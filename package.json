@@ -40,5 +40,11 @@
     "@mui/material": "^9.3.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
+  },
+  "overrides": {
+    "@types/express": "4.17.25",
+    "@types/express-serve-static-core": "4.19.9",
+    "@types/serve-static": "1.15.10",
+    "@types/send": "0.17.6"
   }
 }
