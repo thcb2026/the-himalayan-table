@@ -11,10 +11,10 @@ import {
 } from '@mui/material';
 import { menuItems } from '../content/data';
 import { CheckoutPageProps, FormErrors } from '../types';
-import { initailFormData } from '../content/common-content';
+import { initialFormData } from '../content/common-content';
 
 export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps) {
-  const [form, setForm] = useState(initailFormData);
+  const [form, setForm] = useState(initialFormData);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
