@@ -177,16 +177,14 @@ jobs:
 
           echo "::notice::Credential context: this GitHub Actions deploy uses CLOUDFLARE_API_TOKEN with Wrangler."
 
-          if [[ -z "${CLOUDFLARE_API_TOKEN:-}" ]]; then
-            echo "::error::CLOUDFLARE_API_TOKEN is missing. Add this repository secret to enable Cloudflare deployment."
-            exit 1
+          if [[ -z "${CLOUDFLARE_API_TOKEN:-}" || -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]]; then
+            echo "::warning::Cloudflare deployment secrets are missing. Skipping deployment for this run."
+            echo "skip_deploy=true" >> "$GITHUB_OUTPUT"
+            echo "account_id=" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
           if [[ -z "${CLOUDFLARE_WORKER_NAME:-}" ]]; then
             echo "::notice::CLOUDFLARE_WORKER_NAME is not configured; using the default worker name 'finance-hub-prod'."
-          fi
-          if [[ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]]; then
-            echo "::error::CLOUDFLARE_ACCOUNT_ID is missing. Add this repository secret to enable Cloudflare deployment."
-            exit 1
           fi
           resolved_account_id="${CLOUDFLARE_ACCOUNT_ID}"
           if [[ -z "${BACKEND_HOST:-}" ]]; then
