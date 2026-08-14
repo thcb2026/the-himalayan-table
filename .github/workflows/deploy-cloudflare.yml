@@ -216,7 +216,7 @@ jobs:
           text = path.read_text()
 
           replacements = {
-              'YOUR_WORKER_NAME': os.environ.get('CLOUDFLARE_WORKER_NAME', '').strip() or 'finance-hub-prod',
+              'YOUR_WORKER_NAME': os.environ.get('CLOUDFLARE_WORKER_NAME', '').strip() or 'the-himalayan-table-prod',
               'YOUR_CLOUDFLARE_ACCOUNT_ID': os.environ.get('CLOUDFLARE_ACCOUNT_ID', '').strip(),
               'YOUR_BACKEND_HOST': os.environ.get('BACKEND_HOST', '').strip(),
               'YOUR_BACKEND_FALLBACK_HOST': os.environ.get('BACKEND_FALLBACK_HOST', '').strip(),
