@@ -1,6 +1,6 @@
 {
   "name": "the-himalayan-table",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "scripts": {
     "build:dev": "NODE_ENV=development rspack build",
     "build:start": "cd dist && rspack serve",
