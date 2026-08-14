@@ -1,5 +1,5 @@
 name = "the-himalayan-table"
-account_id = "YOUR_CLOUDFLARE_ACCOUNT_ID"
+account_id = "ce027662d92cfb76ed3a1d42da2edb30"
 main = "src/worker.ts"
 compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
