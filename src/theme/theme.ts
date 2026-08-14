@@ -1,60 +1,57 @@
 // theme/theme.ts
-import { createTheme } from '@mui/material/styles';
+import { alpha, createTheme } from '@mui/material/styles';
+import { createM3Palette } from './m3Palette';
 
 export const buildM3Theme = (sourceColor: string = '#a75b2c', isDark: boolean = false) => {
+  const palette = createM3Palette(sourceColor, isDark);
+
   return createTheme({
-    palette: {
-      mode: isDark ? 'dark' : 'light',
-      primary: {
-        main: sourceColor,
-        dark: '#7c411a',
-        light: '#d9b07a',
-      },
-      secondary: {
-        main: '#d9b07a',
-      },
-      background: {
-        default: isDark ? '#1a1a1a' : '#f5efe6',
-        paper: isDark ? '#2d2d2d' : '#fffdf9',
-      },
-      error: {
-        main: '#b42318',
-      },
-    },
+    palette,
     shape: {
       borderRadius: 12,
     },
     components: {
       MuiButton: {
         styleOverrides: {
-          root: {
-            borderRadius: 50,
+          root: ({ theme }) => ({
+            borderRadius: 999,
             textTransform: 'none',
-            fontWeight: 500,
+            fontWeight: 600,
             padding: '10px 24px',
-          },
-          contained: {
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.primary.contrastText,
+          }),
+          contained: ({ theme }) => ({
             boxShadow: 'none',
             '&:hover': {
-              boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.2)',
+              boxShadow: theme.shadows[1],
+              backgroundColor: alpha(theme.palette.primary.main, 0.92),
             },
-          },
+          }),
+          outlined: ({ theme }) => ({
+            borderColor: alpha(theme.palette.primary.main, 0.5),
+            color: theme.palette.primary.main,
+          }),
         },
       },
       MuiCard: {
         styleOverrides: {
-          root: {
+          root: ({ theme }) => ({
             borderRadius: 16,
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-          },
+            boxShadow: theme.shadows[1],
+            backgroundColor: theme.palette.background.paper,
+            color: theme.palette.text.primary,
+          }),
         },
       },
       MuiChip: {
         styleOverrides: {
-          root: {
+          root: ({ theme }) => ({
             borderRadius: 8,
             fontWeight: 500,
-          },
+            backgroundColor: alpha(theme.palette.secondary.main, 0.12),
+            color: theme.palette.secondary.main,
+          }),
         },
       },
     },
