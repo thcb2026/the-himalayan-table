@@ -184,7 +184,7 @@ jobs:
             exit 0
           fi
           if [[ -z "${CLOUDFLARE_WORKER_NAME:-}" ]]; then
-            echo "::notice::CLOUDFLARE_WORKER_NAME is not configured; using the default worker name 'finance-hub-prod'."
+            echo "::notice::CLOUDFLARE_WORKER_NAME is not configured; using the default worker name 'the-himalayan-table-prod'."
           fi
           resolved_account_id="${CLOUDFLARE_ACCOUNT_ID}"
           if [[ -z "${BACKEND_HOST:-}" ]]; then
