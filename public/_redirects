@@ -1,3 +1,3 @@
-# Single Page App (SPA) rewrite
-# All requests to non-existent files route to index.html for React Router
-/*    /index.html   200
+# Deprecated: the Worker handles SPA fallback directly.
+# Cloudflare Pages redirect rules are intentionally disabled here to avoid
+# redirect loops when the worker serves the app bundle and the assets fallback.

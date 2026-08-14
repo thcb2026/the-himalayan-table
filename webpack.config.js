@@ -82,7 +82,6 @@ module.exports = {
     }),
     new CopyPlugin({
       patterns: [
-        { from: 'public/_redirects', to: '.' },
         { from: 'public/_headers', to: '.' },
       ],
     }),
