@@ -14,10 +14,11 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { menuItems } from '../content/data';
+import { dietaryOptions, menuCategories, uiText } from '../content/common-content';
 import { MenuCategory, DietaryTag, MenuPageProps } from '../types';
 
-const categories: (MenuCategory | 'All')[] = ['All', 'Everyday Favorites', 'Nepali Traditional', 'Appetizers & Snacks', 'Desserts'];
-const dietaryOptions: (DietaryTag | 'All')[] = ['All', 'Vegetarian', 'Vegan', 'Gluten-Free', 'Dairy-Free', 'Nut Allergies'];
+const categories: (MenuCategory | 'All')[] = menuCategories as (MenuCategory | 'All')[];
+const dietaryChoices: (DietaryTag | 'All')[] = dietaryOptions as (DietaryTag | 'All')[];
 
 export function MenuPageMUI({ state, onCategoryChange, onDietaryChange, onAddToCart }: MenuPageProps) {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
@@ -49,17 +50,17 @@ export function MenuPageMUI({ state, onCategoryChange, onDietaryChange, onAddToC
     <Box>
       <Box sx={{ mb: 4 }}>
         <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
-          Menu
+          {uiText.app.menu}
         </Typography>
         <Typography variant="h4" sx={{ fontWeight: 700, mt: 1 }}>
-          Explore our authentic Nepali flavors
+          {uiText.menu.title}
         </Typography>
       </Box>
 
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, mb: 4 }}>
         <FormControl fullWidth>
-          <InputLabel>Category</InputLabel>
-          <Select value={state.selectedCategory} label="Category" onChange={(e) => onCategoryChange(e.target.value as MenuCategory | 'All')}>
+          <InputLabel>{uiText.menu.categoryLabel}</InputLabel>
+          <Select value={state.selectedCategory} label={uiText.menu.categoryLabel} onChange={(e) => onCategoryChange(e.target.value as MenuCategory | 'All')}>
             {categories.map((cat) => (
               <MenuItem key={cat} value={cat}>
                 {cat}
@@ -69,9 +70,9 @@ export function MenuPageMUI({ state, onCategoryChange, onDietaryChange, onAddToC
         </FormControl>
 
         <FormControl fullWidth>
-          <InputLabel>Dietary</InputLabel>
-          <Select value={state.selectedDietary} label="Dietary" onChange={(e) => onDietaryChange(e.target.value as DietaryTag | 'All')}>
-            {dietaryOptions.map((opt) => (
+          <InputLabel>{uiText.menu.dietaryLabel}</InputLabel>
+          <Select value={state.selectedDietary} label={uiText.menu.dietaryLabel} onChange={(e) => onDietaryChange(e.target.value as DietaryTag | 'All')}>
+            {dietaryChoices.map((opt) => (
               <MenuItem key={opt} value={opt}>
                 {opt}
               </MenuItem>
@@ -104,9 +105,9 @@ export function MenuPageMUI({ state, onCategoryChange, onDietaryChange, onAddToC
                 </Typography>
 
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-                  {item.vegetarian && <Typography variant="caption" sx={{ bgcolor: 'success.light', px: 1, py: 0.5, borderRadius: 1 }}>Vegetarian</Typography>}
-                  {item.vegan && <Typography variant="caption" sx={{ bgcolor: 'info.light', px: 1, py: 0.5, borderRadius: 1 }}>Vegan</Typography>}
-                  {item.glutenFree && <Typography variant="caption" sx={{ bgcolor: 'warning.light', px: 1, py: 0.5, borderRadius: 1 }}>GF</Typography>}
+                  {item.vegetarian && <Typography variant="caption" sx={{ bgcolor: 'success.light', px: 1, py: 0.5, borderRadius: 1 }}>{uiText.menu.vegetarian}</Typography>}
+                  {item.vegan && <Typography variant="caption" sx={{ bgcolor: 'info.light', px: 1, py: 0.5, borderRadius: 1 }}>{uiText.menu.vegan}</Typography>}
+                  {item.glutenFree && <Typography variant="caption" sx={{ bgcolor: 'warning.light', px: 1, py: 0.5, borderRadius: 1 }}>{uiText.menu.glutenFree}</Typography>}
                 </Box>
 
                 <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
@@ -118,7 +119,7 @@ export function MenuPageMUI({ state, onCategoryChange, onDietaryChange, onAddToC
                     <AddIcon fontSize="small" />
                   </Button>
                   <Button size="small" variant="contained" onClick={() => handleAddToCart(item.id)} sx={{ flex: 1 }}>
-                    Add
+                    {uiText.menu.add}
                   </Button>
                 </Box>
               </CardContent>
