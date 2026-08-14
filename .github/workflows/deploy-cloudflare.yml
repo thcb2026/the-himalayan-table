@@ -185,14 +185,10 @@ jobs:
             echo "::notice::CLOUDFLARE_WORKER_NAME is not configured; using the default worker name 'finance-hub-prod'."
           fi
           if [[ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]]; then
-            resolved_account_id=$(grep -E '^account_id\s*=\s*"[^"]+"' wrangler.toml | head -n1 | sed -E 's/^account_id\s*=\s*"([^"]+)".*/\1/' || true)
-            if [[ -n "${resolved_account_id:-}" ]]; then
-              echo "::notice::CLOUDFLARE_ACCOUNT_ID not set; using account_id from wrangler.toml."
-            else
-              echo "::error::CLOUDFLARE_ACCOUNT_ID not set and no account_id found in wrangler.toml."
-              exit 1
-            fi
+            echo "::error::CLOUDFLARE_ACCOUNT_ID is missing. Add this repository secret to enable Cloudflare deployment."
+            exit 1
           fi
+          resolved_account_id="${CLOUDFLARE_ACCOUNT_ID}"
           if [[ -z "${BACKEND_HOST:-}" ]]; then
             missing+=("BACKEND_HOST")
           fi
