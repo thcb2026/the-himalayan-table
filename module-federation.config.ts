@@ -1,0 +1,26 @@
+export const mfConfig = {
+  name: "the_himalayan_table",
+  filename: "remoteEntry.js",
+  exposes: {
+    "./App": "./src/AppMUI",
+    "./HomePageMUI": "./src/pages/HomePageMUI",
+    "./MenuPageMUI": "./src/pages/MenuPageMUI",
+    "./CheckoutPageMUI": "./src/pages/CheckoutPageMUI",
+    "./CartDrawerMUI": "./src/pages/CartDrawerMUI",
+    "./OrderFlowPageMUI": "./src/pages/OrderFlowPageMUI",
+    "./CorporateCateringPageMUI": "./src/pages/CorporateCateringPageMUI",
+    "./ContactPageMUI": "./src/pages/ContactPageMUI",
+    "./store": "./src/store",
+    "./types": "./src/types",
+    "./data": "./src/data",
+    "./theme": "./src/theme/theme",
+  },
+  shared: {
+    react: { singleton: true, strictVersion: true, requiredVersion: "^19.0.0" },
+    "react-dom": { singleton: true, strictVersion: true, requiredVersion: "^19.0.0" },
+    "@mui/material": { singleton: true, strictVersion: false, requiredVersion: "^9.3.1" },
+    "@mui/icons-material": { singleton: true, strictVersion: false, requiredVersion: "^9.3.1" },
+    "@emotion/react": { singleton: true, requiredVersion: "^11.14.0" },
+    "@emotion/styled": { singleton: true, requiredVersion: "^11.14.1" },
+  },
+};

@@ -1,0 +1,15 @@
+# Caching headers for Cloudflare Pages
+/*
+  Cache-Control: public, max-age=3600
+
+# HTML should not be cached aggressively
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Chunk files can be cached long-term (they have content hashes)
+/*.bundle.js
+  Cache-Control: public, max-age=31536000, immutable
+
+# Bundle files can be cached
+/bundle.js
+  Cache-Control: public, max-age=3600
