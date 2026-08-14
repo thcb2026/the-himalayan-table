@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { menuItems } from '../content/data';
 import { CheckoutPageProps, FormErrors } from '../types';
-import { initialFormData } from '../content/common-content';
+import { initialFormData, uiText, validationMessages } from '../content/common-content';
 
 export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps) {
   const [form, setForm] = useState(initialFormData);
@@ -46,13 +46,13 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-    if (!form.firstName.trim()) newErrors.firstName = 'First name is required';
-    if (!form.lastName.trim()) newErrors.lastName = 'Last name is required';
-    if (!form.email.trim()) newErrors.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = 'Invalid email address';
-    if (!form.phone.trim()) newErrors.phone = 'Phone number is required';
-    else if (!/^[0-9+\-\s()]{7,}$/.test(form.phone)) newErrors.phone = 'Invalid phone number';
-    if (!form.deliveryAddress.trim()) newErrors.deliveryAddress = 'Delivery address is required';
+    if (!form.firstName.trim()) newErrors.firstName = validationMessages.checkout.firstName;
+    if (!form.lastName.trim()) newErrors.lastName = validationMessages.checkout.lastName;
+    if (!form.email.trim()) newErrors.email = validationMessages.checkout.emailRequired;
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = validationMessages.checkout.emailInvalid;
+    if (!form.phone.trim()) newErrors.phone = validationMessages.checkout.phoneRequired;
+    else if (!/^[0-9+\-\s()]{7,}$/.test(form.phone)) newErrors.phone = validationMessages.checkout.phoneInvalid;
+    if (!form.deliveryAddress.trim()) newErrors.deliveryAddress = validationMessages.checkout.deliveryAddress;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -69,13 +69,13 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
         <Card>
           <CardContent sx={{ textAlign: 'center', py: 4 }}>
             <Typography variant="overline" sx={{ color: 'success.main', fontWeight: 700 }}>
-              Order placed
+              {uiText.checkout.orderPlaced}
             </Typography>
             <Typography variant="h4" sx={{ fontWeight: 700, mt: 1, mb: 2 }}>
-              Thank you for your order!
+              {uiText.checkout.sentTitle}
             </Typography>
             <Typography color="textSecondary" sx={{ mb: 3 }}>
-              We've received your order and will confirm via email and SMS shortly.
+              {uiText.checkout.sentMessage}
             </Typography>
 
             <Box
@@ -90,42 +90,42 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
               }}
             >
               <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
-                <Typography color="textSecondary">Customer</Typography>
+                <Typography color="textSecondary">{uiText.checkout.customerLabel}</Typography>
                 <Typography sx={{ fontWeight: 700 }}>
                   {form.firstName} {form.lastName}
                 </Typography>
               </Box>
               <Divider sx={{ my: 1 }} />
               <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
-                <Typography color="textSecondary">Email</Typography>
+                <Typography color="textSecondary">{uiText.checkout.email}</Typography>
                 <Typography sx={{ fontWeight: 700 }}>{form.email}</Typography>
               </Box>
               <Divider sx={{ my: 1 }} />
               <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
-                <Typography color="textSecondary">Phone</Typography>
+                <Typography color="textSecondary">{uiText.checkout.phone}</Typography>
                 <Typography sx={{ fontWeight: 700 }}>{form.phone}</Typography>
               </Box>
               <Divider sx={{ my: 1 }} />
               <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
-                <Typography color="textSecondary">Delivery to</Typography>
+                <Typography color="textSecondary">{uiText.checkout.deliveryTo}</Typography>
                 <Typography sx={{ fontWeight: 700 }}>{form.deliveryAddress}</Typography>
               </Box>
               <Divider sx={{ my: 1 }} />
               <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
-                <Typography color="textSecondary">Total amount</Typography>
+                <Typography color="textSecondary">{uiText.checkout.totalAmount}</Typography>
                 <Typography sx={{ fontWeight: 700, color: 'primary.main', fontSize: '1.1rem' }}>
                   NRs {total}
                 </Typography>
               </Box>
               <Divider sx={{ my: 1 }} />
               <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
-                <Typography color="textSecondary">Payment method</Typography>
+                <Typography color="textSecondary">{uiText.checkout.paymentMethod}</Typography>
                 <Typography sx={{ fontWeight: 700 }}>{form.paymentMethod}</Typography>
               </Box>
             </Box>
 
             <Button variant="contained" onClick={onComplete} size="large">
-              Back to home
+              {uiText.checkout.backToHome}
             </Button>
           </CardContent>
         </Card>
@@ -138,14 +138,14 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
           <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
-            Checkout
+            {uiText.checkout.eyebrow}
           </Typography>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>
-            Review your order and complete payment
+            {uiText.checkout.title}
           </Typography>
         </Box>
         <Button variant="outlined" onClick={onBack}>
-          Back
+          {uiText.checkout.back}
         </Button>
       </Box>
 
@@ -154,12 +154,12 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-                Customer details
+                {uiText.checkout.customerDetails}
               </Typography>
               <Stack spacing={2}>
                 <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                   <TextField
-                    label="First Name"
+                    label={uiText.checkout.firstName}
                     value={form.firstName}
                     onChange={(e) => handleInputChange('firstName', e.target.value)}
                     error={!!errors.firstName}
@@ -167,7 +167,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
                     fullWidth
                   />
                   <TextField
-                    label="Last Name"
+                    label={uiText.checkout.lastName}
                     value={form.lastName}
                     onChange={(e) => handleInputChange('lastName', e.target.value)}
                     error={!!errors.lastName}
@@ -175,7 +175,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
                     fullWidth
                   />
                   <TextField
-                    label="Email"
+                    label={uiText.checkout.email}
                     type="email"
                     value={form.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
@@ -184,7 +184,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
                     fullWidth
                   />
                   <TextField
-                    label="Phone"
+                    label={uiText.checkout.phone}
                     value={form.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                     error={!!errors.phone}
@@ -193,7 +193,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
                   />
                 </Box>
                 <TextField
-                  label="Delivery Address"
+                  label={uiText.checkout.deliveryAddress}
                   value={form.deliveryAddress}
                   onChange={(e) => handleInputChange('deliveryAddress', e.target.value)}
                   error={!!errors.deliveryAddress}
@@ -203,7 +203,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
                   rows={2}
                 />
                 <TextField
-                  label="Notes (optional)"
+                  label={uiText.checkout.notes}
                   value={form.notes}
                   onChange={(e) => handleInputChange('notes', e.target.value)}
                   fullWidth
@@ -219,7 +219,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-                Order summary
+                {uiText.checkout.orderSummary}
               </Typography>
               <Stack spacing={1}>
                 {cartItems.map((item) => (
@@ -235,17 +235,17 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
               </Stack>
               <Divider sx={{ my: 2 }} />
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                <Typography>Subtotal</Typography>
+                <Typography>{uiText.cart.subtotal}</Typography>
                 <Typography sx={{ fontWeight: 700 }}>NRs {subtotal}</Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                <Typography>Delivery</Typography>
+                <Typography>{uiText.orderFlow.deliveryLabel}</Typography>
                 <Typography sx={{ fontWeight: 700 }}>NRs {deliveryCharge}</Typography>
               </Box>
               <Divider sx={{ my: 2 }} />
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                  Total
+                  {uiText.orderFlow.total}
                 </Typography>
                 <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main' }}>
                   NRs {total}
@@ -253,7 +253,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
               </Box>
 
               <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
-                Payment method
+                {uiText.checkout.paymentMethod}
               </Typography>
               <Stack spacing={1} sx={{ mb: 2 }}>
                 {(['Esewa', 'IME Pay', 'Cash on Delivery'] as const).map((option) => (
@@ -269,7 +269,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
               </Stack>
 
               <Button variant="contained" size="large" fullWidth onClick={handleSubmit}>
-                Place order
+                {uiText.checkout.placeOrder}
               </Button>
             </CardContent>
           </Card>

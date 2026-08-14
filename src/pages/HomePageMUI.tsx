@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Typography, Button, Card, CardContent, CardMedia, Stack } from '@mui/material';
+import { uiText } from '../content/common-content';
 
 export function HomePageMUI() {
   return (
@@ -15,7 +16,7 @@ export function HomePageMUI() {
       >
         <Box>
           <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
-            Welcome to
+            {uiText.home.welcome}
           </Typography>
           <Typography
             variant="h3"
@@ -25,31 +26,31 @@ export function HomePageMUI() {
               fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
             }}
           >
-            The Himalayan Table
+            {uiText.home.title}
           </Typography>
           <Typography variant="body1" color="textSecondary" sx={{ my: 2, lineHeight: 1.7, maxWidth: 600 }}>
-            Discover authentic Nepali cuisine crafted with traditional recipes and the finest ingredients. From office catering to unforgettable events, we bring the flavors of the Himalayas to your table.
+            {uiText.home.description}
           </Typography>
           <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
             <Button variant="contained" size="large">
-              Explore Menu
+              {uiText.home.exploreMenu}
             </Button>
             <Button variant="outlined" size="large">
-              Order Online
+              {uiText.home.orderOnline}
             </Button>
           </Stack>
           <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
             <Box>
               <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
-                Free Delivery
+                {uiText.home.freeDelivery}
               </Typography>
-              <Typography variant="body2">Within 10 km radius</Typography>
+              <Typography variant="body2">{uiText.home.freeDeliveryDetail}</Typography>
             </Box>
             <Box>
               <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
-                Expert Catering
+                {uiText.home.expertCatering}
               </Typography>
-              <Typography variant="body2">For all occasions</Typography>
+              <Typography variant="body2">{uiText.home.expertCateringDetail}</Typography>
             </Box>
           </Stack>
         </Box>
@@ -87,20 +88,20 @@ export function HomePageMUI() {
 
       <Box sx={{ my: 6 }}>
         <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
-          Our Story
+          {uiText.home.ourStory}
         </Typography>
         <Typography variant="h4" sx={{ fontWeight: 700, mt: 1, mb: 3 }}>
-          Bringing Nepal to Your Table
+          {uiText.home.storyTitle}
         </Typography>
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
           <Box>
             <Typography color="textSecondary" sx={{ lineHeight: 1.8 }}>
-              For over a decade, we've been dedicated to sharing authentic Nepali flavors with the Kathmandu Valley. Every dish is prepared fresh using traditional techniques and the highest quality ingredients sourced directly from local suppliers.
+              {uiText.home.storyBodyOne}
             </Typography>
           </Box>
           <Box>
             <Typography color="textSecondary" sx={{ lineHeight: 1.8 }}>
-              Whether you're looking for a quick office lunch or planning a memorable celebration, we customize our offerings to suit your needs. Our team takes pride in delivering not just food, but an experience of Himalayan hospitality.
+              {uiText.home.storyBodyTwo}
             </Typography>
           </Box>
         </Box>

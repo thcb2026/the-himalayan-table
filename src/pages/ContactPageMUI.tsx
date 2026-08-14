@@ -3,16 +3,17 @@ import { Box, Typography, TextField, Button, Stack, Card, CardContent, Link } fr
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import { uiText } from '../content/common-content';
 
 export function ContactPageMUI() {
   return (
     <Box>
       <Box sx={{ mb: 4, textAlign: 'center' }}>
         <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
-          Contact Us
+          {uiText.contact.eyebrow}
         </Typography>
         <Typography variant="h4" sx={{ fontWeight: 700, mt: 1 }}>
-          Get in touch with The Himalayan Table
+          {uiText.contact.title}
         </Typography>
       </Box>
 
@@ -21,15 +22,15 @@ export function ContactPageMUI() {
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-                Send us a message
+                {uiText.contact.sendMessage}
               </Typography>
               <Stack spacing={2}>
-                <TextField label="Your Name" fullWidth />
-                <TextField label="Email" type="email" fullWidth />
-                <TextField label="Subject" fullWidth />
-                <TextField label="Message" multiline rows={4} fullWidth />
+                <TextField label={uiText.contact.yourName} fullWidth />
+                <TextField label={uiText.contact.yourEmail} type="email" fullWidth />
+                <TextField label={uiText.contact.subject} fullWidth />
+                <TextField label={uiText.contact.message} multiline rows={4} fullWidth />
                 <Button variant="contained" size="large">
-                  Send Message
+                  {uiText.contact.sendButton}
                 </Button>
               </Stack>
             </CardContent>
@@ -44,7 +45,7 @@ export function ContactPageMUI() {
                   <PhoneIcon sx={{ color: 'primary.main', mt: 0.5 }} />
                   <Box>
                     <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                      Phone
+                      {uiText.contact.phoneLabel}
                     </Typography>
                     <Link href="tel:+977-9800000000" underline="hover">
                       +977-9800000000
@@ -60,7 +61,7 @@ export function ContactPageMUI() {
                   <EmailIcon sx={{ color: 'primary.main', mt: 0.5 }} />
                   <Box>
                     <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                      Email
+                      {uiText.contact.emailLabel}
                     </Typography>
                     <Link href="mailto:hello@thehimalayantable.com" underline="hover">
                       hello@thehimalayantable.com
@@ -76,7 +77,7 @@ export function ContactPageMUI() {
                   <LocationOnIcon sx={{ color: 'primary.main', mt: 0.5 }} />
                   <Box>
                     <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                      Location
+                      {uiText.contact.location}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
                       Kathmandu Valley, Nepal
@@ -89,13 +90,13 @@ export function ContactPageMUI() {
             <Card sx={{ bgcolor: 'primary.main', color: 'primary.contrastText' }}>
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
-                  Quick contact
+                  {uiText.contact.quickContact}
                 </Typography>
                 <Stack spacing={1}>
-                  <Typography variant="body2">WhatsApp: +977-9800000000</Typography>
-                  <Typography variant="body2">Viber: +977-9800000000</Typography>
-                  <Typography variant="body2">Instagram: @thehimalayantable</Typography>
-                  <Typography variant="body2">Facebook: The Himalayan Table</Typography>
+                  <Typography variant="body2">{uiText.contact.whatsapp}: +977-9800000000</Typography>
+                  <Typography variant="body2">{uiText.contact.viber}: +977-9800000000</Typography>
+                  <Typography variant="body2">{uiText.contact.instagram}: @thehimalayantable</Typography>
+                  <Typography variant="body2">{uiText.contact.facebook}: The Himalayan Table</Typography>
                 </Stack>
               </CardContent>
             </Card>

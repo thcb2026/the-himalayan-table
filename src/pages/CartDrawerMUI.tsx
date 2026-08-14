@@ -15,6 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { menuItems } from '../content/data';
+import { uiText } from '../content/common-content';
 import { CartDrawerProps } from '../types';
 
 export function CartDrawerMUI({
@@ -39,7 +40,7 @@ export function CartDrawerMUI({
       <Box sx={{ width: { xs: '100vw', sm: 400 }, display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, bgcolor: 'primary.main', color: 'primary.contrastText' }}>
           <Typography variant="h6" sx={{ fontWeight: 700 }}>
-            Cart
+            {uiText.cart.title}
           </Typography>
           <IconButton color="inherit" onClick={onClose} size="small">
             <CloseIcon />
@@ -49,10 +50,10 @@ export function CartDrawerMUI({
         {cartItems.length === 0 ? (
           <Box sx={{ p: 3, textAlign: 'center' }}>
             <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-              Your cart is empty.
+              {uiText.cart.empty}
             </Typography>
             <Button variant="contained" onClick={onClose}>
-              Continue shopping
+              {uiText.app.continueShopping}
             </Button>
           </Box>
         ) : (
@@ -95,11 +96,11 @@ export function CartDrawerMUI({
 
             <Box sx={{ p: 2, bgcolor: 'background.paper', borderTop: '1px solid', borderColor: 'divider' }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                <Typography>Subtotal</Typography>
+                <Typography>{uiText.cart.subtotal}</Typography>
                 <Typography sx={{ fontWeight: 700 }}>NRs {subtotal}</Typography>
               </Box>
               <Button variant="contained" fullWidth onClick={onCheckout}>
-                Go to checkout
+                {uiText.cart.checkout}
               </Button>
             </Box>
           </>

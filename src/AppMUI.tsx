@@ -12,7 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import CircularProgress from '@mui/material/CircularProgress';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Logo from '@mui/icons-material/LunchDining';
-import { navigation, STORAGE_KEY } from './content/common-content';
+import { appBrand, navigation, STORAGE_KEY, uiText } from './content/common-content';
 import { initialQuote } from './content/data';
 import { GenericStateStore } from './store';
 import { AppState } from './types';
@@ -201,10 +201,10 @@ function App() {
               <Logo sx={{ fontSize: 32 }} />
               <Box>
                 <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1 }}>
-                  The Himalayan Table
+                  {appBrand.name}
                 </Typography>
                 <Typography variant="caption" sx={{ color: 'inherit', opacity: 0.9 }}>
-                  Authentic Nepali Catering & Events
+                  {appBrand.tagline}
                 </Typography>
               </Box>
             </Box>
@@ -233,10 +233,10 @@ function App() {
                 onClick={() => appStore.setState({ activeNav: 'Menu' })}
                 sx={{ borderColor: 'inherit' }}
               >
-                Menu
+                {uiText.app.menu}
               </Button>
               <Button variant="contained" color="secondary" onClick={() => appStore.setState({ activeNav: 'Order Online' })}>
-                Order Now
+                {uiText.app.orderNow}
               </Button>
               <IconButton color="inherit" onClick={() => setIsCartOpen(true)} sx={{ position: 'relative' }}>
                 <Badge badgeContent={state.cartCount} color="error">
@@ -287,17 +287,17 @@ function App() {
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3 }}>
               <Box>
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                  The Himalayan Table
+                  {appBrand.name}
                 </Typography>
-                <Typography variant="body2">Authentic Nepali flavors for office lunches and memorable events.</Typography>
+                <Typography variant="body2">{appBrand.footerText}</Typography>
               </Box>
               <Box>
-                <Typography variant="body2">Phone: +977-9800000000</Typography>
-                <Typography variant="body2">Email: hello@thehimalayantable.com</Typography>
+                <Typography variant="body2">{uiText.footer.contactPhone}</Typography>
+                <Typography variant="body2">{uiText.footer.contactEmail}</Typography>
               </Box>
               <Box>
-                <Typography variant="body2">WhatsApp / Viber</Typography>
-                <Typography variant="body2">Instagram / Facebook</Typography>
+                <Typography variant="body2">{uiText.footer.socials[0]}</Typography>
+                <Typography variant="body2">{uiText.footer.socials[1]}</Typography>
               </Box>
             </Box>
           </Container>
