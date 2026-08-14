@@ -6,7 +6,7 @@
     "build:start": "cd dist && rspack serve",
     "start": "webpack serve --config webpack.config.js",
     "build": "webpack --mode production",
-    "deploy": "npm run build && npx wrangler pages deploy ./dist --project-name=the-himalayan-table"
+    "deploy": "npm run build && npx wrangler deploy --env production"
   },
   "devDependencies": {
     "@rspack/cli": "~1.2.0",
