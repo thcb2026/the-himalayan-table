@@ -1,0 +1,329 @@
+name: Deploy - Cloudflare Unified Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - feature
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to check for approvals (manual check)'
+        required: false
+      skip_gate:
+        description: 'Set to "true" to force bypass the approval gate'
+        required: false
+        default: 'false'
+      release_from_non_main:
+        description: 'Set to "true" to allow Production Release from develop/feature branches (manual runs only)'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  validate:
+    name: Lint and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test -- --watch=false --passWithNoTests
+
+  create-pr:
+    name: Automated PR Creation
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+          fetch-depth: 0
+
+      - name: Ensure PR from feature branch to main
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          GH_TOKEN: ${{ github.token }}
+          HEAD_BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          if [[ "${EVENT_NAME}" != "push" ]]; then
+            echo "::notice::PR creation is only relevant on push events."
+            exit 0
+          fi
+          if [[ "${HEAD_BRANCH}" == "main" ]]; then
+            echo "::notice::PR creation skipped because branch is main."
+            exit 0
+          fi
+          if [[ -z "${GH_TOKEN}" ]]; then
+            echo "No token available. Ensure GITHUB_TOKEN is enabled." >&2
+            exit 1
+          fi
+          if [[ -z "${HEAD_BRANCH}" ]]; then
+            echo "Could not determine source branch name from event context." >&2
+            exit 1
+          fi
+
+          pr_number=$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --head "${HEAD_BRANCH}" --state open --json number -q '.[0].number' || true)
+          if [[ -z "${pr_number}" || "${pr_number}" == "null" ]]; then
+            set +e
+            create_output=$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "${HEAD_BRANCH}" --title "Merge ${HEAD_BRANCH} into main" --body "Automated PR from ${HEAD_BRANCH} to main." 2>&1)
+            create_status=$?
+            set -e
+
+            if [[ $create_status -ne 0 ]]; then
+              if echo "$create_output" | grep -q "GitHub Actions is not permitted to create or approve pull requests"; then
+                echo "GitHub token is restricted from creating PRs in this repo/org policy."
+                echo "Create manually: https://github.com/$GITHUB_REPOSITORY/compare/main...${HEAD_BRANCH}?expand=1"
+                exit 0
+              fi
+
+              echo "$create_output" >&2
+              exit $create_status
+            fi
+          fi
+
+  release:
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    name: Production Release
+    needs: validate
+    environment: production
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Bump Version
+        if: "github.event_name == 'push'"
+        run: npm version patch --no-git-tag-version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prepare Cloudflare deployment
+        id: deploy-prep
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BRANCH_NAME: ${{ github.ref_name }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message || '' }}
+          RELEASE_FROM_NON_MAIN: ${{ github.event.inputs.release_from_non_main || 'false' }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_WORKER_NAME: ${{ secrets.CLOUDFLARE_WORKER_NAME }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          BACKEND_HOST: ${{ secrets.BACKEND_HOST }}
+          BACKEND_FALLBACK_HOST: ${{ secrets.BACKEND_FALLBACK_HOST }}
+        run: |
+          set -euo pipefail
+          missing=()
+          resolved_account_id="${CLOUDFLARE_ACCOUNT_ID:-}"
+
+          should_deploy="false"
+          if [[ "${EVENT_NAME}" == "push" ]]; then
+            if [[ "${COMMIT_MESSAGE}" != *"[skip ci]"* ]]; then
+              should_deploy="true"
+            fi
+          elif [[ "${EVENT_NAME}" == "workflow_dispatch" ]]; then
+            if [[ "${BRANCH_NAME}" == "main" || "${BRANCH_NAME}" == "develop" || "${BRANCH_NAME}" == "feature" || "${BRANCH_NAME}" == feature/* ]]; then
+              should_deploy="true"
+            elif [[ "${RELEASE_FROM_NON_MAIN}" == "true" ]]; then
+              should_deploy="true"
+            fi
+          fi
+
+          if [[ "${should_deploy}" != "true" ]]; then
+            echo "::notice::Release job ran, but deployment conditions were not met for this event/branch."
+            echo "skip_deploy=true" >> "$GITHUB_OUTPUT"
+            echo "account_id=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "::notice::Credential context: this GitHub Actions deploy uses CLOUDFLARE_API_TOKEN with Wrangler."
+
+          if [[ -z "${CLOUDFLARE_API_TOKEN:-}" ]]; then
+            echo "::error::CLOUDFLARE_API_TOKEN is missing. Add this repository secret to enable Cloudflare deployment."
+            exit 1
+          fi
+          if [[ -z "${CLOUDFLARE_WORKER_NAME:-}" ]]; then
+            echo "::notice::CLOUDFLARE_WORKER_NAME is not configured; using the default worker name 'finance-hub-prod'."
+          fi
+          if [[ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]]; then
+            resolved_account_id=$(grep -E '^account_id\s*=\s*"[^"]+"' wrangler.toml | head -n1 | sed -E 's/^account_id\s*=\s*"([^"]+)".*/\1/' || true)
+            if [[ -n "${resolved_account_id:-}" ]]; then
+              echo "::notice::CLOUDFLARE_ACCOUNT_ID not set; using account_id from wrangler.toml."
+            else
+              echo "::error::CLOUDFLARE_ACCOUNT_ID not set and no account_id found in wrangler.toml."
+              exit 1
+            fi
+          fi
+          if [[ -z "${BACKEND_HOST:-}" ]]; then
+            missing+=("BACKEND_HOST")
+          fi
+          if [[ -z "${BACKEND_FALLBACK_HOST:-}" ]]; then
+            missing+=("BACKEND_FALLBACK_HOST")
+          fi
+          if [[ -z "${CLOUDFLARE_ZONE_ID:-}" ]]; then
+            echo "::notice::CLOUDFLARE_ZONE_ID is not configured. Deploying to workers.dev without custom domain routes."
+          fi
+
+          if [[ ${#missing[@]} -gt 0 ]]; then
+            echo "::warning::Skipping Cloudflare deployment because required secrets are missing: ${missing[*]}"
+            echo "skip_deploy=true" >> "$GITHUB_OUTPUT"
+            echo "account_id=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "skip_deploy=false" >> "$GITHUB_OUTPUT"
+          echo "account_id=${resolved_account_id}" >> "$GITHUB_OUTPUT"
+
+          python3 - <<'PY'
+          import os
+          import pathlib
+          import re
+
+          path = pathlib.Path('wrangler.toml')
+          text = path.read_text()
+
+          replacements = {
+              'YOUR_WORKER_NAME': os.environ.get('CLOUDFLARE_WORKER_NAME', '').strip() or 'finance-hub-prod',
+              'YOUR_CLOUDFLARE_ACCOUNT_ID': os.environ.get('CLOUDFLARE_ACCOUNT_ID', '').strip(),
+              'YOUR_BACKEND_HOST': os.environ.get('BACKEND_HOST', '').strip(),
+              'YOUR_BACKEND_FALLBACK_HOST': os.environ.get('BACKEND_FALLBACK_HOST', '').strip(),
+          }
+
+          for old, new in replacements.items():
+              text = text.replace(old, new)
+
+          zone_id = os.environ.get('CLOUDFLARE_ZONE_ID', '').strip()
+          if zone_id:
+              text = text.replace('YOUR_CLOUDFLARE_ZONE_ID', zone_id)
+          else:
+              text = re.sub(r'workers_dev\s*=\s*false', 'workers_dev = true', text, count=1)
+              text = re.sub(r'routes\s*=\s*\[[^\]]*\]\n?', '', text, flags=re.DOTALL)
+              text = re.sub(r'\n{3,}', '\n\n', text)
+
+          path.write_text(text)
+          print('Rendered wrangler.toml from GitHub secrets')
+          PY
+
+      - name: Deploy to Cloudflare Workers
+        if: ${{ steps.deploy-prep.outputs.skip_deploy != 'true' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ steps.deploy-prep.outputs.account_id }}
+        run: |
+          set -euo pipefail
+          assets_dir=$(python3 -c "import pathlib,tomllib; data=tomllib.loads(pathlib.Path('wrangler.toml').read_text()); print(data.get('assets',{}).get('directory',''))")
+          if [[ -z "${assets_dir}" ]]; then
+            echo "::error::wrangler.toml is missing [assets].directory"
+            exit 1
+          fi
+          if [[ ! -d "${assets_dir}" ]]; then
+            echo "::notice::Assets directory is not present before deploy: ${assets_dir}"
+            echo "::notice::Continuing because Wrangler will run the configured custom build first."
+          fi
+          npx --yes wrangler@4 deploy --env production
+
+      - name: Commit and Push Version
+        if: "github.event_name == 'push' && github.ref_name == 'main'"
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git diff --quiet --exit-code || git commit -m "chore: bump version after deployment [skip ci]"
+          git push origin HEAD:main
+
+  approval-check:
+    name: PR Approval Gate
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+
+      - name: Check approvals
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.event.pull_request.base.ref || '' }}
+          HEAD_BRANCH: ${{ github.ref_name }}
+          GH_TOKEN: ${{ github.token }}
+          INPUT_PR_NUMBER: ${{ github.event.inputs.pr_number || '' }}
+          PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+          SKIP_GATE: ${{ github.event.inputs.skip_gate || 'false' }}
+          REQUIRE_APPROVAL: ${{ vars.REQUIRE_PR_APPROVAL || 'false' }}
+        run: |
+          set -euo pipefail
+          if [[ "${EVENT_NAME}" == "workflow_dispatch" && -n "${INPUT_PR_NUMBER}" ]]; then
+            PR_NUMBER="${INPUT_PR_NUMBER}"
+          elif [[ "${EVENT_NAME}" == "push" ]]; then
+            PR_NUMBER=$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --head "${HEAD_BRANCH}" --state open --json number -q '.[0].number' || true)
+          fi
+
+          if [[ "${EVENT_NAME}" == "pull_request" && "${BASE_REF}" != "main" ]]; then
+            echo "::notice::Approval gate not required because PR target is not main."
+            exit 0
+          fi
+
+          if [[ -z "${PR_NUMBER}" || "${PR_NUMBER}" == "null" ]]; then
+            echo "::notice::No PR context found for approval check."
+            exit 0
+          fi
+
+          if [[ "${SKIP_GATE}" == "true" ]]; then
+            echo "Gate bypassed via manual workflow input."
+            exit 0
+          fi
+
+          if [[ "${REQUIRE_APPROVAL}" != "true" ]]; then
+            echo "::warning::Approval gate bypassed because REQUIRE_PR_APPROVAL is not enabled."
+            echo "Set repository variable REQUIRE_PR_APPROVAL=true to enforce approvals."
+            exit 0
+          fi
+
+          pr_json=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json reviews,labels)
+          approvals=$(echo "$pr_json" | jq '[.reviews[] | select(.state=="APPROVED")] | length')
+          has_bypass_label=$(echo "$pr_json" | jq '.labels[] | select(.name=="bypass-gate")' | grep -q . && echo "true" || echo "false")
+
+          if [[ "$approvals" -lt 1 && "$has_bypass_label" != "true" ]]; then
+            echo "::warning::GATE SOFT-BYPASS: PR #$PR_NUMBER has 0 approvals. Continuing without blocking deployment."
+            exit 0
+          fi
