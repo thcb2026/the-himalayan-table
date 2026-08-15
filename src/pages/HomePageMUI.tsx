@@ -5,8 +5,10 @@ import { getLabel } from '../utils/getLabel';
 
 export function HomePageMUI() {
   return (
-    <Box>
+    <Box component="div">
       <Box
+        component="section"
+        aria-labelledby="home-hero-title"
         sx={{
           display: 'grid',
           gridTemplateColumns: { xs: '1fr', md: '1.2fr 1fr' },
@@ -15,11 +17,12 @@ export function HomePageMUI() {
           alignItems: 'center',
         }}
       >
-        <Box>
+        <Box component="article">
           <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
             {uiText.home.welcome}
           </Typography>
           <Typography
+            id="home-hero-title"
             variant="h3"
             sx={{
               fontWeight: 700,
@@ -32,22 +35,22 @@ export function HomePageMUI() {
           <Typography variant="body1" color="textSecondary" sx={{ my: 2, lineHeight: 1.7, maxWidth: 600 }}>
             {uiText.home.description}
           </Typography>
-          <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
-            <Button variant="contained" size="large">
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 3, alignItems: { xs: 'stretch', sm: 'center' } }}>
+            <Button variant="contained" size="large" sx={{ width: { xs: '100%', sm: 'auto' } }}>
               {getLabel('act_menu', uiText.home.exploreMenu)}
             </Button>
-            <Button variant="outlined" size="large">
+            <Button variant="outlined" size="large" sx={{ width: { xs: '100%', sm: 'auto' } }}>
               {getLabel('act_order_now', uiText.home.orderOnline)}
             </Button>
           </Stack>
-          <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
-            <Box>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 3 }}>
+            <Box component="div">
               <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
                 {uiText.home.freeDelivery}
               </Typography>
               <Typography variant="body2">{uiText.home.freeDeliveryDetail}</Typography>
             </Box>
-            <Box>
+            <Box component="div">
               <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
                 {uiText.home.expertCatering}
               </Typography>
@@ -56,7 +59,7 @@ export function HomePageMUI() {
           </Stack>
         </Box>
 
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1.2fr 0.8fr' }, gap: 2 }}>
+        <Box component="figure" sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1.2fr 0.8fr' }, gap: 2, m: 0 }}>
           <Card sx={{ gridRow: { sm: '1 / 3' }, minHeight: { xs: 400, sm: 500 } }}>
             <CardMedia
               component="img"
@@ -87,20 +90,20 @@ export function HomePageMUI() {
         </Box>
       </Box>
 
-      <Box sx={{ my: 6 }}>
+      <Box component="section" aria-labelledby="story-heading" sx={{ my: 6 }}>
         <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
           {uiText.home.ourStory}
         </Typography>
-        <Typography variant="h4" sx={{ fontWeight: 700, mt: 1, mb: 3 }}>
+        <Typography id="story-heading" variant="h4" sx={{ fontWeight: 700, mt: 1, mb: 3 }}>
           {uiText.home.storyTitle}
         </Typography>
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-          <Box>
+          <Box component="article">
             <Typography color="textSecondary" sx={{ lineHeight: 1.8 }}>
               {uiText.home.storyBodyOne}
             </Typography>
           </Box>
-          <Box>
+          <Box component="article">
             <Typography color="textSecondary" sx={{ lineHeight: 1.8 }}>
               {uiText.home.storyBodyTwo}
             </Typography>

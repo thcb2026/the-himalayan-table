@@ -48,9 +48,8 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
   const estimate = (state.quote.numberOfPeople || 0) * (state.quote.budgetPerPerson || 500);
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', p: { xs: 2, md: 3 } }}>
-      {/* Header Section */}
-      <Box sx={{ mb: 4 }}>
+    <Box component="main" sx={{ maxWidth: 1200, mx: 'auto', p: { xs: 2, md: 3 } }}>
+      <Box component="header" sx={{ mb: 4 }}>
         <Typography
           variant="overline"
           component="span"
@@ -72,6 +71,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
       {submitted && (
         <Alert
           severity="success"
+          aria-live="polite"
           sx={{
             mb: 4,
             borderRadius: 3,
@@ -83,14 +83,17 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
         </Alert>
       )}
 
-      {/* Main Grid Layout */}
       <Grid container spacing={3}>
-        {/* Left Column: Form Controls */}
         <Grid size={{ xs: 12, md: 8 }}>
           <Card
+            component="form"
             variant="outlined"
+            onSubmit={(event) => {
+              event.preventDefault();
+              handleSubmit();
+            }}
             sx={{
-              borderRadius: 4, // M3 Large Corner Token (16px)
+              borderRadius: 4,
               boxShadow: 'none',
               borderColor: 'divider',
               p: { xs: 1, sm: 2 },
@@ -98,7 +101,6 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
           >
             <CardContent>
               <Stack spacing={2.5}>
-                {/* 2-Column Responsive Form Row */}
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
                   <TextField
                     variant="filled"
@@ -108,6 +110,8 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                     error={!!errors.companyName}
                     helperText={errors.companyName}
                     fullWidth
+                    autoComplete="organization"
+                    aria-label={uiText.corporate.companyName}
                     sx={{ '& .MuiFilledInput-root': { borderRadius: '8px 8px 0 0' } }}
                   />
                   <TextField
@@ -118,6 +122,8 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                     error={!!errors.contactPerson}
                     helperText={errors.contactPerson}
                     fullWidth
+                    autoComplete="name"
+                    aria-label={uiText.corporate.contactPerson}
                     sx={{ '& .MuiFilledInput-root': { borderRadius: '8px 8px 0 0' } }}
                   />
                   <TextField
@@ -129,6 +135,8 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                     error={!!errors.email}
                     helperText={errors.email}
                     fullWidth
+                    autoComplete="email"
+                    aria-label={uiText.corporate.emailLabel}
                     sx={{ '& .MuiFilledInput-root': { borderRadius: '8px 8px 0 0' } }}
                   />
                   <TextField
@@ -139,6 +147,8 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                     error={!!errors.phone}
                     helperText={errors.phone}
                     fullWidth
+                    autoComplete="tel"
+                    aria-label={uiText.corporate.phoneLabel}
                     sx={{ '& .MuiFilledInput-root': { borderRadius: '8px 8px 0 0' } }}
                   />
                 </Box>
@@ -154,6 +164,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                     helperText={errors.eventDate}
                     slotProps={{ inputLabel: { shrink: true } }}
                     fullWidth
+                    aria-label={uiText.corporate.eventDate}
                     sx={{ '& .MuiFilledInput-root': { borderRadius: '8px 8px 0 0' } }}
                   />
                   <TextField
@@ -166,6 +177,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                     helperText={errors.numberOfPeople}
                     slotProps={{ htmlInput: { min: 10 } }}
                     fullWidth
+                    aria-label={uiText.corporate.numberOfPeople}
                     sx={{ '& .MuiFilledInput-root': { borderRadius: '8px 8px 0 0' } }}
                   />
                 </Box>
@@ -180,6 +192,8 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                   fullWidth
                   multiline
                   rows={2}
+                  autoComplete="street-address"
+                  aria-label={uiText.corporate.deliveryAddress}
                   sx={{ '& .MuiFilledInput-root': { borderRadius: '8px 8px 0 0' } }}
                 />
 
@@ -192,6 +206,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                     error={!!errors.mealType}
                     helperText={errors.mealType}
                     fullWidth
+                    aria-label={uiText.corporate.mealType}
                     sx={{ '& .MuiFilledInput-root': { borderRadius: '8px 8px 0 0' } }}
                   />
                   <TextField
@@ -206,6 +221,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                       },
                     }}
                     fullWidth
+                    aria-label={uiText.corporate.budgetPerPerson}
                     sx={{ '& .MuiFilledInput-root': { borderRadius: '8px 8px 0 0' } }}
                   />
                 </Box>
@@ -218,22 +234,23 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                   fullWidth
                   multiline
                   rows={2}
+                  aria-label={uiText.corporate.dietaryRequirements}
                   sx={{ '& .MuiFilledInput-root': { borderRadius: '8px 8px 0 0' } }}
                 />
 
-                {/* M3 Pill CTA Button */}
                 <Button
+                  type="submit"
                   variant="contained"
                   size="large"
-                  onClick={handleSubmit}
                   sx={{
-                    borderRadius: 50, // M3 Full Pill Token
+                    borderRadius: 50,
                     py: 1.5,
                     px: 4,
                     textTransform: 'none',
                     fontWeight: 600,
                     fontSize: '1rem',
                     boxShadow: 'none',
+                    minHeight: 48,
                     '&:hover': {
                       boxShadow: '0px 1px 3px rgba(0,0,0,0.2)',
                     },
@@ -290,7 +307,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                 <Stack spacing={1.5}>
                   {uiText.corporate.features.map((feature, idx) => (
                     <Stack key={idx} direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-                      <CheckCircleOutlinedIcon color="primary" fontSize="small" />
+                      <CheckCircleOutlinedIcon color="primary" fontSize="small" aria-hidden="true" />
                       <Typography variant="body2">{feature}</Typography>
                     </Stack>
                   ))}

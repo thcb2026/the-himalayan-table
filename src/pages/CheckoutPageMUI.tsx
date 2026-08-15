@@ -55,7 +55,8 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (event?: React.FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
     if (validateForm()) {
       setIsSubmitted(true);
     }
@@ -63,7 +64,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
 
   if (isSubmitted) {
     return (
-      <Box sx={{ maxWidth: 600, mx: 'auto' }}>
+      <Box component="section" aria-live="polite" sx={{ maxWidth: 600, mx: 'auto' }}>
         <Card>
           <CardContent sx={{ textAlign: 'center', py: 4 }}>
             <Typography variant="overline" sx={{ color: 'success.main', fontWeight: 700 }}>
@@ -132,13 +133,13 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
   }
 
   return (
-    <Box>
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Box>
+    <Box component="section" aria-labelledby="checkout-heading">
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+        <Box component="header">
           <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
             {uiText.checkout.eyebrow}
           </Typography>
-          <Typography variant="h5" sx={{ fontWeight: 700 }}>
+          <Typography id="checkout-heading" variant="h5" sx={{ fontWeight: 700 }}>
             {uiText.checkout.title}
           </Typography>
         </Box>
@@ -148,14 +149,14 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
       </Box>
 
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 3 }}>
-        <Box>
+        <Box component="form" id="checkout-form" noValidate aria-label="Checkout form" onSubmit={handleSubmit}>
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                 {uiText.checkout.customerDetails}
               </Typography>
               <Stack spacing={2}>
-                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
                   <TextField
                     label={uiText.checkout.firstName}
                     value={form.firstName}
@@ -163,6 +164,8 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
                     error={!!errors.firstName}
                     helperText={errors.firstName}
                     fullWidth
+                    autoComplete="given-name"
+                    aria-label={uiText.checkout.firstName}
                   />
                   <TextField
                     label={uiText.checkout.lastName}
@@ -171,6 +174,8 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
                     error={!!errors.lastName}
                     helperText={errors.lastName}
                     fullWidth
+                    autoComplete="family-name"
+                    aria-label={uiText.checkout.lastName}
                   />
                   <TextField
                     label={uiText.checkout.email}
@@ -180,6 +185,8 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
                     error={!!errors.email}
                     helperText={errors.email}
                     fullWidth
+                    autoComplete="email"
+                    aria-label={uiText.checkout.email}
                   />
                   <TextField
                     label={uiText.checkout.phone}
@@ -188,6 +195,8 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
                     error={!!errors.phone}
                     helperText={errors.phone}
                     fullWidth
+                    autoComplete="tel"
+                    aria-label={uiText.checkout.phone}
                   />
                 </Box>
                 <TextField
@@ -199,6 +208,8 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
                   fullWidth
                   multiline
                   rows={2}
+                  autoComplete="street-address"
+                  aria-label={uiText.checkout.deliveryAddress}
                 />
                 <TextField
                   label={uiText.checkout.notes}
@@ -207,13 +218,14 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
                   fullWidth
                   multiline
                   rows={2}
+                  aria-label={uiText.checkout.notes}
                 />
               </Stack>
             </CardContent>
           </Card>
         </Box>
 
-        <Box>
+        <Box component="aside" aria-label="Order summary panel">
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
@@ -257,16 +269,18 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
                 {uiText.orderFlow.paymentOptions.map((option) => (
                   <Button
                     key={option}
+                    type="button"
                     variant={form.paymentMethod === option ? 'contained' : 'outlined'}
                     onClick={() => handleInputChange('paymentMethod', option)}
                     fullWidth
+                    sx={{ minHeight: 48 }}
                   >
                     {option}
                   </Button>
                 ))}
               </Stack>
 
-              <Button variant="contained" size="large" fullWidth onClick={handleSubmit}>
+              <Button type="submit" form="checkout-form" variant="contained" size="large" fullWidth sx={{ minHeight: 48 }}>
                 {getLabel('act_place_order', uiText.checkout.placeOrder)}
               </Button>
             </CardContent>
