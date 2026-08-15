@@ -106,20 +106,49 @@ export function MenuPageMUI({ state, onCategoryChange, onDietaryChange, onAddToC
                 </Typography>
 
                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-                  {item.vegetarian && <Typography variant="caption" sx={{ bgcolor: 'success.light', px: 1, py: 0.5, borderRadius: 1 }}>{uiText.menu.vegetarian}</Typography>}
-                  {item.vegan && <Typography variant="caption" sx={{ bgcolor: 'info.light', px: 1, py: 0.5, borderRadius: 1 }}>{uiText.menu.vegan}</Typography>}
-                  {item.glutenFree && <Typography variant="caption" sx={{ bgcolor: 'warning.light', px: 1, py: 0.5, borderRadius: 1 }}>{uiText.menu.glutenFree}</Typography>}
+                  {item.vegetarian && (
+                    <Typography variant="caption" sx={{ bgcolor: 'success.main', color: 'success.contrastText', px: 1, py: 0.5, borderRadius: 1 }}>
+                      {uiText.menu.vegetarian}
+                    </Typography>
+                  )}
+                  {item.vegan && (
+                    <Typography variant="caption" sx={{ bgcolor: 'info.main', color: 'info.contrastText', px: 1, py: 0.5, borderRadius: 1 }}>
+                      {uiText.menu.vegan}
+                    </Typography>
+                  )}
+                  {item.glutenFree && (
+                    <Typography variant="caption" sx={{ bgcolor: 'warning.main', color: 'warning.contrastText', px: 1, py: 0.5, borderRadius: 1 }}>
+                      {uiText.menu.glutenFree}
+                    </Typography>
+                  )}
                 </Box>
 
                 <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
-                  <Button size="small" onClick={() => setQuantities((c) => ({ ...c, [item.id]: Math.max(1, (c[item.id] || 1) - 1) }))} variant="outlined" aria-label={`Decrease quantity for ${item.name}`}>
+                  <Button
+                    size="small"
+                    onClick={() => setQuantities((c) => ({ ...c, [item.id]: Math.max(1, (c[item.id] || 1) - 1) }))}
+                    variant="outlined"
+                    aria-label={`Decrease quantity for ${item.name}`}
+                    sx={{ minWidth: 40, '&:focus-visible': { outline: '2px solid', outlineColor: 'primary.main', outlineOffset: 2 } }}
+                  >
                     <RemoveIcon fontSize="small" />
                   </Button>
                   <Typography sx={{ minWidth: 40, textAlign: 'center' }}>{quantities[item.id] || 1}</Typography>
-                  <Button size="small" onClick={() => setQuantities((c) => ({ ...c, [item.id]: (c[item.id] || 1) + 1 }))} variant="outlined" aria-label={`Increase quantity for ${item.name}`}>
+                  <Button
+                    size="small"
+                    onClick={() => setQuantities((c) => ({ ...c, [item.id]: (c[item.id] || 1) + 1 }))}
+                    variant="outlined"
+                    aria-label={`Increase quantity for ${item.name}`}
+                    sx={{ minWidth: 40, '&:focus-visible': { outline: '2px solid', outlineColor: 'primary.main', outlineOffset: 2 } }}
+                  >
                     <AddIcon fontSize="small" />
                   </Button>
-                  <Button size="small" variant="contained" onClick={() => handleAddToCart(item.id)} sx={{ flex: 1, minWidth: 96 }}>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    onClick={() => handleAddToCart(item.id)}
+                    sx={{ flex: 1, minWidth: 96, '&:focus-visible': { outline: '2px solid', outlineColor: 'primary.main', outlineOffset: 2 } }}
+                  >
                     {getLabel('act_add_to_cart', uiText.menu.add)}
                   </Button>
                 </Box>

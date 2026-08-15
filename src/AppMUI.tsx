@@ -216,12 +216,20 @@ function App() {
                 <Button
                   key={item}
                   color="inherit"
+                  aria-current={state.activeNav === item ? 'page' : undefined}
                   onClick={() => appStore.setState({ activeNav: item })}
                   sx={{
                     fontWeight: state.activeNav === item ? 700 : 500,
                     opacity: state.activeNav === item ? 1 : 0.7,
                     textTransform: 'none',
                     whiteSpace: 'nowrap',
+                    borderRadius: 1,
+                    '&:focus-visible': {
+                      outline: '2px solid',
+                      outlineColor: 'common.white',
+                      outlineOffset: 2,
+                      backgroundColor: 'rgba(255,255,255,0.12)',
+                    },
                   }}
                 >
                   {getLabel(`nav_${item.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')}`, item)}
@@ -234,18 +242,47 @@ function App() {
                 variant="outlined"
                 color="inherit"
                 onClick={() => appStore.setState({ activeNav: 'Menu' })}
-                sx={{ borderColor: 'inherit', whiteSpace: 'nowrap' }}
+                sx={{
+                  borderColor: 'rgba(255,255,255,0.7)',
+                  whiteSpace: 'nowrap',
+                  '&:focus-visible': {
+                    outline: '2px solid',
+                    outlineColor: 'common.white',
+                    outlineOffset: 2,
+                    backgroundColor: 'rgba(255,255,255,0.12)',
+                  },
+                }}
               >
                 {uiText.app.menu}
               </Button>
-              <Button variant="contained" color="secondary" onClick={() => appStore.setState({ activeNav: 'Order Online' })} sx={{ whiteSpace: 'nowrap' }}>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => appStore.setState({ activeNav: 'Order Online' })}
+                sx={{
+                  whiteSpace: 'nowrap',
+                  '&:focus-visible': {
+                    outline: '2px solid',
+                    outlineColor: 'common.white',
+                    outlineOffset: 3,
+                  },
+                }}
+              >
                 {uiText.app.orderNow}
               </Button>
               <IconButton
                 color="inherit"
                 onClick={() => setIsCartOpen(true)}
                 aria-label={getLabel('aria_shopping_cart', 'Shopping Cart')}
-                sx={{ position: 'relative' }}
+                sx={{
+                  position: 'relative',
+                  '&:focus-visible': {
+                    outline: '2px solid',
+                    outlineColor: 'common.white',
+                    outlineOffset: 2,
+                    borderRadius: 1,
+                  },
+                }}
               >
                 <Badge badgeContent={state.cartCount} color="error">
                   <ShoppingCartIcon />
