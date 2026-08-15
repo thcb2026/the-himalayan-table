@@ -58,6 +58,70 @@ export const appBrand = {
   footerText: 'Authentic Nepali flavors for office lunches and memorable events.',
 };
 
+const contentRegistryTargets = {
+  appBrand,
+  uiText: undefined as any,
+  contactInfo: undefined as any,
+  currency: undefined as any,
+};
+
+export const applyRegistryOverrides = (registry: Record<string, string>) => {
+  const targetMap: Record<string, Record<string, any>> = {
+    appBrand,
+    uiText: undefined as any,
+    contactInfo: undefined as any,
+    currency: undefined as any,
+  };
+
+  const rootTargets = {
+    uiText,
+    contactInfo,
+    currency,
+  };
+
+  Object.assign(targetMap, rootTargets);
+
+  Object.entries(registry).forEach(([key, value]) => {
+    if (!key.includes('.')) return;
+
+    const [rootKey, ...pathParts] = key.split('.');
+    const target = targetMap[rootKey as keyof typeof targetMap];
+    if (!target || pathParts.length === 0) return;
+
+    let current: any = target;
+    for (let index = 0; index < pathParts.length - 1; index += 1) {
+      if (!current || typeof current !== 'object' || !(pathParts[index] in current)) {
+        return;
+      }
+      current = current[pathParts[index]];
+    }
+
+    const finalKey = pathParts[pathParts.length - 1];
+    if (!(current && typeof current === 'object' && finalKey in current)) {
+      return;
+    }
+
+    const existingValue = current[finalKey];
+    if (Array.isArray(existingValue)) {
+      try {
+        const parsed = JSON.parse(value);
+        if (Array.isArray(parsed)) {
+          current[finalKey] = parsed;
+        }
+      } catch {
+        // Ignore non-JSON scalar fallback value for array fields.
+      }
+      return;
+    }
+
+    if (existingValue && typeof existingValue === 'object') {
+      return;
+    }
+
+    current[finalKey] = value;
+  });
+};
+
 export const uiText = {
   app: {
     menu: 'Menu',
@@ -216,6 +280,10 @@ export const contactInfo = {
   instagram: '@thehimalayantable',
   facebook: 'The Himalayan Table',
 };
+
+contentRegistryTargets.uiText = uiText;
+contentRegistryTargets.contactInfo = contactInfo;
+contentRegistryTargets.currency = currency;
 
 export const menuCategories = ['All', 'Everyday Favorites', 'Nepali Traditional', 'Appetizers & Snacks', 'Desserts'];
 export const dietaryOptions = ['All', 'Vegetarian', 'Vegan', 'Gluten-Free', 'Dairy-Free', 'Nut Allergies'];

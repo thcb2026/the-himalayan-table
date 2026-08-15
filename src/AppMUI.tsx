@@ -72,18 +72,30 @@ const appStore = new GenericStateStore(getInitialState());
 function App() {
   const [state, setState] = useState(appStore.getState());
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [contentVersion, setContentVersion] = useState(0);
   const theme = buildM3Theme('#a75b2c', false);
 
   React.useEffect(() => {
     const unsubscribe = appStore.subscribe(() => setState(appStore.getState()));
-    return unsubscribe;
+    const handleRegistryUpdate = () => setContentVersion((current) => current + 1);
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('content-registry-updated', handleRegistryUpdate);
+    }
+
+    return () => {
+      unsubscribe();
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('content-registry-updated', handleRegistryUpdate);
+      }
+    };
   }, []);
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(appStore.getState()));
     }
-  }, [state]);
+  }, [state, contentVersion]);
 
   const addToCart = (itemId: string, quantity = 1) => {
     const existing = appStore.getState().cartItems.find((item) => item.id === itemId);
