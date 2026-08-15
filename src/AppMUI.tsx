@@ -10,6 +10,8 @@ import Badge from '@mui/material/Badge';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Logo from '@mui/icons-material/LunchDining';
 import { appBrand, navigation, STORAGE_KEY, uiText } from './content/common-content';
@@ -73,20 +75,28 @@ function App() {
   const [state, setState] = useState(appStore.getState());
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [contentVersion, setContentVersion] = useState(0);
+  const [fallbackNotice, setFallbackNotice] = useState<{ open: boolean; message: string }>({ open: false, message: '' });
   const theme = buildM3Theme('#a75b2c', false);
 
   React.useEffect(() => {
     const unsubscribe = appStore.subscribe(() => setState(appStore.getState()));
     const handleRegistryUpdate = () => setContentVersion((current) => current + 1);
+    const handleFallbackNotice = (event: Event) => {
+      const customEvent = event as CustomEvent<{ message?: string }>;
+      const message = customEvent.detail?.message || 'Shared content is temporarily unavailable. Local content is being served instead.';
+      setFallbackNotice({ open: true, message });
+    };
 
     if (typeof window !== 'undefined') {
       window.addEventListener('content-registry-updated', handleRegistryUpdate);
+      window.addEventListener('content-registry-fallback', handleFallbackNotice);
     }
 
     return () => {
       unsubscribe();
       if (typeof window !== 'undefined') {
         window.removeEventListener('content-registry-updated', handleRegistryUpdate);
+        window.removeEventListener('content-registry-fallback', handleFallbackNotice);
       }
     };
   }, []);
@@ -201,6 +211,21 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <Snackbar
+        open={fallbackNotice.open}
+        autoHideDuration={5000}
+        onClose={() => setFallbackNotice((current) => ({ ...current, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setFallbackNotice((current) => ({ ...current, open: false }))}
+          severity="info"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {fallbackNotice.message}
+        </Alert>
+      </Snackbar>
       <Box component="div" sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <AppBar
           component="header"

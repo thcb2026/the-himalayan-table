@@ -96,6 +96,16 @@ const resolveApiBaseUrl = (): string => {
   return HOST_LOCAL_API_URL;
 };
 
+const emitFallbackNotification = (message = 'Shared DB registry unavailable; using local content registry.') => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.dispatchEvent(new CustomEvent('content-registry-fallback', {
+    detail: { message },
+  }));
+};
+
 export const hydrateSharedContentRegistry = async (): Promise<Record<string, string>> => {
   if (sharedRegistryHydrationPromise) {
     return sharedRegistryHydrationPromise;
@@ -114,6 +124,7 @@ export const hydrateSharedContentRegistry = async (): Promise<Record<string, str
 
       if (!response.ok) {
         console.info('[content] Shared DB registry unavailable; using local content registry.');
+        emitFallbackNotification('Shared content is temporarily unavailable. Local content is being served instead.');
         return {};
       }
 
@@ -121,33 +132,39 @@ export const hydrateSharedContentRegistry = async (): Promise<Record<string, str
       const dbLabels = payload?.data ?? payload?.labels ?? payload ?? {};
       const normalized = normalizeDatabaseLabels(dbLabels);
 
-      if (Object.keys(normalized).length > 0) {
-        const restored = Object.fromEntries(
-          Object.entries(normalized).map(([key, value]) => {
-            if (typeof value === 'string') {
-              try {
-                const parsed = JSON.parse(value);
-                if (Array.isArray(parsed)) {
-                  return [key, parsed];
-                }
-              } catch {
-                // Keep as string for scalar content.
-              }
-            }
-            return [key, value];
-          }),
-        );
+      if (Object.keys(normalized).length === 0) {
+        console.info('[content] Shared DB registry was empty; using local content registry.');
+        emitFallbackNotification('No shared registry entries were returned. Local content is being served instead.');
+        return normalized;
+      }
 
-        Object.assign(sharedContentRegistry, restored);
-        applyRegistryOverrides(restored);
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('content-registry-updated'));
-        }
+      const restored = Object.fromEntries(
+        Object.entries(normalized).map(([key, value]) => {
+          if (typeof value === 'string') {
+            try {
+              const parsed = JSON.parse(value);
+              if (Array.isArray(parsed)) {
+                return [key, parsed];
+              }
+            } catch {
+              // Keep as string for scalar content.
+            }
+          }
+          return [key, value];
+        }),
+      );
+
+      Object.assign(sharedContentRegistry, restored);
+      applyRegistryOverrides(restored);
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('content-registry-updated'));
       }
 
       return normalized;
     } catch (error) {
-      console.info('[content] Shared DB registry unavailable; using local content registry.', error instanceof Error ? error.message : String(error));
+      const details = error instanceof Error ? error.message : String(error);
+      console.info('[content] Shared DB registry unavailable; using local content registry.', details);
+      emitFallbackNotification('Shared content is temporarily unavailable. Local content is being served instead.');
       return {};
     } finally {
       sharedRegistryHydrationPromise = null;
