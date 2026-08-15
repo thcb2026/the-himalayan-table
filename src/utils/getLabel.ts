@@ -1,20 +1,11 @@
 import { actionLabels } from '../content/common-content';
-
-export type ContentLabelGroup = {
-  category: string;
-  description: string;
-  items: Array<{
-    id: string;
-    label: string;
-  }>;
-};
-
-export type DatabaseLabelMap = Partial<Record<string, string>>;
-
-export interface ContentRegistryService {
-  getLabels: () => Record<string, string>;
-  getLabel: (id: string, fallback?: string) => string;
-}
+import {
+  ContentLabelEntry,
+  ContentLabelGroup,
+  ContentRegistryPayload,
+  ContentRegistryService,
+  DatabaseLabelMap,
+} from '../types';
 
 const buildLabelMap = (groups: ContentLabelGroup[] = actionLabels): Record<string, string> =>
   groups.reduce<Record<string, string>>((acc, group) => {
@@ -26,33 +17,81 @@ const buildLabelMap = (groups: ContentLabelGroup[] = actionLabels): Record<strin
 
 export const sharedContentRegistry = buildLabelMap();
 
-const sanitizeDatabaseLabels = (databaseLabels: DatabaseLabelMap = {}): Record<string, string> => {
-  const sanitized: Record<string, string> = {};
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
 
-  Object.entries(databaseLabels).forEach(([key, value]) => {
-    if (typeof value === 'string' && value.trim().length > 0) {
-      sanitized[key] = value;
+const normalizeSingleEntry = (entry: ContentLabelEntry): [string, string] | null => {
+  const id = entry.id ?? entry.key;
+  const labelValue = entry.label ?? entry.value;
+
+  if (typeof id !== 'string' || id.trim().length === 0) {
+    return null;
+  }
+
+  if (typeof labelValue !== 'string' || labelValue.trim().length === 0) {
+    return null;
+  }
+
+  return [id, labelValue];
+};
+
+const collectLabelRecords = (source: unknown, acc: Record<string, string>): Record<string, string> => {
+  if (source == null) {
+    return acc;
+  }
+
+  if (Array.isArray(source)) {
+    source.forEach((entry) => {
+      if (!isPlainObject(entry)) return;
+      const normalized = normalizeSingleEntry(entry as ContentLabelEntry);
+      if (normalized) {
+        const [id, label] = normalized;
+        acc[id] = label;
+      }
+    });
+    return acc;
+  }
+
+  if (isPlainObject(source)) {
+    const nestedKeys = ['labels', 'data', 'items'] as const;
+    for (const nestedKey of nestedKeys) {
+      if (nestedKey in source) {
+        collectLabelRecords(source[nestedKey], acc);
+      }
     }
-  });
 
+    Object.entries(source).forEach(([key, value]) => {
+      if (typeof value === 'string' && value.trim().length > 0) {
+        acc[key] = value;
+      }
+    });
+  }
+
+  return acc;
+};
+
+export const normalizeDatabaseLabels = (databaseLabels: ContentRegistryPayload = {}): Record<string, string> => {
+  const sanitized: Record<string, string> = {};
+  collectLabelRecords(databaseLabels, sanitized);
   return sanitized;
 };
 
-export const createContentService = (databaseLabels: DatabaseLabelMap = {}): ContentRegistryService => {
+export const createContentService = (databaseLabels: ContentRegistryPayload = {}): ContentRegistryService => {
   const registry: Record<string, string> = {
     ...sharedContentRegistry,
-    ...sanitizeDatabaseLabels(databaseLabels),
+    ...normalizeDatabaseLabels(databaseLabels),
   };
 
   return {
     getLabels: () => ({ ...registry }),
     getLabel: (id: string, fallback = '') => registry[id] ?? fallback,
+    hasLabel: (id: string) => Object.prototype.hasOwnProperty.call(registry, id),
   };
 };
 
 export const contentService = createContentService();
 
-export const getLabel = (id: string, fallback = '', databaseLabels?: DatabaseLabelMap): string => {
+export const getLabel = (id: string, fallback = '', databaseLabels?: ContentRegistryPayload): string => {
   const service = createContentService(databaseLabels ?? {});
   return service.getLabel(id, fallback);
 };

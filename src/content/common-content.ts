@@ -1,7 +1,10 @@
 export const navigation = ['Home', 'Menu', 'Order Online', 'Corporate Catering', 'Event Catering', 'Our Story', 'Contact'];
 export const STORAGE_KEY = 'the-himalayan-table-state';
 export const steps = ['Choose food', 'Pickup or Delivery', 'Date & Time', 'Confirm order'];
-
+export const HOST_LOCAL_API_URL = 'http://localhost:5002';
+export const API_BASE_PATH = '/api/pms_tms/v1';
+export const DEFAULT_GET_CACHE_TTL_MS = 30 * 1000;
+export const isAbsoluteUrl = (url: string): boolean => /^https?:\/\//i.test(url);
 export const actionLabels = [
   {
     category: 'Navigation',
