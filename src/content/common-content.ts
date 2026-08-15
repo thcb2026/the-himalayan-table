@@ -102,15 +102,33 @@ export const applyRegistryOverrides = (registry: Record<string, string>) => {
     }
 
     const existingValue = current[finalKey];
-    if (Array.isArray(existingValue)) {
-      try {
-        const parsed = JSON.parse(value);
-        if (Array.isArray(parsed)) {
-          current[finalKey] = parsed;
-        }
-      } catch {
-        // Ignore non-JSON scalar fallback value for array fields.
+    const parseArrayValue = (candidate: unknown): unknown[] | null => {
+      if (Array.isArray(candidate)) {
+        return candidate;
       }
+
+      if (typeof candidate !== 'string') {
+        return null;
+      }
+
+      try {
+        const parsed = JSON.parse(candidate);
+        return Array.isArray(parsed) ? parsed : null;
+      } catch {
+        return null;
+      }
+    };
+
+    const candidateArray = parseArrayValue(value);
+    if (Array.isArray(existingValue)) {
+      if (candidateArray) {
+        current[finalKey] = candidateArray;
+      }
+      return;
+    }
+
+    if (Array.isArray(candidateArray)) {
+      current[finalKey] = candidateArray;
       return;
     }
 

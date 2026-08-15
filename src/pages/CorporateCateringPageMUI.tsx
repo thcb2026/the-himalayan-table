@@ -46,6 +46,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
   };
 
   const estimate = (state.quote.numberOfPeople || 0) * (state.quote.budgetPerPerson || 500);
+  const corporateFeatures = Array.isArray(uiText?.corporate?.features) ? uiText.corporate.features : [];
 
   return (
     <Box component="main" sx={{ maxWidth: 1200, mx: 'auto', p: { xs: 2, md: 3 } }}>
@@ -305,7 +306,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                 </Typography>
 
                 <Stack spacing={1.5}>
-                  {uiText.corporate.features.map((feature, idx) => (
+                  {corporateFeatures.map((feature, idx) => (
                     <Stack key={idx} direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
                       <CheckCircleOutlinedIcon color="primary" fontSize="small" aria-hidden="true" />
                       <Typography variant="body2">{feature}</Typography>
