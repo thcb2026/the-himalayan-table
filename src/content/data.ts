@@ -136,3 +136,49 @@ export const initialQuote: QuoteRequest = {
   dietaryRequirements: '',
   notes: '',
 };
+
+export const actionLabels = [
+  {
+    "category": "Navigation",
+    "description": "App routes and navigation menu items",
+    "items": [
+      { "id": "nav_home", "label": "Home" },
+      { "id": "nav_menu", "label": "Menu" },
+      { "id": "nav_corporate", "label": "Corporate Catering" },
+      { "id": "nav_events", "label": "Event Catering" },
+      { "id": "nav_story", "label": "Our Story" },
+      { "id": "nav_contact", "label": "Contact" },
+      { "id": "nav_order", "label": "Order Online" },
+      { "id": "nav_checkout", "label": "Checkout" }
+    ]
+  },
+  {
+    "category": "Actions",
+    "description": "Buttons and click triggers",
+    "items": [
+      { "id": "act_menu", "label": "Menu" },
+      { "id": "act_order_now", "label": "Order Now" },
+      { "id": "act_explore_menu", "label": "Explore Menu" },
+      { "id": "act_checkout", "label": "Checkout" },
+      { "id": "act_go_checkout", "label": "Go to checkout" },
+      { "id": "act_continue_shopping", "label": "Continue shopping" },
+      { "id": "act_back", "label": "Back" },
+      { "id": "act_back_home", "label": "Back to home" },
+      { "id": "act_back_to_menu", "label": "Back to menu" },
+      { "id": "act_continue", "label": "Continue" },
+      { "id": "act_confirm_order", "label": "Confirm order" },
+      { "id": "act_place_order", "label": "Place order" },
+      { "id": "act_get_quote", "label": "Get a Quote" },
+      { "id": "act_send_message", "label": "Send Message" },
+      { "id": "act_add_to_cart", "label": "Add" }
+    ]
+  },
+  {
+    "category": "A11y & Metadata",
+    "description": "Accessibility labels and static metadata",
+    "items": [
+      { "id": "aria_shopping_cart", "label": "Shopping Cart" },
+      { "id": "status_loading", "label": "Loading..." }
+    ]
+  }
+]

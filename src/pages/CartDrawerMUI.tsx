@@ -15,8 +15,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { menuItems } from '../content/data';
-import { uiText } from '../content/common-content';
+import { currency, uiText } from '../content/common-content';
 import { CartDrawerProps } from '../types';
+import { subtotal } from '../utils/common-helpers';
+import { getLabel } from '../utils/getLabel';
 
 export function CartDrawerMUI({
   state,
@@ -32,8 +34,6 @@ export function CartDrawerMUI({
       return item ? { ...item, quantity: line.quantity } : null;
     })
     .filter(Boolean) as Array<(typeof menuItems)[number] & { quantity: number }>;
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <Drawer anchor="right" open={true} onClose={onClose}>
@@ -53,7 +53,7 @@ export function CartDrawerMUI({
               {uiText.cart.empty}
             </Typography>
             <Button variant="contained" onClick={onClose}>
-              {uiText.app.continueShopping}
+              {getLabel('act_continue_shopping', uiText.app.continueShopping)}
             </Button>
           </Box>
         ) : (
@@ -86,7 +86,7 @@ export function CartDrawerMUI({
                         </IconButton>
                       </Box>
                       <Typography variant="body2" sx={{ fontWeight: 700, mt: 1 }}>
-                        NRs {item.price * item.quantity}
+                        {currency.symbol} {item.price * item.quantity}
                       </Typography>
                     </CardContent>
                   </Card>
@@ -97,10 +97,10 @@ export function CartDrawerMUI({
             <Box sx={{ p: 2, bgcolor: 'background.paper', borderTop: '1px solid', borderColor: 'divider' }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                 <Typography>{uiText.cart.subtotal}</Typography>
-                <Typography sx={{ fontWeight: 700 }}>NRs {subtotal}</Typography>
+                <Typography sx={{ fontWeight: 700 }}>{currency.symbol} {subtotal(cartItems)}</Typography>
               </Box>
               <Button variant="contained" fullWidth onClick={onCheckout}>
-                {uiText.cart.checkout}
+                {getLabel('act_go_checkout', uiText.cart.checkout)}
               </Button>
             </Box>
           </>

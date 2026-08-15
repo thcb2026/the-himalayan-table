@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, Button, Card, CardContent, CardMedia, Stack } from '@mui/material';
 import { uiText } from '../content/common-content';
+import { getLabel } from '../utils/getLabel';
 
 export function HomePageMUI() {
   return (
@@ -33,10 +34,10 @@ export function HomePageMUI() {
           </Typography>
           <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
             <Button variant="contained" size="large">
-              {uiText.home.exploreMenu}
+              {getLabel('act_menu', uiText.home.exploreMenu)}
             </Button>
             <Button variant="outlined" size="large">
-              {uiText.home.orderOnline}
+              {getLabel('act_order_now', uiText.home.orderOnline)}
             </Button>
           </Stack>
           <Stack direction="row" spacing={2} sx={{ mt: 3 }}>

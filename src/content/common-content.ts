@@ -2,6 +2,52 @@ export const navigation = ['Home', 'Menu', 'Order Online', 'Corporate Catering',
 export const STORAGE_KEY = 'the-himalayan-table-state';
 export const steps = ['Choose food', 'Pickup or Delivery', 'Date & Time', 'Confirm order'];
 
+export const actionLabels = [
+  {
+    category: 'Navigation',
+    description: 'App routes and navigation menu items',
+    items: [
+      { id: 'nav_home', label: 'Home' },
+      { id: 'nav_menu', label: 'Menu' },
+      { id: 'nav_corporate', label: 'Corporate Catering' },
+      { id: 'nav_events', label: 'Event Catering' },
+      { id: 'nav_story', label: 'Our Story' },
+      { id: 'nav_contact', label: 'Contact' },
+      { id: 'nav_order', label: 'Order Online' },
+      { id: 'nav_checkout', label: 'Checkout' },
+    ],
+  },
+  {
+    category: 'Actions',
+    description: 'Buttons and click triggers',
+    items: [
+      { id: 'act_menu', label: 'Menu' },
+      { id: 'act_order_now', label: 'Order Now' },
+      { id: 'act_explore_menu', label: 'Explore Menu' },
+      { id: 'act_checkout', label: 'Checkout' },
+      { id: 'act_go_checkout', label: 'Go to checkout' },
+      { id: 'act_continue_shopping', label: 'Continue shopping' },
+      { id: 'act_back', label: 'Back' },
+      { id: 'act_back_home', label: 'Back to home' },
+      { id: 'act_back_to_menu', label: 'Back to menu' },
+      { id: 'act_continue', label: 'Continue' },
+      { id: 'act_confirm_order', label: 'Confirm order' },
+      { id: 'act_place_order', label: 'Place order' },
+      { id: 'act_get_quote', label: 'Get a Quote' },
+      { id: 'act_send_message', label: 'Send Message' },
+      { id: 'act_add_to_cart', label: 'Add' },
+    ],
+  },
+  {
+    category: 'A11y & Metadata',
+    description: 'Accessibility labels and static metadata',
+    items: [
+      { id: 'aria_shopping_cart', label: 'Shopping Cart' },
+      { id: 'status_loading', label: 'Loading...' },
+    ],
+  },
+];
+
 export const appBrand = {
   name: 'The Himalayan Table',
   tagline: 'Authentic Nepali Catering & Events',
@@ -71,6 +117,12 @@ export const uiText = {
     orderScheduled: 'Your {itemName} order for {quantity} item(s) has been scheduled. A confirmation will be sent to your email and phone.',
     backToHome: 'Back to home',
     paymentOptions: ['Esewa', 'IME Pay', 'Cash on Delivery'],
+    quantityLabel: 'Quantity',
+    paymentOptionsLabel: 'Payment',
+    deliveryModePickup: 'Pickup',
+    deliveryModeDelivery: 'Delivery',
+    orderConfirmedMessage: 'Order confirmed',
+    totalAmount: 'Total amount',
   },
   cart: {
     title: 'Cart',
@@ -124,6 +176,8 @@ export const uiText = {
     submit: 'Get a Quote',
     companyName: 'Company Name',
     contactPerson: 'Contact Person',
+    emailLabel: 'Email',
+    phoneLabel: 'Phone',
     eventDate: 'Event Date',
     numberOfPeople: 'Number of People',
     deliveryAddress: 'Delivery Address',
@@ -139,12 +193,25 @@ export const uiText = {
       'Punctual delivery & professional setup',
     ],
     successMessage: 'Thank you for your interest! We\'ll contact you within 24 hours.',
+    guestsPrefix: 'guests × NRs',
   },
   footer: {
     contactPhone: 'Phone: +977-9800000000',
     contactEmail: 'Email: hello@thehimalayantable.com',
     socials: ['WhatsApp / Viber', 'Instagram / Facebook'],
   },
+};
+
+export const currency = {
+  symbol: 'NRs',
+};
+
+export const contactInfo = {
+  phone: '+977-9800000000',
+  email: 'hello@thehimalayantable.com',
+  location: 'Kathmandu Valley, Nepal',
+  instagram: '@thehimalayantable',
+  facebook: 'The Himalayan Table',
 };
 
 export const menuCategories = ['All', 'Everyday Favorites', 'Nepali Traditional', 'Appetizers & Snacks', 'Desserts'];

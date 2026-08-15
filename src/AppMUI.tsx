@@ -17,6 +17,7 @@ import { initialQuote } from './content/data';
 import { GenericStateStore } from './store';
 import { AppState } from './types';
 import { buildM3Theme } from './theme/theme';
+import { getLabel } from './utils/getLabel';
 
 // Lazy load page components for code splitting
 const HomePageMUI = React.lazy(() => import('./pages/HomePageMUI').then(m => ({ default: m.HomePageMUI })));
@@ -221,7 +222,7 @@ function App() {
                     textTransform: 'none',
                   }}
                 >
-                  {item}
+                  {getLabel(`nav_${item.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')}`, item)}
                 </Button>
               ))}
             </Box>
@@ -238,7 +239,12 @@ function App() {
               <Button variant="contained" color="secondary" onClick={() => appStore.setState({ activeNav: 'Order Online' })}>
                 {uiText.app.orderNow}
               </Button>
-              <IconButton color="inherit" onClick={() => setIsCartOpen(true)} sx={{ position: 'relative' }}>
+              <IconButton
+                color="inherit"
+                onClick={() => setIsCartOpen(true)}
+                aria-label={getLabel('aria_shopping_cart', 'Shopping Cart')}
+                sx={{ position: 'relative' }}
+              >
                 <Badge badgeContent={state.cartCount} color="error">
                   <ShoppingCartIcon />
                 </Badge>

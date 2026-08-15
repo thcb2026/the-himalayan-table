@@ -11,7 +11,9 @@ import {
 } from '@mui/material';
 import { menuItems } from '../content/data';
 import { CheckoutPageProps, FormErrors } from '../types';
-import { initialFormData, uiText, validationMessages } from '../content/common-content';
+import { currency, initialFormData, uiText, validationMessages } from '../content/common-content';
+import { deliveryCharge, subtotal, total } from '../utils/common-helpers';
+import { getLabel } from '../utils/getLabel';
 
 export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps) {
   const [form, setForm] = useState(initialFormData);
@@ -28,10 +30,6 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
         .filter(Boolean) as Array<(typeof menuItems)[number] & { quantity: number }>,
     [state.cartItems],
   );
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const deliveryCharge = cartItems.length > 0 ? 150 : 0;
-  const total = subtotal + deliveryCharge;
 
   const handleInputChange = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
     setForm((current) => ({ ...current, [key]: value }));
@@ -114,7 +112,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
               <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
                 <Typography color="textSecondary">{uiText.checkout.totalAmount}</Typography>
                 <Typography sx={{ fontWeight: 700, color: 'primary.main', fontSize: '1.1rem' }}>
-                  NRs {total}
+                  NRs {total(cartItems)}
                 </Typography>
               </Box>
               <Divider sx={{ my: 1 }} />
@@ -125,7 +123,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
             </Box>
 
             <Button variant="contained" onClick={onComplete} size="large">
-              {uiText.checkout.backToHome}
+              {getLabel('act_back_home', uiText.checkout.backToHome)}
             </Button>
           </CardContent>
         </Card>
@@ -145,7 +143,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
           </Typography>
         </Box>
         <Button variant="outlined" onClick={onBack}>
-          {uiText.checkout.back}
+          {getLabel('act_back', uiText.checkout.back)}
         </Button>
       </Box>
 
@@ -228,7 +226,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
                       {item.name} × {item.quantity}
                     </Typography>
                     <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                      NRs {item.price * item.quantity}
+                      {currency.symbol} {item.price * item.quantity}
                     </Typography>
                   </Box>
                 ))}
@@ -236,11 +234,11 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
               <Divider sx={{ my: 2 }} />
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography>{uiText.cart.subtotal}</Typography>
-                <Typography sx={{ fontWeight: 700 }}>NRs {subtotal}</Typography>
+                <Typography sx={{ fontWeight: 700 }}>{currency.symbol} {subtotal(cartItems)}</Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                 <Typography>{uiText.orderFlow.deliveryLabel}</Typography>
-                <Typography sx={{ fontWeight: 700 }}>NRs {deliveryCharge}</Typography>
+                <Typography sx={{ fontWeight: 700 }}>{currency.symbol} {deliveryCharge(cartItems)}</Typography>
               </Box>
               <Divider sx={{ my: 2 }} />
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
@@ -248,7 +246,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
                   {uiText.orderFlow.total}
                 </Typography>
                 <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                  NRs {total}
+                  NRs {total(cartItems)}
                 </Typography>
               </Box>
 
@@ -256,7 +254,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
                 {uiText.checkout.paymentMethod}
               </Typography>
               <Stack spacing={1} sx={{ mb: 2 }}>
-                {(['Esewa', 'IME Pay', 'Cash on Delivery'] as const).map((option) => (
+                {uiText.orderFlow.paymentOptions.map((option) => (
                   <Button
                     key={option}
                     variant={form.paymentMethod === option ? 'contained' : 'outlined'}
@@ -269,7 +267,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
               </Stack>
 
               <Button variant="contained" size="large" fullWidth onClick={handleSubmit}>
-                {uiText.checkout.placeOrder}
+                {getLabel('act_place_order', uiText.checkout.placeOrder)}
               </Button>
             </CardContent>
           </Card>

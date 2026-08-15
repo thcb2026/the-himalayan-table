@@ -15,6 +15,8 @@ import {
 } from '@mui/material';
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import { CorporateCateringPageProps } from '../types';
+import { currency, uiText, validationMessages } from '../content/common-content';
+import { getLabel } from '../utils/getLabel';
 
 export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringPageProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -22,16 +24,16 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (!state.quote.companyName?.trim()) newErrors.companyName = 'Company name is required';
-    if (!state.quote.contactPerson?.trim()) newErrors.contactPerson = 'Contact person is required';
-    if (!state.quote.email?.trim()) newErrors.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.quote.email)) newErrors.email = 'Invalid email';
-    if (!state.quote.phone?.trim()) newErrors.phone = 'Phone is required';
-    if (!state.quote.eventDate?.trim()) newErrors.eventDate = 'Event date is required';
+    if (!state.quote.companyName?.trim()) newErrors.companyName = validationMessages.corporate.companyName;
+    if (!state.quote.contactPerson?.trim()) newErrors.contactPerson = validationMessages.corporate.contactPerson;
+    if (!state.quote.email?.trim()) newErrors.email = validationMessages.corporate.emailRequired;
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.quote.email)) newErrors.email = validationMessages.corporate.emailInvalid;
+    if (!state.quote.phone?.trim()) newErrors.phone = validationMessages.corporate.phone;
+    if (!state.quote.eventDate?.trim()) newErrors.eventDate = validationMessages.corporate.eventDate;
     if (!state.quote.numberOfPeople || state.quote.numberOfPeople < 10)
-      newErrors.numberOfPeople = 'Minimum 10 people required';
-    if (!state.quote.deliveryAddress?.trim()) newErrors.deliveryAddress = 'Delivery address is required';
-    if (!state.quote.mealType?.trim()) newErrors.mealType = 'Meal type is required';
+      newErrors.numberOfPeople = validationMessages.corporate.numberOfPeople;
+    if (!state.quote.deliveryAddress?.trim()) newErrors.deliveryAddress = validationMessages.corporate.deliveryAddress;
+    if (!state.quote.mealType?.trim()) newErrors.mealType = validationMessages.corporate.mealType;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -60,10 +62,10 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
             mb: 0.5,
           }}
         >
-          Corporate Catering
+          {uiText.corporate.eyebrow}
         </Typography>
         <Typography variant="h3" component="h1" sx={{ fontWeight: 700, letterSpacing: '-0.02em' }}>
-          Get a customized quote for your event
+          {uiText.corporate.title}
         </Typography>
       </Box>
 
@@ -77,7 +79,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
             color: 'onPrimaryContainer.main',
           }}
         >
-          Thank you for your interest! We'll contact you within 24 hours.
+          {uiText.corporate.successMessage}
         </Alert>
       )}
 
@@ -100,7 +102,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
                   <TextField
                     variant="filled"
-                    label="Company Name"
+                    label={uiText.corporate.companyName}
                     value={state.quote.companyName || ''}
                     onChange={(e) => onChange('companyName', e.target.value)}
                     error={!!errors.companyName}
@@ -110,7 +112,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                   />
                   <TextField
                     variant="filled"
-                    label="Contact Person"
+                    label={uiText.corporate.contactPerson}
                     value={state.quote.contactPerson || ''}
                     onChange={(e) => onChange('contactPerson', e.target.value)}
                     error={!!errors.contactPerson}
@@ -120,7 +122,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                   />
                   <TextField
                     variant="filled"
-                    label="Email"
+                    label={uiText.corporate.emailLabel}
                     type="email"
                     value={state.quote.email || ''}
                     onChange={(e) => onChange('email', e.target.value)}
@@ -131,7 +133,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                   />
                   <TextField
                     variant="filled"
-                    label="Phone"
+                    label={uiText.corporate.phoneLabel}
                     value={state.quote.phone || ''}
                     onChange={(e) => onChange('phone', e.target.value)}
                     error={!!errors.phone}
@@ -144,7 +146,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
                   <TextField
                     variant="filled"
-                    label="Event Date"
+                    label={uiText.corporate.eventDate}
                     type="date"
                     value={state.quote.eventDate || ''}
                     onChange={(e) => onChange('eventDate', e.target.value)}
@@ -156,7 +158,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                   />
                   <TextField
                     variant="filled"
-                    label="Number of People"
+                    label={uiText.corporate.numberOfPeople}
                     type="number"
                     value={state.quote.numberOfPeople || ''}
                     onChange={(e) => onChange('numberOfPeople', Number(e.target.value) || 0)}
@@ -170,7 +172,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
 
                 <TextField
                   variant="filled"
-                  label="Delivery Address"
+                  label={uiText.corporate.deliveryAddress}
                   value={state.quote.deliveryAddress || ''}
                   onChange={(e) => onChange('deliveryAddress', e.target.value)}
                   error={!!errors.deliveryAddress}
@@ -184,7 +186,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
                   <TextField
                     variant="filled"
-                    label="Meal Type"
+                    label={uiText.corporate.mealType}
                     value={state.quote.mealType || ''}
                     onChange={(e) => onChange('mealType', e.target.value)}
                     error={!!errors.mealType}
@@ -194,13 +196,13 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                   />
                   <TextField
                     variant="filled"
-                    label="Budget per Person"
+                    label={uiText.corporate.budgetPerPerson}
                     type="number"
                     value={state.quote.budgetPerPerson || ''}
                     onChange={(e) => onChange('budgetPerPerson', Number(e.target.value) || 500)}
                     slotProps={{
                       input: {
-                        startAdornment: <InputAdornment position="start">NRs</InputAdornment>,
+                        startAdornment: <InputAdornment position="start">{currency.symbol}</InputAdornment>,
                       },
                     }}
                     fullWidth
@@ -210,7 +212,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
 
                 <TextField
                   variant="filled"
-                  label="Dietary Requirements & Special Notes"
+                  label={uiText.corporate.dietaryRequirements}
                   value={state.quote.dietaryRequirements || ''}
                   onChange={(e) => onChange('dietaryRequirements', e.target.value)}
                   fullWidth
@@ -237,7 +239,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                     },
                   }}
                 >
-                  Get a Quote
+                  {getLabel('act_get_quote', uiText.corporate.submit)}
                 </Button>
               </Stack>
             </CardContent>
@@ -257,7 +259,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
             >
               <CardContent sx={{ p: 3 }}>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-                  Cost Estimate
+                  {uiText.corporate.costEstimate}
                 </Typography>
 
                 {/* M3 Tonal Highlight Card */}
@@ -271,7 +273,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                   }}
                 >
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                    {state.quote.numberOfPeople || 0} guests × NRs {state.quote.budgetPerPerson || 500}
+                    {state.quote.numberOfPeople || 0} {uiText.corporate.guestsPrefix} {state.quote.budgetPerPerson || 500}
                   </Typography>
                   <Typography variant="h3" sx={{ fontWeight: 800, color: 'primary.main' }}>
                     NRs {estimate.toLocaleString()}
@@ -282,16 +284,11 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
 
                 {/* Feature List */}
                 <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5 }}>
-                  Why Choose The Himalayan Table?
+                  {uiText.corporate.featureTitle}
                 </Typography>
 
                 <Stack spacing={1.5}>
-                  {[
-                    'Authentic mountain spices & recipes',
-                    'Freshly sourced organic ingredients',
-                    'Customizable corporate menu options',
-                    'Punctual delivery & professional setup',
-                  ].map((feature, idx) => (
+                  {uiText.corporate.features.map((feature, idx) => (
                     <Stack key={idx} direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
                       <CheckCircleOutlinedIcon color="primary" fontSize="small" />
                       <Typography variant="body2">{feature}</Typography>
