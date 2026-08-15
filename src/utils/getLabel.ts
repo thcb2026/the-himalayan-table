@@ -4,7 +4,6 @@ import {
   ContentLabelGroup,
   ContentRegistryPayload,
   ContentRegistryService,
-  DatabaseLabelMap,
 } from '../types';
 
 const buildLabelMap = (groups: ContentLabelGroup[] = actionLabels): Record<string, string> =>
@@ -24,21 +23,14 @@ const normalizeSingleEntry = (entry: ContentLabelEntry): [string, string] | null
   const id = entry.id ?? entry.key;
   const labelValue = entry.label ?? entry.value;
 
-  if (typeof id !== 'string' || id.trim().length === 0) {
-    return null;
-  }
-
-  if (typeof labelValue !== 'string' || labelValue.trim().length === 0) {
-    return null;
-  }
+  if (typeof id !== 'string' || id.trim().length === 0) return null;
+  if (typeof labelValue !== 'string' || labelValue.trim().length === 0) return null;
 
   return [id, labelValue];
 };
 
 const collectLabelRecords = (source: unknown, acc: Record<string, string>): Record<string, string> => {
-  if (source == null) {
-    return acc;
-  }
+  if (source == null) return acc;
 
   if (Array.isArray(source)) {
     source.forEach((entry) => {
@@ -53,7 +45,7 @@ const collectLabelRecords = (source: unknown, acc: Record<string, string>): Reco
   }
 
   if (isPlainObject(source)) {
-    const nestedKeys = ['labels', 'data', 'items'] as const;
+    const nestedKeys = ['labels', 'data', 'items', 'content', 'values'] as const;
     for (const nestedKey of nestedKeys) {
       if (nestedKey in source) {
         collectLabelRecords(source[nestedKey], acc);
@@ -77,7 +69,7 @@ export const normalizeDatabaseLabels = (databaseLabels: ContentRegistryPayload =
 };
 
 export const createContentService = (databaseLabels: ContentRegistryPayload = {}): ContentRegistryService => {
-  const registry: Record<string, string> = {
+  const registry = {
     ...sharedContentRegistry,
     ...normalizeDatabaseLabels(databaseLabels),
   };
@@ -85,6 +77,7 @@ export const createContentService = (databaseLabels: ContentRegistryPayload = {}
   return {
     getLabels: () => ({ ...registry }),
     getLabel: (id: string, fallback = '') => registry[id] ?? fallback,
+    getAll: () => ({ ...registry }),
     hasLabel: (id: string) => Object.prototype.hasOwnProperty.call(registry, id),
   };
 };
