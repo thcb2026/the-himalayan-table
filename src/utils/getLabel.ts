@@ -101,6 +101,7 @@ const emitFallbackNotification = (message = 'Shared DB registry unavailable; usi
     return;
   }
 
+  (window as Window & { __contentRegistryFallbackMessage?: string }).__contentRegistryFallbackMessage = message;
   window.dispatchEvent(new CustomEvent('content-registry-fallback', {
     detail: { message },
   }));

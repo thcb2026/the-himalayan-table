@@ -88,6 +88,11 @@ function App() {
     };
 
     if (typeof window !== 'undefined') {
+      const queuedMessage = (window as Window & { __contentRegistryFallbackMessage?: string }).__contentRegistryFallbackMessage;
+      if (queuedMessage) {
+        setFallbackNotice({ open: true, message: queuedMessage });
+      }
+
       window.addEventListener('content-registry-updated', handleRegistryUpdate);
       window.addEventListener('content-registry-fallback', handleFallbackNotice);
     }
