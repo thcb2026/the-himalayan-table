@@ -57,6 +57,14 @@ module.exports = {
     static: './dist',
     port: 4211,
     open: true,
+    proxy: [
+      {
+        context: ['/api'],
+        target: 'http://127.0.0.1:5002',
+        changeOrigin: true,
+        secure: false,
+      },
+    ],
   },
 
   // 6. Loaders: process non-JavaScript files (CSS, images, TS, Babel)

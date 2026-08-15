@@ -126,10 +126,12 @@ export type ContentRegistryPayload =
       labels?: DatabaseLabelMap | ContentLabelEntry[];
       data?: DatabaseLabelMap | ContentLabelEntry[];
       items?: ContentLabelEntry[];
+      [key: string]: unknown;
     };
 
 export interface ContentRegistryService {
   getLabels: () => Record<string, string>;
   getLabel: (id: string, fallback?: string) => string;
+  getAll: () => Record<string, string>;
   hasLabel: (id: string) => boolean;
 }
