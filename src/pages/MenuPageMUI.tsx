@@ -16,6 +16,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import { menuItems } from '../content/data';
 import { dietaryOptions, menuCategories, uiText } from '../content/common-content';
 import { MenuCategory, DietaryTag, MenuPageProps } from '../types';
+import { getLabel } from '../utils/getLabel';
 
 const categories: (MenuCategory | 'All')[] = menuCategories as (MenuCategory | 'All')[];
 const dietaryChoices: (DietaryTag | 'All')[] = dietaryOptions as (DietaryTag | 'All')[];
@@ -119,7 +120,7 @@ export function MenuPageMUI({ state, onCategoryChange, onDietaryChange, onAddToC
                     <AddIcon fontSize="small" />
                   </Button>
                   <Button size="small" variant="contained" onClick={() => handleAddToCart(item.id)} sx={{ flex: 1 }}>
-                    {uiText.menu.add}
+                    {getLabel('act_add_to_cart', uiText.menu.add)}
                   </Button>
                 </Box>
               </CardContent>

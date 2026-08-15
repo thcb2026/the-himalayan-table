@@ -3,7 +3,8 @@ import { Box, Typography, TextField, Button, Stack, Card, CardContent, Link } fr
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import { uiText } from '../content/common-content';
+import { contactInfo, uiText } from '../content/common-content';
+import { getLabel } from '../utils/getLabel';
 
 export function ContactPageMUI() {
   return (
@@ -30,7 +31,7 @@ export function ContactPageMUI() {
                 <TextField label={uiText.contact.subject} fullWidth />
                 <TextField label={uiText.contact.message} multiline rows={4} fullWidth />
                 <Button variant="contained" size="large">
-                  {uiText.contact.sendButton}
+                  {getLabel('act_send_message', uiText.contact.sendButton)}
                 </Button>
               </Stack>
             </CardContent>
@@ -47,8 +48,8 @@ export function ContactPageMUI() {
                     <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
                       {uiText.contact.phoneLabel}
                     </Typography>
-                    <Link href="tel:+977-9800000000" underline="hover">
-                      +977-9800000000
+                    <Link href={`tel:${contactInfo.phone}`} underline="hover">
+                      {contactInfo.phone}
                     </Link>
                   </Box>
                 </Box>
@@ -63,8 +64,8 @@ export function ContactPageMUI() {
                     <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
                       {uiText.contact.emailLabel}
                     </Typography>
-                    <Link href="mailto:hello@thehimalayantable.com" underline="hover">
-                      hello@thehimalayantable.com
+                    <Link href={`mailto:${contactInfo.email}`} underline="hover">
+                      {contactInfo.email}
                     </Link>
                   </Box>
                 </Box>
@@ -80,7 +81,7 @@ export function ContactPageMUI() {
                       {uiText.contact.location}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                      Kathmandu Valley, Nepal
+                      {contactInfo.location}
                     </Typography>
                   </Box>
                 </Box>
@@ -93,10 +94,10 @@ export function ContactPageMUI() {
                   {uiText.contact.quickContact}
                 </Typography>
                 <Stack spacing={1}>
-                  <Typography variant="body2">{uiText.contact.whatsapp}: +977-9800000000</Typography>
-                  <Typography variant="body2">{uiText.contact.viber}: +977-9800000000</Typography>
-                  <Typography variant="body2">{uiText.contact.instagram}: @thehimalayantable</Typography>
-                  <Typography variant="body2">{uiText.contact.facebook}: The Himalayan Table</Typography>
+                  <Typography variant="body2">{uiText.contact.whatsapp}: {contactInfo.phone}</Typography>
+                  <Typography variant="body2">{uiText.contact.viber}: {contactInfo.phone}</Typography>
+                  <Typography variant="body2">{uiText.contact.instagram}: {contactInfo.instagram}</Typography>
+                  <Typography variant="body2">{uiText.contact.facebook}: {contactInfo.facebook}</Typography>
                 </Stack>
               </CardContent>
             </Card>

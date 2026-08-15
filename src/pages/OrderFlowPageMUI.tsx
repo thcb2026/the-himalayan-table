@@ -19,7 +19,8 @@ import {
 } from '@mui/material';
 import { menuItems } from '../content/data';
 import { OrderFlowPageProps } from '../types';
-import { steps } from '../content/common-content';
+import { currency, steps, uiText } from '../content/common-content';
+import { getLabel } from '../utils/getLabel';
 
 export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) {
   const [step, setStep] = useState(0);
@@ -27,7 +28,7 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
   const [quantity, setQuantity] = useState(1);
   const [deliveryMode, setDeliveryMode] = useState<'Pickup' | 'Delivery'>('Delivery');
   const [deliveryAddress, setDeliveryAddress] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'Cash on Delivery' | 'Esewa' | 'IME Pay'>('Esewa');
+  const [paymentMethod, setPaymentMethod] = useState<(typeof uiText.orderFlow.paymentOptions)[number]>('Esewa');
 
   const selectedItem = useMemo(
     () => menuItems.find((item) => item.id === selectedItemId) ?? menuItems[0],
@@ -43,14 +44,14 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
     <Box>
       <Box sx={{ mb: 3 }}>
         <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
-          Order Online
+          {uiText.orderFlow.eyebrow}
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>
-            Simple ordering flow for pickup or delivery
+            {uiText.orderFlow.title}
           </Typography>
           <Button variant="outlined" onClick={() => onSetActiveNav('Menu')}>
-            Back to menu
+            {getLabel('act_back_to_menu', uiText.orderFlow.backToMenu)}
           </Button>
         </Box>
       </Box>
@@ -69,7 +70,7 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
             <Card>
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-                  1. Choose your food
+                  {uiText.orderFlow.stepChooseFood}
                 </Typography>
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
                   {menuItems.map((item) => (
@@ -96,7 +97,7 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
                           {item.name}
                         </Typography>
                         <Typography variant="caption" color="textSecondary">
-                          NRs {item.price}
+                          {currency.symbol} {item.price}
                         </Typography>
                       </CardContent>
                     </Box>
@@ -110,14 +111,14 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
             <Card>
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-                  Selected item
+                  {uiText.orderFlow.selectedItem}
                 </Typography>
                 <Box sx={{ mb: 2 }}>
                   <Typography>{selectedItem.name}</Typography>
-                  <Typography sx={{ fontWeight: 700 }}>NRs {selectedItem.price}</Typography>
+                  <Typography sx={{ fontWeight: 700 }}>{currency.symbol} {selectedItem.price}</Typography>
                 </Box>
                 <TextField
-                  label="Quantity"
+                  label={uiText.orderFlow.quantityLabel}
                   type="number"
                   value={quantity}
                   onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
@@ -126,7 +127,7 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
                   sx={{ mb: 2 }}
                 />
                 <Button variant="contained" fullWidth onClick={() => setStep(1)}>
-                  Continue
+                  {getLabel('act_continue', uiText.orderFlow.continue)}
                 </Button>
               </CardContent>
             </Card>
@@ -140,27 +141,27 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
             <Card>
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-                  2. Choose pickup or delivery
+                  {uiText.orderFlow.stepPickup}
                 </Typography>
                 <Stack spacing={2}>
                   <FormControlLabel
                     control={<Radio />}
-                    label="Pickup"
+                    label={uiText.orderFlow.deliveryModePickup}
                     checked={deliveryMode === 'Pickup'}
                     onChange={() => setDeliveryMode('Pickup')}
                   />
                   <FormControlLabel
                     control={<Radio />}
-                    label="Delivery"
+                    label={uiText.orderFlow.deliveryModeDelivery}
                     checked={deliveryMode === 'Delivery'}
                     onChange={() => setDeliveryMode('Delivery')}
                   />
                   {deliveryMode === 'Delivery' && (
                     <TextField
-                      label="Delivery address"
+                      label={uiText.orderFlow.deliveryAddress}
                       value={deliveryAddress}
                       onChange={(e) => setDeliveryAddress(e.target.value)}
-                      placeholder="Enter household or office address"
+                      placeholder={uiText.orderFlow.addressPlaceholder}
                       fullWidth
                       multiline
                       rows={2}
@@ -175,28 +176,28 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
             <Card>
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-                  Order summary
+                  {uiText.orderFlow.orderSummary}
                 </Typography>
                 <Box sx={{ mb: 2 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography>Subtotal</Typography>
-                    <Typography sx={{ fontWeight: 700 }}>NRs {subtotal}</Typography>
+                    <Typography>{uiText.orderFlow.subtotal}</Typography>
+                    <Typography sx={{ fontWeight: 700 }}>{currency.symbol} {subtotal}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography>Delivery</Typography>
-                    <Typography sx={{ fontWeight: 700 }}>NRs {deliveryFee}</Typography>
+                    <Typography>{uiText.orderFlow.deliveryLabel}</Typography>
+                    <Typography sx={{ fontWeight: 700 }}>{currency.symbol} {deliveryFee}</Typography>
                   </Box>
                 </Box>
                 <Box sx={{ py: 1, borderTop: '1px solid', borderColor: 'divider' }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="h6">Total</Typography>
+                    <Typography variant="h6">{uiText.orderFlow.total}</Typography>
                     <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                      NRs {total}
+                      {currency.symbol} {total}
                     </Typography>
                   </Box>
                 </Box>
                 <Button variant="contained" fullWidth onClick={() => setStep(2)} sx={{ mt: 2 }}>
-                  Continue
+                  {getLabel('act_continue', uiText.orderFlow.continue)}
                 </Button>
               </CardContent>
             </Card>
@@ -210,11 +211,11 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
             <Card>
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-                  3. Choose date and time
+                  {uiText.orderFlow.stepDateTime}
                 </Typography>
                 <Stack spacing={2}>
-                  <TextField label="Preferred date" type="date" fullWidth slotProps={{ inputLabel: { shrink: true } }} />
-                  <TextField label="Preferred time" type="time" fullWidth slotProps={{ inputLabel: { shrink: true } }} />
+                  <TextField label={uiText.orderFlow.preferredDate} type="date" fullWidth slotProps={{ inputLabel: { shrink: true } }} />
+                  <TextField label={uiText.orderFlow.preferredTime} type="time" fullWidth slotProps={{ inputLabel: { shrink: true } }} />
                 </Stack>
               </CardContent>
             </Card>
@@ -224,15 +225,15 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
             <Card>
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-                  Payment
+                  {uiText.orderFlow.stepPayment}
                 </Typography>
                 <RadioGroup value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value as any)}>
-                  <FormControlLabel control={<Radio />} label="Esewa" value="Esewa" />
-                  <FormControlLabel control={<Radio />} label="IME Pay" value="IME Pay" />
-                  <FormControlLabel control={<Radio />} label="Cash on Delivery" value="Cash on Delivery" />
+                  {uiText.orderFlow.paymentOptions.map((option) => (
+                    <FormControlLabel key={option} control={<Radio />} label={option} value={option} />
+                  ))}
                 </RadioGroup>
                 <Button variant="contained" fullWidth onClick={() => setStep(3)} sx={{ mt: 2 }}>
-                  Confirm order
+                  {getLabel('act_confirm_order', uiText.orderFlow.confirmOrder)}
                 </Button>
               </CardContent>
             </Card>
@@ -245,26 +246,28 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
           <Card>
             <CardContent sx={{ textAlign: 'center' }}>
               <Alert severity="success" sx={{ mb: 2 }}>
-                Order confirmed
+                {uiText.orderFlow.orderConfirmedMessage}
               </Alert>
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
-                Thank you for your order.
+                {uiText.orderFlow.thankYou}
               </Typography>
               <Typography color="textSecondary" sx={{ mb: 3 }}>
-                Your {selectedItem.name} order for {quantity} item(s) has been scheduled. A confirmation will be sent to your email and phone.
+                {uiText.orderFlow.orderScheduled
+                  .replace('{itemName}', selectedItem.name)
+                  .replace('{quantity}', String(quantity))}
               </Typography>
               <Stack spacing={1} sx={{ textAlign: 'left', mb: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography color="textSecondary">Payment method</Typography>
+                  <Typography color="textSecondary">{uiText.orderFlow.paymentMethod}</Typography>
                   <Typography sx={{ fontWeight: 700 }}>{paymentMethod}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography color="textSecondary">Total amount</Typography>
-                  <Typography sx={{ fontWeight: 700 }}>NRs {total}</Typography>
+                  <Typography color="textSecondary">{uiText.orderFlow.totalAmount}</Typography>
+                  <Typography sx={{ fontWeight: 700 }}>{currency.symbol} {total}</Typography>
                 </Box>
               </Stack>
               <Button variant="contained" onClick={() => onSetActiveNav('Home')} size="large">
-                Back to home
+                {getLabel('act_back_home', uiText.orderFlow.backToHome)}
               </Button>
             </CardContent>
           </Card>
