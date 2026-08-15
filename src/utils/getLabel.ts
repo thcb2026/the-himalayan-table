@@ -85,12 +85,19 @@ export const createContentService = (databaseLabels: ContentRegistryPayload = {}
 };
 
 const resolveApiBaseUrl = (): string => {
+  const env = (globalThis as any).process?.env || {};
+  const configured = (env.NEXT_PUBLIC_API_URL || env.REACT_APP_API_URL || '').trim();
+  if (configured) {
+    return configured;
+  }
+
   if (typeof window !== 'undefined') {
-    const { hostname, protocol } = window.location;
+    const { hostname, protocol, origin } = window.location;
     const isLocal = ['localhost', '127.0.0.1', '0.0.0.0'].includes(hostname) || hostname.startsWith('10.') || hostname.startsWith('192.168.') || /^172\.(1[6-9]|2\d|3[0-1])\./.test(hostname);
     if (isLocal) {
       return `${protocol}//127.0.0.1:5002`;
     }
+    return origin;
   }
 
   return HOST_LOCAL_API_URL;
