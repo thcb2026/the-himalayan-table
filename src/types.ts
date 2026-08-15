@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export type DietaryTag =
   | 'Vegetarian'
   | 'Vegan'
@@ -134,4 +136,12 @@ export interface ContentRegistryService {
   getLabel: (id: string, fallback?: string) => string;
   getAll: () => Record<string, string>;
   hasLabel: (id: string) => boolean;
+}
+export interface ErrorBoundaryProps {
+  children: ReactNode;
+}
+
+export interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
 }

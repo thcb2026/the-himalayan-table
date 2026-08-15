@@ -1,3 +1,5 @@
+import type { QuoteRequest } from '../types';
+
 export const navigation = ['Home', 'Menu', 'Order Online', 'Corporate Catering', 'Event Catering', 'Our Story', 'Contact'];
 export const STORAGE_KEY = 'the-himalayan-table-state';
 export const steps = ['Choose food', 'Pickup or Delivery', 'Date & Time', 'Confirm order'];
@@ -138,6 +140,16 @@ export const applyRegistryOverrides = (registry: Record<string, string>) => {
 
     current[finalKey] = value;
   });
+};
+
+export const errorBoundary = {
+  title: 'Oops! Something went wrong',
+  defaultError: 'An unexpected error occurred',
+  supportMessage: 'Please try refreshing the page or contact support if the problem persists.',
+  reloadButton: 'Reload Page',
+  backHomeButton: 'Back to Home',
+  backendNote:
+    'If you\'re seeing this error repeatedly, the backend service may be unavailable. The app will work with local content, but shared content updates won\'t be available.',
 };
 
 export const uiText = {
@@ -285,6 +297,29 @@ export const uiText = {
     contactEmail: 'Email: hello@thehimalayantable.com',
     socials: ['WhatsApp / Viber', 'Instagram / Facebook'],
   },
+  accessibility: {
+    menuFilters: 'Menu filters',
+    menuItems: 'Menu items',
+    checkoutForm: 'Checkout form',
+    contactForm: 'Contact form',
+    contactDetails: 'Contact details',
+    orderProgressSteps: 'Order progress steps',
+    selectedItemSummary: 'Selected item summary',
+    orderSummaryPickup: 'Order summary for pickup options',
+    paymentSelection: 'Payment selection panel',
+    choosePaymentMethod: 'Choose payment method',
+    orderSummaryPanel: 'Order summary panel',
+    selectItem: (itemName: string) => `Select ${itemName}`,
+    callPhone: (phone: string) => `Call ${phone}`,
+    emailAddress: (email: string) => `Email ${email}`,
+    decreaseQuantity: (itemName: string) => `Decrease quantity for ${itemName}`,
+    increaseQuantity: (itemName: string) => `Increase quantity for ${itemName}`,
+  },
+  media: {
+    nepaliFood: 'Nepali Food',
+    spices: 'Spices',
+    eventCatering: 'Event Catering',
+  },
 };
 
 export const currency = {
@@ -297,6 +332,20 @@ export const contactInfo = {
   location: 'Kathmandu Valley, Nepal',
   instagram: '@thehimalayantable',
   facebook: 'The Himalayan Table',
+};
+
+export const initialQuote: QuoteRequest = {
+  companyName: '',
+  contactPerson: '',
+  email: '',
+  phone: '',
+  eventDate: '',
+  numberOfPeople: 25,
+  deliveryAddress: '',
+  mealType: 'Office Lunch',
+  budgetPerPerson: 850,
+  dietaryRequirements: '',
+  notes: '',
 };
 
 contentRegistryTargets.uiText = uiText;

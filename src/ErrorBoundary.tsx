@@ -1,15 +1,10 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { Box, Typography, Button, Container, Alert } from '@mui/material';
 import ErrorIcon from '@mui/icons-material/Error';
+import { errorBoundary } from './content/common-content';
+import { ErrorBoundaryProps, ErrorBoundaryState } from './types';
 
-interface ErrorBoundaryProps {
-  children: ReactNode;
-}
 
-interface ErrorBoundaryState {
-  hasError: boolean;
-  error: Error | null;
-}
 
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
@@ -69,26 +64,26 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
                 }}
               />
               <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                Oops! Something went wrong
+                {errorBoundary.title}
               </Typography>
               <Alert severity="error" sx={{ width: '100%', mt: 1, mb: 2 }}>
                 <Typography variant="body2" sx={{ mb: 1 }}>
-                  {this.state.error?.message || 'An unexpected error occurred'}
+                  {this.state.error?.message || errorBoundary.defaultError}
                 </Typography>
                 <Typography variant="caption" component="div" sx={{ color: 'inherit', opacity: 0.8 }}>
-                  Please try refreshing the page or contact support if the problem persists.
+                  {errorBoundary.supportMessage}
                 </Typography>
               </Alert>
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
                 <Button variant="contained" onClick={this.handleReset}>
-                  Reload Page
+                  {errorBoundary.reloadButton}
                 </Button>
                 <Button variant="outlined" href="/">
-                  Back to Home
+                  {errorBoundary.backHomeButton}
                 </Button>
               </Box>
               <Typography variant="caption" sx={{ mt: 3, color: 'text.secondary', maxWidth: 400 }}>
-                If you're seeing this error repeatedly, the backend service may be unavailable. The app will work with local content, but shared content updates won't be available.
+                {errorBoundary.backendNote}
               </Typography>
             </Box>
           </Container>

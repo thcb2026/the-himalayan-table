@@ -61,7 +61,7 @@ export function MenuPageMUI() {
         </Typography>
       </Box>
 
-      <Box component="section" aria-label="Menu filters" sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, mb: 4 }}>
+      <Box component="section" aria-label={uiText.accessibility.menuFilters} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, mb: 4 }}>
         <FormControl fullWidth>
           <InputLabel>{uiText.menu.categoryLabel}</InputLabel>
           <Select value={state.selectedCategory} label={uiText.menu.categoryLabel} onChange={(e) => dispatch(setSelectedCategory(e.target.value as MenuCategory | 'All'))}>
@@ -85,7 +85,7 @@ export function MenuPageMUI() {
         </FormControl>
       </Box>
 
-      <Box component="section" aria-label="Menu items" sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 3 }}>
+      <Box component="section" aria-label={uiText.accessibility.menuItems} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 3 }}>
         {filtered.map((item) => (
           <Box component="article" key={item.id}>
             <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -131,7 +131,7 @@ export function MenuPageMUI() {
                     size="small"
                     onClick={() => setQuantities((c) => ({ ...c, [item.id]: Math.max(1, (c[item.id] || 1) - 1) }))}
                     variant="outlined"
-                    aria-label={`Decrease quantity for ${item.name}`}
+                    aria-label={uiText.accessibility.decreaseQuantity(item.name)}
                     sx={{ minWidth: 40, '&:focus-visible': { outline: '2px solid', outlineColor: 'primary.main', outlineOffset: 2 } }}
                   >
                     <RemoveIcon fontSize="small" />
@@ -141,7 +141,7 @@ export function MenuPageMUI() {
                     size="small"
                     onClick={() => setQuantities((c) => ({ ...c, [item.id]: (c[item.id] || 1) + 1 }))}
                     variant="outlined"
-                    aria-label={`Increase quantity for ${item.name}`}
+                    aria-label={uiText.accessibility.increaseQuantity(item.name)}
                     sx={{ minWidth: 40, '&:focus-visible': { outline: '2px solid', outlineColor: 'primary.main', outlineOffset: 2 } }}
                   >
                     <AddIcon fontSize="small" />
