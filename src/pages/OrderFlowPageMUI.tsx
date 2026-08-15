@@ -41,22 +41,22 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
 
 
   return (
-    <Box>
-      <Box sx={{ mb: 3 }}>
+    <Box component="main" aria-labelledby="order-flow-title">
+      <Box component="header" sx={{ mb: 3 }}>
         <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
           {uiText.orderFlow.eyebrow}
         </Typography>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h5" sx={{ fontWeight: 700 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+          <Typography id="order-flow-title" variant="h5" sx={{ fontWeight: 700 }}>
             {uiText.orderFlow.title}
           </Typography>
-          <Button variant="outlined" onClick={() => onSetActiveNav('Menu')}>
+          <Button variant="outlined" onClick={() => onSetActiveNav('Menu')} sx={{ minHeight: 48 }}>
             {getLabel('act_back_to_menu', uiText.orderFlow.backToMenu)}
           </Button>
         </Box>
       </Box>
 
-      <Stepper activeStep={step} sx={{ mb: 4 }}>
+      <Stepper activeStep={step} sx={{ mb: 4, overflowX: 'auto' }} aria-label="Order progress steps">
         {steps.map((label) => (
           <Step key={label}>
             <StepLabel>{label}</StepLabel>
@@ -66,10 +66,10 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
 
       {step === 0 && (
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 3 }}>
-          <Box>
+          <Box component="section" aria-labelledby="choose-food-heading">
             <Card>
               <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+                <Typography id="choose-food-heading" variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                   {uiText.orderFlow.stepChooseFood}
                 </Typography>
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
@@ -77,6 +77,15 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
                     <Box
                       key={item.id}
                       onClick={() => setSelectedItemId(item.id)}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`Select ${item.name}`}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          setSelectedItemId(item.id);
+                        }
+                      }}
                       sx={{
                         cursor: 'pointer',
                         border: selectedItemId === item.id ? '2px solid' : '1px solid',
@@ -84,6 +93,11 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
                         display: 'flex',
                         borderRadius: 1,
                         overflow: 'hidden',
+                        '&:focus-visible': {
+                          outline: '2px solid',
+                          outlineColor: 'primary.main',
+                          outlineOffset: 2,
+                        },
                       }}
                     >
                       <CardMedia
@@ -107,7 +121,7 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
             </Card>
           </Box>
 
-          <Box>
+          <Box component="aside" aria-label="Selected item summary">
             <Card>
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
@@ -125,8 +139,9 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
                   fullWidth
                   slotProps={{ htmlInput: { min: 1 } }}
                   sx={{ mb: 2 }}
+                  aria-label={uiText.orderFlow.quantityLabel}
                 />
-                <Button variant="contained" fullWidth onClick={() => setStep(1)}>
+                <Button variant="contained" fullWidth onClick={() => setStep(1)} sx={{ minHeight: 48 }}>
                   {getLabel('act_continue', uiText.orderFlow.continue)}
                 </Button>
               </CardContent>
@@ -137,13 +152,16 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
 
       {step === 1 && (
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 3 }}>
-          <Box>
+          <Box component="section" aria-labelledby="pickup-details-heading">
             <Card>
               <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+                <Typography id="pickup-details-heading" variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                   {uiText.orderFlow.stepPickup}
                 </Typography>
-                <Stack spacing={2}>
+                <Stack spacing={2} component="fieldset" sx={{ border: 0, p: 0, m: 0 }}>
+                  <Typography component="legend" variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>
+                    {uiText.orderFlow.paymentMethod}
+                  </Typography>
                   <FormControlLabel
                     control={<Radio />}
                     label={uiText.orderFlow.deliveryModePickup}
@@ -165,6 +183,7 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
                       fullWidth
                       multiline
                       rows={2}
+                      aria-label={uiText.orderFlow.deliveryAddress}
                     />
                   )}
                 </Stack>
@@ -172,7 +191,7 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
             </Card>
           </Box>
 
-          <Box>
+          <Box component="aside" aria-label="Order summary for pickup options">
             <Card>
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
@@ -196,7 +215,7 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
                     </Typography>
                   </Box>
                 </Box>
-                <Button variant="contained" fullWidth onClick={() => setStep(2)} sx={{ mt: 2 }}>
+                <Button variant="contained" fullWidth onClick={() => setStep(2)} sx={{ mt: 2, minHeight: 48 }}>
                   {getLabel('act_continue', uiText.orderFlow.continue)}
                 </Button>
               </CardContent>
@@ -207,32 +226,44 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
 
       {step === 2 && (
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 3 }}>
-          <Box>
+          <Box component="section" aria-labelledby="datetime-heading">
             <Card>
               <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+                <Typography id="datetime-heading" variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                   {uiText.orderFlow.stepDateTime}
                 </Typography>
                 <Stack spacing={2}>
-                  <TextField label={uiText.orderFlow.preferredDate} type="date" fullWidth slotProps={{ inputLabel: { shrink: true } }} />
-                  <TextField label={uiText.orderFlow.preferredTime} type="time" fullWidth slotProps={{ inputLabel: { shrink: true } }} />
+                  <TextField
+                    label={uiText.orderFlow.preferredDate}
+                    type="date"
+                    fullWidth
+                    slotProps={{ inputLabel: { shrink: true } }}
+                    aria-label={uiText.orderFlow.preferredDate}
+                  />
+                  <TextField
+                    label={uiText.orderFlow.preferredTime}
+                    type="time"
+                    fullWidth
+                    slotProps={{ inputLabel: { shrink: true } }}
+                    aria-label={uiText.orderFlow.preferredTime}
+                  />
                 </Stack>
               </CardContent>
             </Card>
           </Box>
 
-          <Box>
+          <Box component="aside" aria-label="Payment selection panel">
             <Card>
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                   {uiText.orderFlow.stepPayment}
                 </Typography>
-                <RadioGroup value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value as any)}>
+                <RadioGroup value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value as any)} aria-label="Choose payment method">
                   {uiText.orderFlow.paymentOptions.map((option) => (
                     <FormControlLabel key={option} control={<Radio />} label={option} value={option} />
                   ))}
                 </RadioGroup>
-                <Button variant="contained" fullWidth onClick={() => setStep(3)} sx={{ mt: 2 }}>
+                <Button variant="contained" fullWidth onClick={() => setStep(3)} sx={{ mt: 2, minHeight: 48 }}>
                   {getLabel('act_confirm_order', uiText.orderFlow.confirmOrder)}
                 </Button>
               </CardContent>

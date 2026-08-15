@@ -189,18 +189,19 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <Box component="div" sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <AppBar
+          component="header"
           position="sticky"
           elevation={2}
           sx={{
             background: 'linear-gradient(135deg, primary.main 0%, primary.dark 100%)',
           }}
         >
-          <Toolbar sx={{ justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Logo sx={{ fontSize: 32 }} />
-              <Box>
+          <Toolbar sx={{ justifyContent: 'space-between', gap: 2, flexWrap: 'wrap', py: { xs: 1, sm: 1.5 } }}>
+            <Box component="div" sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+              <Logo sx={{ fontSize: 32 }} aria-hidden="true" />
+              <Box component="div" sx={{ minWidth: 0 }}>
                 <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1 }}>
                   {appBrand.name}
                 </Typography>
@@ -210,7 +211,7 @@ function App() {
               </Box>
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center', flex: 1 }}>
+            <Box component="nav" aria-label="Main navigation" sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center', flex: 1 }}>
               {navigation.map((item) => (
                 <Button
                   key={item}
@@ -220,6 +221,7 @@ function App() {
                     fontWeight: state.activeNav === item ? 700 : 500,
                     opacity: state.activeNav === item ? 1 : 0.7,
                     textTransform: 'none',
+                    whiteSpace: 'nowrap',
                   }}
                 >
                   {getLabel(`nav_${item.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')}`, item)}
@@ -227,16 +229,16 @@ function App() {
               ))}
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 1 }}>
+            <Box component="div" sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
               <Button
                 variant="outlined"
                 color="inherit"
                 onClick={() => appStore.setState({ activeNav: 'Menu' })}
-                sx={{ borderColor: 'inherit' }}
+                sx={{ borderColor: 'inherit', whiteSpace: 'nowrap' }}
               >
                 {uiText.app.menu}
               </Button>
-              <Button variant="contained" color="secondary" onClick={() => appStore.setState({ activeNav: 'Order Online' })}>
+              <Button variant="contained" color="secondary" onClick={() => appStore.setState({ activeNav: 'Order Online' })} sx={{ whiteSpace: 'nowrap' }}>
                 {uiText.app.orderNow}
               </Button>
               <IconButton
@@ -253,10 +255,10 @@ function App() {
           </Toolbar>
         </AppBar>
 
-        <Container maxWidth="lg" sx={{ flex: 1, py: 4 }}>
+        <Container component="main" maxWidth="lg" sx={{ flex: 1, py: { xs: 2, sm: 3, md: 4 }, width: '100%' }}>
           <Suspense fallback={
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
-              <CircularProgress />
+              <CircularProgress aria-label="Loading content" />
             </Box>
           }>
             {renderPage()}
@@ -281,10 +283,11 @@ function App() {
 
         <Box
           component="footer"
+          aria-label="Site footer"
           sx={{
             bgcolor: 'primary.main',
             color: 'primary.contrastText',
-            py: 4,
+            py: { xs: 3, md: 4 },
             px: 2,
             mt: 'auto',
           }}

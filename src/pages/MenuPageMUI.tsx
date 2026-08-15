@@ -48,8 +48,8 @@ export function MenuPageMUI({ state, onCategoryChange, onDietaryChange, onAddToC
   };
 
   return (
-    <Box>
-      <Box sx={{ mb: 4 }}>
+    <Box component="div">
+      <Box component="header" sx={{ mb: 4 }}>
         <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
           {uiText.app.menu}
         </Typography>
@@ -58,7 +58,7 @@ export function MenuPageMUI({ state, onCategoryChange, onDietaryChange, onAddToC
         </Typography>
       </Box>
 
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, mb: 4 }}>
+      <Box component="section" aria-label="Menu filters" sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, mb: 4 }}>
         <FormControl fullWidth>
           <InputLabel>{uiText.menu.categoryLabel}</InputLabel>
           <Select value={state.selectedCategory} label={uiText.menu.categoryLabel} onChange={(e) => onCategoryChange(e.target.value as MenuCategory | 'All')}>
@@ -82,14 +82,14 @@ export function MenuPageMUI({ state, onCategoryChange, onDietaryChange, onAddToC
         </FormControl>
       </Box>
 
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 3 }}>
+      <Box component="section" aria-label="Menu items" sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 3 }}>
         {filtered.map((item) => (
-          <Box key={item.id}>
+          <Box component="article" key={item.id}>
             <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               <CardMedia component="img" height="200" image={item.image} alt={item.name} sx={{ objectFit: 'cover' }} />
               <CardContent sx={{ flex: 1 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', mb: 1 }}>
-                  <Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', mb: 1, gap: 1 }}>
+                  <Box component="div" sx={{ minWidth: 0 }}>
                     <Typography variant="h6" sx={{ fontWeight: 700 }}>
                       {item.name}
                     </Typography>
@@ -97,7 +97,7 @@ export function MenuPageMUI({ state, onCategoryChange, onDietaryChange, onAddToC
                       {item.portion}
                     </Typography>
                   </Box>
-                  <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}>
                     NRs {item.price}
                   </Typography>
                 </Box>
@@ -111,15 +111,15 @@ export function MenuPageMUI({ state, onCategoryChange, onDietaryChange, onAddToC
                   {item.glutenFree && <Typography variant="caption" sx={{ bgcolor: 'warning.light', px: 1, py: 0.5, borderRadius: 1 }}>{uiText.menu.glutenFree}</Typography>}
                 </Box>
 
-                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                  <Button size="small" onClick={() => setQuantities((c) => ({ ...c, [item.id]: Math.max(1, (c[item.id] || 1) - 1) }))} variant="outlined">
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <Button size="small" onClick={() => setQuantities((c) => ({ ...c, [item.id]: Math.max(1, (c[item.id] || 1) - 1) }))} variant="outlined" aria-label={`Decrease quantity for ${item.name}`}>
                     <RemoveIcon fontSize="small" />
                   </Button>
                   <Typography sx={{ minWidth: 40, textAlign: 'center' }}>{quantities[item.id] || 1}</Typography>
-                  <Button size="small" onClick={() => setQuantities((c) => ({ ...c, [item.id]: (c[item.id] || 1) + 1 }))} variant="outlined">
+                  <Button size="small" onClick={() => setQuantities((c) => ({ ...c, [item.id]: (c[item.id] || 1) + 1 }))} variant="outlined" aria-label={`Increase quantity for ${item.name}`}>
                     <AddIcon fontSize="small" />
                   </Button>
-                  <Button size="small" variant="contained" onClick={() => handleAddToCart(item.id)} sx={{ flex: 1 }}>
+                  <Button size="small" variant="contained" onClick={() => handleAddToCart(item.id)} sx={{ flex: 1, minWidth: 96 }}>
                     {getLabel('act_add_to_cart', uiText.menu.add)}
                   </Button>
                 </Box>
