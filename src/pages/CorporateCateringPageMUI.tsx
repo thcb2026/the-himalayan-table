@@ -14,11 +14,13 @@ import {
   Paper,
 } from '@mui/material';
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
-import { CorporateCateringPageProps } from '../types';
 import { currency, uiText, validationMessages } from '../content/common-content';
 import { getLabel } from '../utils/getLabel';
+import { useAppDispatch, useAppSelector, selectAppState, updateQuote } from '../store';
 
-export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringPageProps) {
+export function CorporateCateringPageMUI() {
+  const dispatch = useAppDispatch();
+  const state = useAppSelector(selectAppState);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState<boolean>(false);
 
@@ -107,7 +109,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                     variant="filled"
                     label={uiText.corporate.companyName}
                     value={state.quote.companyName || ''}
-                    onChange={(e) => onChange('companyName', e.target.value)}
+                    onChange={(e) => dispatch(updateQuote({ key: 'companyName', value: e.target.value }))}
                     error={!!errors.companyName}
                     helperText={errors.companyName}
                     fullWidth
@@ -119,7 +121,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                     variant="filled"
                     label={uiText.corporate.contactPerson}
                     value={state.quote.contactPerson || ''}
-                    onChange={(e) => onChange('contactPerson', e.target.value)}
+                    onChange={(e) => dispatch(updateQuote({ key: 'contactPerson', value: e.target.value }))}
                     error={!!errors.contactPerson}
                     helperText={errors.contactPerson}
                     fullWidth
@@ -132,7 +134,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                     label={uiText.corporate.emailLabel}
                     type="email"
                     value={state.quote.email || ''}
-                    onChange={(e) => onChange('email', e.target.value)}
+                    onChange={(e) => dispatch(updateQuote({ key: 'email', value: e.target.value }))}
                     error={!!errors.email}
                     helperText={errors.email}
                     fullWidth
@@ -144,7 +146,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                     variant="filled"
                     label={uiText.corporate.phoneLabel}
                     value={state.quote.phone || ''}
-                    onChange={(e) => onChange('phone', e.target.value)}
+                    onChange={(e) => dispatch(updateQuote({ key: 'phone', value: e.target.value }))}
                     error={!!errors.phone}
                     helperText={errors.phone}
                     fullWidth
@@ -160,7 +162,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                     label={uiText.corporate.eventDate}
                     type="date"
                     value={state.quote.eventDate || ''}
-                    onChange={(e) => onChange('eventDate', e.target.value)}
+                    onChange={(e) => dispatch(updateQuote({ key: 'eventDate', value: e.target.value }))}
                     error={!!errors.eventDate}
                     helperText={errors.eventDate}
                     slotProps={{ inputLabel: { shrink: true } }}
@@ -173,7 +175,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                     label={uiText.corporate.numberOfPeople}
                     type="number"
                     value={state.quote.numberOfPeople || ''}
-                    onChange={(e) => onChange('numberOfPeople', Number(e.target.value) || 0)}
+                    onChange={(e) => dispatch(updateQuote({ key: 'numberOfPeople', value: Number(e.target.value) || 0 }))}
                     error={!!errors.numberOfPeople}
                     helperText={errors.numberOfPeople}
                     slotProps={{ htmlInput: { min: 10 } }}
@@ -187,7 +189,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                   variant="filled"
                   label={uiText.corporate.deliveryAddress}
                   value={state.quote.deliveryAddress || ''}
-                  onChange={(e) => onChange('deliveryAddress', e.target.value)}
+                  onChange={(e) => dispatch(updateQuote({ key: 'deliveryAddress', value: e.target.value }))}
                   error={!!errors.deliveryAddress}
                   helperText={errors.deliveryAddress}
                   fullWidth
@@ -203,7 +205,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                     variant="filled"
                     label={uiText.corporate.mealType}
                     value={state.quote.mealType || ''}
-                    onChange={(e) => onChange('mealType', e.target.value)}
+                    onChange={(e) => dispatch(updateQuote({ key: 'mealType', value: e.target.value }))}
                     error={!!errors.mealType}
                     helperText={errors.mealType}
                     fullWidth
@@ -215,7 +217,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                     label={uiText.corporate.budgetPerPerson}
                     type="number"
                     value={state.quote.budgetPerPerson || ''}
-                    onChange={(e) => onChange('budgetPerPerson', Number(e.target.value) || 500)}
+                    onChange={(e) => dispatch(updateQuote({ key: 'budgetPerPerson', value: Number(e.target.value) || 500 }))}
                     slotProps={{
                       input: {
                         startAdornment: <InputAdornment position="start">{currency.symbol}</InputAdornment>,
@@ -231,7 +233,7 @@ export function CorporateCateringPageMUI({ state, onChange }: CorporateCateringP
                   variant="filled"
                   label={uiText.corporate.dietaryRequirements}
                   value={state.quote.dietaryRequirements || ''}
-                  onChange={(e) => onChange('dietaryRequirements', e.target.value)}
+                  onChange={(e) => dispatch(updateQuote({ key: 'dietaryRequirements', value: e.target.value }))}
                   fullWidth
                   multiline
                   rows={2}

@@ -15,13 +15,16 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { menuItems } from '../content/data';
 import { dietaryOptions, menuCategories, uiText } from '../content/common-content';
-import { MenuCategory, DietaryTag, MenuPageProps } from '../types';
+import { MenuCategory, DietaryTag } from '../types';
+import { useAppDispatch, useAppSelector, setSelectedCategory, setSelectedDietary, addToCart, selectAppState } from '../store';
 import { getLabel } from '../utils/getLabel';
 
 const categories: (MenuCategory | 'All')[] = menuCategories as (MenuCategory | 'All')[];
 const dietaryChoices: (DietaryTag | 'All')[] = dietaryOptions as (DietaryTag | 'All')[];
 
-export function MenuPageMUI({ state, onCategoryChange, onDietaryChange, onAddToCart }: MenuPageProps) {
+export function MenuPageMUI() {
+  const dispatch = useAppDispatch();
+  const state = useAppSelector(selectAppState);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
   const filtered = useMemo(() => {
@@ -43,7 +46,7 @@ export function MenuPageMUI({ state, onCategoryChange, onDietaryChange, onAddToC
 
   const handleAddToCart = (itemId: string) => {
     const quantity = quantities[itemId] || 1;
-    onAddToCart(itemId, quantity);
+    dispatch(addToCart({ itemId, quantity }));
     setQuantities((current) => ({ ...current, [itemId]: 1 }));
   };
 
@@ -61,7 +64,7 @@ export function MenuPageMUI({ state, onCategoryChange, onDietaryChange, onAddToC
       <Box component="section" aria-label="Menu filters" sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, mb: 4 }}>
         <FormControl fullWidth>
           <InputLabel>{uiText.menu.categoryLabel}</InputLabel>
-          <Select value={state.selectedCategory} label={uiText.menu.categoryLabel} onChange={(e) => onCategoryChange(e.target.value as MenuCategory | 'All')}>
+          <Select value={state.selectedCategory} label={uiText.menu.categoryLabel} onChange={(e) => dispatch(setSelectedCategory(e.target.value as MenuCategory | 'All'))}>
             {categories.map((cat) => (
               <MenuItem key={cat} value={cat}>
                 {cat}
@@ -72,7 +75,7 @@ export function MenuPageMUI({ state, onCategoryChange, onDietaryChange, onAddToC
 
         <FormControl fullWidth>
           <InputLabel>{uiText.menu.dietaryLabel}</InputLabel>
-          <Select value={state.selectedDietary} label={uiText.menu.dietaryLabel} onChange={(e) => onDietaryChange(e.target.value as DietaryTag | 'All')}>
+          <Select value={state.selectedDietary} label={uiText.menu.dietaryLabel} onChange={(e) => dispatch(setSelectedDietary(e.target.value as DietaryTag | 'All'))}>
             {dietaryChoices.map((opt) => (
               <MenuItem key={opt} value={opt}>
                 {opt}
