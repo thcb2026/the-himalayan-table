@@ -1,9 +1,6 @@
-export const HOST_LOCAL_API_URL = 'http://localhost:5002';
-export const API_BASE_PATH = '/api/pms_tms/v1';
-const responseCache = new Map<string, { timestamp: number; responsePromise: Promise<Response> }>();
-const DEFAULT_GET_CACHE_TTL_MS = 30 * 1000;
+import { isAbsoluteUrl, DEFAULT_GET_CACHE_TTL_MS, API_BASE_PATH, HOST_LOCAL_API_URL } from "../content/common-content";
 
-const isAbsoluteUrl = (url: string): boolean => /^https?:\/\//i.test(url);
+const responseCache = new Map<string, { timestamp: number; responsePromise: Promise<Response> }>();
 
 const buildApiUrl = (path: string): string => {
   if (isAbsoluteUrl(path)) {
