@@ -100,3 +100,36 @@ export interface CorporateCateringPageProps {
   state: { quote: QuoteRequest };
   onChange: <K extends keyof QuoteRequest>(key: K, value: QuoteRequest[K]) => void;
 }
+
+export type ContentLabelGroup = {
+  category: string;
+  description: string;
+  items: Array<{
+    id: string;
+    label: string;
+  }>;
+};
+
+export type ContentLabelEntry = {
+  id?: string;
+  key?: string;
+  label?: string;
+  value?: string;
+};
+
+export type DatabaseLabelMap = Partial<Record<string, string>>;
+
+export type ContentRegistryPayload =
+  | DatabaseLabelMap
+  | ContentLabelEntry[]
+  | {
+      labels?: DatabaseLabelMap | ContentLabelEntry[];
+      data?: DatabaseLabelMap | ContentLabelEntry[];
+      items?: ContentLabelEntry[];
+    };
+
+export interface ContentRegistryService {
+  getLabels: () => Record<string, string>;
+  getLabel: (id: string, fallback?: string) => string;
+  hasLabel: (id: string) => boolean;
+}
