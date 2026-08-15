@@ -56,7 +56,7 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
         </Box>
       </Box>
 
-      <Stepper activeStep={step} sx={{ mb: 4, overflowX: 'auto' }} aria-label="Order progress steps">
+      <Stepper activeStep={step} sx={{ mb: 4, overflowX: 'auto' }} aria-label={uiText.accessibility.orderProgressSteps}>
         {steps.map((label) => (
           <Step key={label}>
             <StepLabel>{label}</StepLabel>
@@ -79,7 +79,7 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
                       onClick={() => setSelectedItemId(item.id)}
                       tabIndex={0}
                       role="button"
-                      aria-label={`Select ${item.name}`}
+                      aria-label={uiText.accessibility.selectItem(item.name)}
                       onKeyDown={(event) => {
                         if (event.key === 'Enter' || event.key === ' ') {
                           event.preventDefault();
@@ -121,7 +121,7 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
             </Card>
           </Box>
 
-          <Box component="aside" aria-label="Selected item summary">
+          <Box component="aside" aria-label={uiText.accessibility.selectedItemSummary}>
             <Card>
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
@@ -191,7 +191,7 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
             </Card>
           </Box>
 
-          <Box component="aside" aria-label="Order summary for pickup options">
+          <Box component="aside" aria-label={uiText.accessibility.orderSummaryPickup}>
             <Card>
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
@@ -252,13 +252,13 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
             </Card>
           </Box>
 
-          <Box component="aside" aria-label="Payment selection panel">
+          <Box component="aside" aria-label={uiText.accessibility.paymentSelection}>
             <Card>
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                   {uiText.orderFlow.stepPayment}
                 </Typography>
-                <RadioGroup value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value as any)} aria-label="Choose payment method">
+                <RadioGroup value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value as any)} aria-label={uiText.accessibility.choosePaymentMethod}>
                   {uiText.orderFlow.paymentOptions.map((option) => (
                     <FormControlLabel key={option} control={<Radio />} label={option} value={option} />
                   ))}

@@ -1,29 +1,5 @@
-import { isAbsoluteUrl, DEFAULT_GET_CACHE_TTL_MS, API_BASE_PATH, HOST_LOCAL_API_URL } from "../content/common-content";
-
-const responseCache = new Map<string, { timestamp: number; responsePromise: Promise<Response> }>();
-
-const buildApiUrl = (path: string): string => {
-  if (isAbsoluteUrl(path)) {
-    return path;
-  }
-
-  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-  return `${resolveApiBaseUrl()}${normalizedPath}`;
-};
-
-export const clearAdminApiCache = (): void => {
-  responseCache.clear();
-};
-
-const buildCacheKey = (url: string, options: RequestInit = {}): string => {
-  const method = String(options.method || 'GET').toUpperCase();
-  return `${method}:${url}`;
-};
-
-const shouldCacheRequest = (options: RequestInit = {}): boolean => {
-  const method = String(options.method || 'GET').toUpperCase();
-  return method === 'GET' && !options.signal;
-};
+import {DEFAULT_GET_CACHE_TTL_MS, API_BASE_PATH } from "../content/common-content";
+import { buildApiUrl, buildCacheKey, responseCache, shouldCacheRequest } from "../utils/common-helpers";
 
 export const adminApiFetch = async (path: string, options: RequestInit = {}): Promise<Response> => {
   const url = buildApiUrl(path);
@@ -101,16 +77,3 @@ export const adminRequest = async (
   return data;
 };
 
-const resolveApiBaseUrl = (): string => {
-  const env = (globalThis as any).process?.env || {};
-  const configured = (env.NEXT_PUBLIC_API_URL || env.REACT_APP_API_URL || '').trim();
-  if (configured) return configured;
-  if (typeof window !== 'undefined') {
-    const { hostname, protocol } = window.location;
-    const isLocal = ['localhost', '127.0.0.1', '0.0.0.0'].includes(hostname) || hostname.startsWith('10.') || hostname.startsWith('192.168.') || /^172\.(1[6-9]|2\d|3[0-1])\./.test(hostname);
-    if (isLocal) return `${protocol}//127.0.0.1:5002`;
-  }
-  return runtimeOrigin || HOST_LOCAL_API_URL;
-};
-
-const runtimeOrigin = typeof window !== 'undefined' ? window.location.origin : '';

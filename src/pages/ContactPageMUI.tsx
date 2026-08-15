@@ -29,7 +29,7 @@ export function ContactPageMUI() {
               <Typography id="contact-form-heading" variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                 {uiText.contact.sendMessage}
               </Typography>
-              <Stack spacing={2} component="form" noValidate onSubmit={handleSubmit} aria-label="Contact form">
+              <Stack spacing={2} component="form" noValidate onSubmit={handleSubmit} aria-label={uiText.accessibility.contactForm}>
                 <TextField label={uiText.contact.yourName} fullWidth autoComplete="name" aria-label={uiText.contact.yourName} />
                 <TextField label={uiText.contact.yourEmail} type="email" fullWidth autoComplete="email" aria-label={uiText.contact.yourEmail} />
                 <TextField label={uiText.contact.subject} fullWidth autoComplete="off" aria-label={uiText.contact.subject} />
@@ -47,7 +47,7 @@ export function ContactPageMUI() {
           </Card>
         </Box>
 
-        <Box component="aside" aria-label="Contact details">
+        <Box component="aside" aria-label={uiText.accessibility.contactDetails}>
           <Stack spacing={3}>
             <Card>
               <CardContent>
@@ -57,7 +57,7 @@ export function ContactPageMUI() {
                     <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
                       {uiText.contact.phoneLabel}
                     </Typography>
-                    <Link href={`tel:${contactInfo.phone}`} underline="hover" aria-label={`Call ${contactInfo.phone}`}>
+                    <Link href={`tel:${contactInfo.phone}`} underline="hover" aria-label={uiText.accessibility.callPhone(contactInfo.phone)}>
                       {contactInfo.phone}
                     </Link>
                   </Box>
@@ -73,7 +73,7 @@ export function ContactPageMUI() {
                     <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
                       {uiText.contact.emailLabel}
                     </Typography>
-                    <Link href={`mailto:${contactInfo.email}`} underline="hover" aria-label={`Email ${contactInfo.email}`}>
+                    <Link href={`mailto:${contactInfo.email}`} underline="hover" aria-label={uiText.accessibility.emailAddress(contactInfo.email)}>
                       {contactInfo.email}
                     </Link>
                   </Box>

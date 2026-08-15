@@ -149,7 +149,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
       </Box>
 
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 3 }}>
-        <Box component="form" id="checkout-form" noValidate aria-label="Checkout form" onSubmit={handleSubmit}>
+        <Box component="form" id="checkout-form" noValidate aria-label={uiText.accessibility.checkoutForm} onSubmit={handleSubmit}>
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
@@ -225,7 +225,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
           </Card>
         </Box>
 
-        <Box component="aside" aria-label="Order summary panel">
+        <Box component="aside" aria-label={uiText.accessibility.orderSummaryPanel}>
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>

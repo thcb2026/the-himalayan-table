@@ -65,7 +65,7 @@ export function HomePageMUI() {
               component="img"
               height="100%"
               image="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=500&fit=crop"
-              alt="Nepali Food"
+              alt={uiText.media.nepaliFood}
               sx={{ objectFit: 'cover', height: '100%' }}
             />
           </Card>
@@ -74,7 +74,7 @@ export function HomePageMUI() {
               component="img"
               height="100%"
               image="https://images.unsplash.com/photo-1626082927389-6cd097cda687?w=300&h=240&fit=crop"
-              alt="Spices"
+              alt={uiText.media.spices}
               sx={{ objectFit: 'cover', height: '100%' }}
             />
           </Card>
@@ -83,7 +83,7 @@ export function HomePageMUI() {
               component="img"
               height="100%"
               image="https://images.unsplash.com/photo-1505521585350-d7984bc03750?w=300&h=240&fit=crop"
-              alt="Event Catering"
+              alt={uiText.media.eventCatering}
               sx={{ objectFit: 'cover', height: '100%' }}
             />
           </Card>
