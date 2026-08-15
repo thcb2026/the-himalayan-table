@@ -16,10 +16,9 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Logo from '@mui/icons-material/LunchDining';
 import { appBrand, navigation, STORAGE_KEY, uiText } from './content/common-content';
 import { initialQuote } from './content/data';
-import { GenericStateStore } from './store';
-import { AppState } from './types';
+import { useAppDispatch, useAppSelector, setActiveNav, setSelectedCategory, setSelectedDietary, addToCart, updateCartItem, removeCartItem, updateQuote, resetCart } from './store';
 import { buildM3Theme } from './theme/theme';
-import { getLabel } from './utils/getLabel';
+import { getLabel, hydrateSharedContentRegistry } from './utils/getLabel';
 
 // Lazy load page components for code splitting
 const HomePageMUI = React.lazy(() => import('./pages/HomePageMUI').then(m => ({ default: m.HomePageMUI })));
@@ -31,65 +30,40 @@ const CartDrawerMUI = React.lazy(() => import('./pages/CartDrawerMUI').then(m =>
 const CheckoutPageMUI = React.lazy(() => import('./pages/CheckoutPageMUI').then(m => ({ default: m.CheckoutPageMUI })));
 
 
-const getInitialState = (): AppState => {
-  if (typeof window === 'undefined') {
-    return {
-      selectedCategory: 'All',
-      selectedDietary: 'All',
-      cartCount: 0,
-      cartItems: [],
-      quote: initialQuote,
-      activeNav: 'Home',
-    };
-  }
-
-  try {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
-    if (!saved) {
-      return {
-        selectedCategory: 'All',
-        selectedDietary: 'All',
-        cartCount: 0,
-        cartItems: [],
-        quote: initialQuote,
-        activeNav: 'Home',
-      };
-    }
-
-    return JSON.parse(saved) as AppState;
-  } catch {
-    return {
-      selectedCategory: 'All',
-      selectedDietary: 'All',
-      cartCount: 0,
-      cartItems: [],
-      quote: initialQuote,
-      activeNav: 'Home',
-    };
-  }
-};
-
-const appStore = new GenericStateStore(getInitialState());
-
 function App() {
-  const [state, setState] = useState(appStore.getState());
+  const dispatch = useAppDispatch();
+  const state = useAppSelector((state) => state.app);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [contentVersion, setContentVersion] = useState(0);
   const [fallbackNotice, setFallbackNotice] = useState<{ open: boolean; message: string }>({ open: false, message: '' });
   const theme = buildM3Theme('#a75b2c', false);
 
   React.useEffect(() => {
-    const unsubscribe = appStore.subscribe(() => setState(appStore.getState()));
-    const handleRegistryUpdate = () => setContentVersion((current) => current + 1);
+    const handleRegistryUpdate = () => {
+      console.log('[AppMUI] Registry updated, forcing re-render');
+      setContentVersion((current) => current + 1);
+    };
     const handleFallbackNotice = (event: Event) => {
       const customEvent = event as CustomEvent<{ message?: string }>;
       const message = customEvent.detail?.message || 'Shared content is temporarily unavailable. Local content is being served instead.';
+      console.warn('[AppMUI] Fallback notice:', message);
       setFallbackNotice({ open: true, message });
     };
+
+    // Trigger registry hydration on mount
+    console.log('[AppMUI] Mounting, starting registry hydration');
+    hydrateSharedContentRegistry()
+      .then(() => console.log('[AppMUI] Registry hydration completed'))
+      .catch(err => {
+        // Catch any errors from hydration and log them without crashing
+        console.error('[AppMUI] Registry hydration error (non-critical):', err);
+        console.info('[AppMUI] App will continue with local content fallback');
+      });
 
     if (typeof window !== 'undefined') {
       const queuedMessage = (window as Window & { __contentRegistryFallbackMessage?: string }).__contentRegistryFallbackMessage;
       if (queuedMessage) {
+        console.warn('[AppMUI] Using queued fallback message:', queuedMessage);
         setFallbackNotice({ open: true, message: queuedMessage });
       }
 
@@ -98,7 +72,6 @@ function App() {
     }
 
     return () => {
-      unsubscribe();
       if (typeof window !== 'undefined') {
         window.removeEventListener('content-registry-updated', handleRegistryUpdate);
         window.removeEventListener('content-registry-fallback', handleFallbackNotice);
@@ -108,108 +81,61 @@ function App() {
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(appStore.getState()));
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
   }, [state, contentVersion]);
 
-  const addToCart = (itemId: string, quantity = 1) => {
-    const existing = appStore.getState().cartItems.find((item) => item.id === itemId);
-    const nextQuantity = Math.max(1, quantity);
-
-    if (existing) {
-      appStore.setState({
-        cartItems: appStore.getState().cartItems.map((item) =>
-          item.id === itemId ? { ...item, quantity: item.quantity + nextQuantity } : item,
-        ),
-        cartCount: appStore.getState().cartCount + nextQuantity,
-      });
-      return;
-    }
-
-    appStore.setState({
-      cartItems: [...appStore.getState().cartItems, { id: itemId, quantity: nextQuantity }],
-      cartCount: appStore.getState().cartCount + nextQuantity,
-    });
+  const handleAddToCart = (itemId: string, quantity = 1) => {
+    dispatch(addToCart({ itemId, quantity }));
   };
 
-  const updateCartItem = (itemId: string, delta: number) => {
-    const items = appStore.getState().cartItems
-      .map((item) =>
-        item.id === itemId ? { ...item, quantity: Math.max(0, item.quantity + delta) } : item,
-      )
-      .filter((item) => item.quantity > 0);
-
-    appStore.setState({
-      cartItems: items,
-      cartCount: items.reduce((sum, item) => sum + item.quantity, 0),
-    });
+  const handleUpdateCartItem = (itemId: string, delta: number) => {
+    dispatch(updateCartItem({ itemId, delta }));
   };
 
-  const removeCartItem = (itemId: string) => {
-    const items = appStore.getState().cartItems.filter((item) => item.id !== itemId);
-    appStore.setState({
-      cartItems: items,
-      cartCount: items.reduce((sum, item) => sum + item.quantity, 0),
-    });
+  const handleRemoveCartItem = (itemId: string) => {
+    dispatch(removeCartItem(itemId));
   };
 
-  const updateQuote = <K extends keyof typeof initialQuote>(
+  const handleUpdateQuote = <K extends keyof typeof initialQuote>(
     key: K,
     value: (typeof initialQuote)[K],
   ) => {
-    appStore.setState({
-      quote: {
-        ...appStore.getState().quote,
-        [key]: value,
-      },
-    });
+    dispatch(updateQuote({ key, value }));
   };
 
   const renderPage = () => {
+    // contentVersion is used here to ensure re-render when registry updates
+    const key = state.activeNav + contentVersion;
+    
     switch (state.activeNav) {
       case 'Menu':
-        return (
-          <MenuPageMUI
-            state={state}
-            onCategoryChange={(value) => appStore.setState({ selectedCategory: value })}
-            onDietaryChange={(value) => appStore.setState({ selectedDietary: value })}
-            onAddToCart={(itemId, quantity) => addToCart(itemId, quantity)}
-          />
-        );
+        return <MenuPageMUI key={key} />;
       case 'Corporate Catering':
-        return <CorporateCateringPageMUI state={state} onChange={updateQuote} />;
+        return <CorporateCateringPageMUI key={key} />;
       case 'Contact':
-        return <ContactPageMUI />;
+        return <ContactPageMUI key={key} />;
       case 'Order Online':
-        return <OrderFlowPageMUI state={state} onSetActiveNav={(value) => appStore.setState({ activeNav: value })} />;
+        return <OrderFlowPageMUI key={key} state={state} onSetActiveNav={(value) => dispatch(setActiveNav(value))} />;
       case 'Checkout':
         return (
           <CheckoutPageMUI
+            key={key}
             state={state}
-            onBack={() => appStore.setState({ activeNav: 'Order Online' })}
+            onBack={() => dispatch(setActiveNav('Order Online'))}
             onComplete={() => {
-              appStore.setState({
-                activeNav: 'Order Online',
-                cartItems: [],
-                cartCount: 0,
-              });
+              dispatch(setActiveNav('Order Online'));
+              dispatch(resetCart());
               setIsCartOpen(false);
             }}
           />
         );
       case 'Event Catering':
       case 'Our Story':
-        return (
-          <MenuPageMUI
-            state={state}
-            onCategoryChange={(value) => appStore.setState({ selectedCategory: value })}
-            onDietaryChange={(value) => appStore.setState({ selectedDietary: value })}
-            onAddToCart={(itemId, quantity) => addToCart(itemId, quantity)}
-          />
-        );
+        return <MenuPageMUI key={key} />;
       case 'Home':
       default:
-        return <HomePageMUI />;
+        return <HomePageMUI key={key} />;
     }
   };
 
@@ -259,7 +185,7 @@ function App() {
                   key={item}
                   color="inherit"
                   aria-current={state.activeNav === item ? 'page' : undefined}
-                  onClick={() => appStore.setState({ activeNav: item })}
+                  onClick={() => dispatch(setActiveNav(item))}
                   sx={{
                     fontWeight: state.activeNav === item ? 700 : 500,
                     opacity: state.activeNav === item ? 1 : 0.7,
@@ -283,7 +209,7 @@ function App() {
               <Button
                 variant="outlined"
                 color="inherit"
-                onClick={() => appStore.setState({ activeNav: 'Menu' })}
+                onClick={() => dispatch(setActiveNav('Menu'))}
                 sx={{
                   borderColor: 'rgba(255,255,255,0.7)',
                   whiteSpace: 'nowrap',
@@ -300,7 +226,7 @@ function App() {
               <Button
                 variant="contained"
                 color="secondary"
-                onClick={() => appStore.setState({ activeNav: 'Order Online' })}
+                onClick={() => dispatch(setActiveNav('Order Online'))}
                 sx={{
                   whiteSpace: 'nowrap',
                   '&:focus-visible': {
@@ -349,12 +275,12 @@ function App() {
             <CartDrawerMUI
               state={state}
               onClose={() => setIsCartOpen(false)}
-              onIncrease={(itemId) => updateCartItem(itemId, 1)}
-              onDecrease={(itemId) => updateCartItem(itemId, -1)}
-              onRemove={removeCartItem}
+              onIncrease={(itemId) => handleUpdateCartItem(itemId, 1)}
+              onDecrease={(itemId) => handleUpdateCartItem(itemId, -1)}
+              onRemove={handleRemoveCartItem}
               onCheckout={() => {
                 setIsCartOpen(false);
-                appStore.setState({ activeNav: 'Checkout' });
+                dispatch(setActiveNav('Checkout'));
               }}
             />
           </Suspense>
