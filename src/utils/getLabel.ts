@@ -122,8 +122,24 @@ export const hydrateSharedContentRegistry = async (): Promise<Record<string, str
       const normalized = normalizeDatabaseLabels(dbLabels);
 
       if (Object.keys(normalized).length > 0) {
-        Object.assign(sharedContentRegistry, normalized);
-        applyRegistryOverrides(normalized);
+        const restored = Object.fromEntries(
+          Object.entries(normalized).map(([key, value]) => {
+            if (typeof value === 'string') {
+              try {
+                const parsed = JSON.parse(value);
+                if (Array.isArray(parsed)) {
+                  return [key, parsed];
+                }
+              } catch {
+                // Keep as string for scalar content.
+              }
+            }
+            return [key, value];
+          }),
+        );
+
+        Object.assign(sharedContentRegistry, restored);
+        applyRegistryOverrides(restored);
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('content-registry-updated'));
         }
