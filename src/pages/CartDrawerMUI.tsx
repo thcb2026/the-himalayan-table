@@ -19,11 +19,8 @@ import { currency, uiText } from '../content/common-content';
 import { useAppDispatch, useAppSelector, updateCartItem, removeCartItem, setActiveNav } from '../store';
 import { subtotal } from '../utils/common-helpers';
 import { getLabel } from '../utils/getLabel';
+import { CartDrawerMUIProps } from '../types';
 
-interface CartDrawerMUIProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
 
 export function CartDrawerMUI({ isOpen, onClose }: CartDrawerMUIProps) {
   const dispatch = useAppDispatch();

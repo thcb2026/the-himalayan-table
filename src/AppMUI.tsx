@@ -15,7 +15,7 @@ import Alert from '@mui/material/Alert';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Logo from '@mui/icons-material/LunchDining';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { appBrand, navigation, STORAGE_KEY, uiText } from './content/common-content';
+import { appBrand, hydrateFrontendContent, navigation, STORAGE_KEY, uiText } from './content/common-content';
 import { useAppDispatch, useAppSelector, setActiveNav } from './store';
 import { buildM3Theme } from './theme/theme';
 import { getLabel, hydrateSharedContentRegistry } from './utils/getLabel';
@@ -43,6 +43,15 @@ function App() {
       console.log('[AppMUI] Registry updated, forcing re-render');
       setContentVersion((current) => current + 1);
     };
+    const handleFrontendContentUpdate = async () => {
+      console.log('[AppMUI] Frontend content updated, rehydrating content and forcing re-render');
+      try {
+        await hydrateFrontendContent();
+      } catch (error) {
+        console.warn('[AppMUI] Content rehydration failed after update:', error);
+      }
+      setContentVersion((current) => current + 1);
+    };
     const handleFallbackNotice = (event: Event) => {
       const customEvent = event as CustomEvent<{ message?: string }>;
       const message = customEvent.detail?.message || 'Shared content is temporarily unavailable. Local content is being served instead.';
@@ -60,6 +69,10 @@ function App() {
         console.info('[AppMUI] App will continue with local content fallback');
       });
 
+    hydrateFrontendContent().catch((err) => {
+      console.warn('[AppMUI] Frontend content hydration failed:', err);
+    });
+
     if (typeof window !== 'undefined') {
       const queuedMessage = (window as Window & { __contentRegistryFallbackMessage?: string }).__contentRegistryFallbackMessage;
       if (queuedMessage) {
@@ -69,12 +82,16 @@ function App() {
 
       window.addEventListener('content-registry-updated', handleRegistryUpdate);
       window.addEventListener('content-registry-fallback', handleFallbackNotice);
+      window.addEventListener('frontend-content-updated', handleFrontendContentUpdate);
+      window.addEventListener('content-editor-updated', handleFrontendContentUpdate);
     }
 
     return () => {
       if (typeof window !== 'undefined') {
         window.removeEventListener('content-registry-updated', handleRegistryUpdate);
         window.removeEventListener('content-registry-fallback', handleFallbackNotice);
+        window.removeEventListener('frontend-content-updated', handleFrontendContentUpdate);
+        window.removeEventListener('content-editor-updated', handleFrontendContentUpdate);
       }
     };
   }, []);

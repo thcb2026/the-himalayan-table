@@ -7,6 +7,29 @@ export const HOST_LOCAL_API_URL = 'http://localhost:5002';
 export const API_BASE_PATH = '/api/pms_tms/v1';
 export const DEFAULT_GET_CACHE_TTL_MS = 30 * 1000;
 export const isAbsoluteUrl = (url: string): boolean => /^https?:\/\//i.test(url);
+
+const isObjectLike = (value: unknown): value is Record<string, any> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const deepMergeContent = (target: Record<string, any>, source: Record<string, any>): Record<string, any> => {
+  if (!isObjectLike(source)) {
+    return target;
+  }
+
+  Object.entries(source).forEach(([key, value]) => {
+    const currentValue = target[key];
+
+    if (isObjectLike(currentValue) && isObjectLike(value)) {
+      deepMergeContent(currentValue, value);
+      return;
+    }
+
+    target[key] = value;
+  });
+
+  return target;
+};
+
 export const actionLabels = [
   {
     category: 'Navigation',
@@ -354,6 +377,76 @@ contentRegistryTargets.currency = currency;
 
 export const menuCategories = ['All', 'Everyday Favorites', 'Nepali Traditional', 'Appetizers & Snacks', 'Desserts'];
 export const dietaryOptions = ['All', 'Vegetarian', 'Vegan', 'Gluten-Free', 'Dairy-Free', 'Nut Allergies'];
+
+let isFrontendContentHydrating = false;
+
+export const hydrateFrontendContent = async (): Promise<void> => {
+  if (typeof window === 'undefined' || isFrontendContentHydrating) {
+    return;
+  }
+
+  isFrontendContentHydrating = true;
+
+  try {
+    const response = await fetch(`${HOST_LOCAL_API_URL}/api/pms_tms/v1/content/frontend-common-content`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const payload = await response.json();
+    const data = payload?.data ?? payload;
+    if (!data || typeof data !== 'object') {
+      return;
+    }
+
+    if (Array.isArray(data.actionLabels)) {
+      actionLabels.splice(0, actionLabels.length, ...data.actionLabels);
+    }
+
+    if (Array.isArray(data.navigation)) {
+      navigation.splice(0, navigation.length, ...data.navigation);
+    }
+
+    if (Array.isArray(data.menuCategories)) {
+      menuCategories.splice(0, menuCategories.length, ...data.menuCategories);
+    }
+
+    if (Array.isArray(data.dietaryOptions)) {
+      dietaryOptions.splice(0, dietaryOptions.length, ...data.dietaryOptions);
+    }
+
+    if (data.appBrand && typeof data.appBrand === 'object') {
+      deepMergeContent(appBrand, data.appBrand);
+    }
+
+    if (data.uiText && typeof data.uiText === 'object') {
+      deepMergeContent(uiText, data.uiText);
+    }
+
+    if (data.contactInfo && typeof data.contactInfo === 'object') {
+      deepMergeContent(contactInfo, data.contactInfo);
+    }
+
+    if (data.currency && typeof data.currency === 'object') {
+      deepMergeContent(currency, data.currency);
+    }
+
+    if (data.validationMessages && typeof data.validationMessages === 'object') {
+      deepMergeContent(validationMessages, data.validationMessages);
+    }
+  } catch (error) {
+    console.warn('[common-content] Failed to hydrate frontend content from API:', error);
+  } finally {
+    isFrontendContentHydrating = false;
+  }
+};
 
 export const initialFormData = {
   firstName: '',
