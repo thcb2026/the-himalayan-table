@@ -10,25 +10,28 @@ import {
   Divider,
 } from '@mui/material';
 import { menuItems } from '../content/data';
-import { CheckoutPageProps, FormErrors } from '../types';
+import { FormErrors } from '../types';
 import { currency, initialFormData, uiText, validationMessages } from '../content/common-content';
+import { useAppDispatch, useAppSelector, setActiveNav, resetCart } from '../store';
 import { deliveryCharge, subtotal, total } from '../utils/common-helpers';
 import { getLabel } from '../utils/getLabel';
 
-export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps) {
+export function CheckoutPageMUI() {
+  const dispatch = useAppDispatch();
+  const cartState = useAppSelector((state) => state.app);
   const [form, setForm] = useState(initialFormData);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const cartItems = useMemo(
     () =>
-      state.cartItems
+      cartState.cartItems
         .map((line) => {
           const item = menuItems.find((entry) => entry.id === line.id);
           return item ? { ...item, quantity: line.quantity } : null;
         })
         .filter(Boolean) as Array<(typeof menuItems)[number] & { quantity: number }>,
-    [state.cartItems],
+    [cartState.cartItems],
   );
 
   const handleInputChange = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
@@ -60,6 +63,15 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
     if (validateForm()) {
       setIsSubmitted(true);
     }
+  };
+
+  const handleComplete = () => {
+    dispatch(setActiveNav('Order Online'));
+    dispatch(resetCart());
+  };
+
+  const handleGoToMenu = () => {
+    dispatch(setActiveNav('Menu'));
   };
 
   if (isSubmitted) {
@@ -123,7 +135,7 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
               </Box>
             </Box>
 
-            <Button variant="contained" onClick={onComplete} size="large">
+            <Button variant="contained" onClick={handleComplete} size="large">
               {getLabel('act_back_home', uiText.checkout.backToHome)}
             </Button>
           </CardContent>
@@ -132,8 +144,31 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
     );
   }
 
+  if (cartItems.length === 0) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: { xs: 3, md: 6 } }}>
+        <Card sx={{ maxWidth: 520, width: '100%', borderRadius: 3 }}>
+          <CardContent sx={{ textAlign: 'center', py: 5, px: { xs: 3, sm: 4 } }}>
+            <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
+              {uiText.checkout.eyebrow}
+            </Typography>
+            <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>
+              {uiText.cart.empty}
+            </Typography>
+            <Typography color="textSecondary" sx={{ mb: 3 }}>
+              Add a few dishes to your cart before checking out.
+            </Typography>
+            <Button variant="contained" size="large" onClick={handleGoToMenu} sx={{ minHeight: 48 }}>
+              {uiText.app.menu}
+            </Button>
+          </CardContent>
+        </Card>
+      </Box>
+    );
+  }
+
   return (
-    <Box component="section" aria-labelledby="checkout-heading">
+    <Box component="section" aria-labelledby="checkout-heading" sx={{ px: { xs: 0.5, sm: 0 } }}>
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
         <Box component="header">
           <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
@@ -143,15 +178,15 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
             {uiText.checkout.title}
           </Typography>
         </Box>
-        <Button variant="outlined" onClick={onBack}>
+        <Button variant="outlined" onClick={() => dispatch(setActiveNav('Order Online'))} sx={{ minHeight: 42 }}>
           {getLabel('act_back', uiText.checkout.back)}
         </Button>
       </Box>
 
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 3 }}>
         <Box component="form" id="checkout-form" noValidate aria-label={uiText.accessibility.checkoutForm} onSubmit={handleSubmit}>
-          <Card>
-            <CardContent>
+          <Card sx={{ borderRadius: 3 }}>
+            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
               <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                 {uiText.checkout.customerDetails}
               </Typography>
@@ -225,15 +260,15 @@ export function CheckoutPageMUI({ state, onBack, onComplete }: CheckoutPageProps
           </Card>
         </Box>
 
-        <Box component="aside" aria-label={uiText.accessibility.orderSummaryPanel}>
-          <Card>
-            <CardContent>
+        <Box component="aside" aria-label={uiText.accessibility.orderSummaryPanel} sx={{ position: { md: 'sticky' }, top: { md: 16 }, alignSelf: 'flex-start' }}>
+          <Card sx={{ borderRadius: 3 }}>
+            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
               <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                 {uiText.checkout.orderSummary}
               </Typography>
               <Stack spacing={1}>
                 {cartItems.map((item) => (
-                  <Box key={item.id} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Box key={item.id} sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
                     <Typography variant="body2">
                       {item.name} × {item.quantity}
                     </Typography>
