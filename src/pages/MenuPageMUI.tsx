@@ -27,8 +27,22 @@ export function MenuPageMUI() {
   const categories = menuCategories as (MenuCategory | 'All')[];
   const dietaryChoices = dietaryOptions as (DietaryTag | 'All')[];
 
-  const filtered = useMemo(() => {
+  const deduplicatedMenuItems = useMemo(() => {
+    const seen = new Set<string>();
+
     return menuItems.filter((item) => {
+      const key = String(item.id || `${item.name}-${item.category}-${item.price}`);
+      if (!key || seen.has(key)) {
+        return false;
+      }
+
+      seen.add(key);
+      return true;
+    });
+  }, []);
+
+  const filtered = useMemo(() => {
+    return deduplicatedMenuItems.filter((item) => {
       const categoryMatch = state.selectedCategory === 'All' || item.category === state.selectedCategory;
       let dietaryMatch = true;
 
@@ -42,7 +56,7 @@ export function MenuPageMUI() {
 
       return categoryMatch && dietaryMatch;
     });
-  }, [state.selectedCategory, state.selectedDietary, menuItems]);
+  }, [state.selectedCategory, state.selectedDietary, deduplicatedMenuItems]);
 
   const handleAddToCart = (itemId: string) => {
     const quantity = quantities[itemId] || 1;
@@ -51,8 +65,8 @@ export function MenuPageMUI() {
   };
 
   return (
-    <Box component="div">
-      <Box component="header" sx={{ mb: 4, px: { xs: 0.5, sm: 0 } }}>
+    <Box component="div" sx={{ maxWidth: 1400, mx: 'auto', px: { xs: 1, sm: 2, md: 3 }, pb: 4 }}>
+      <Box component="header" sx={{ mb: 4 }}>
         <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: 1.2 }}>
           {uiText.app.menu}
         </Typography>
@@ -61,7 +75,7 @@ export function MenuPageMUI() {
         </Typography>
       </Box>
 
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, px: { xs: 0.5, sm: 0 } }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
         <Button
           variant="contained"
           color="primary"
@@ -74,7 +88,7 @@ export function MenuPageMUI() {
               }
             }
           }}
-          sx={{ minWidth: 140 }}
+          sx={{ minWidth: 140, width: { xs: '100%', sm: 'auto' } }}
         >
           Edit Menu
         </Button>
@@ -88,7 +102,6 @@ export function MenuPageMUI() {
           gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
           gap: 2,
           mb: 4,
-          px: { xs: 0.5, sm: 0 },
         }}
       >
         <FormControl fullWidth>
@@ -119,84 +132,95 @@ export function MenuPageMUI() {
         aria-label={uiText.accessibility.menuItems}
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
+          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))', xl: 'repeat(3, minmax(0, 1fr))' },
           gap: { xs: 2.5, md: 3 },
-          px: { xs: 0.5, sm: 0 },
         }}
       >
-        {filtered.map((item) => (
-          <Box component="article" key={item.id}>
-            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: 3, overflow: 'hidden' }}>
-              <CardMedia component="img" height="200" image={item.image} alt={item.name} sx={{ objectFit: 'cover' }} />
-              <CardContent sx={{ flex: 1 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', mb: 1, gap: 1 }}>
-                  <Box component="div" sx={{ minWidth: 0 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                      {item.name}
-                    </Typography>
-                    <Typography variant="caption" color="textSecondary">
-                      {item.portion}
+        {filtered.length === 0 ? (
+          <Box sx={{ gridColumn: '1 / -1', textAlign: 'center', py: 6, border: '1px dashed', borderColor: 'divider', borderRadius: 3 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+              No menu items found
+            </Typography>
+            <Typography color="textSecondary">
+              Try a different category or dietary filter.
+            </Typography>
+          </Box>
+        ) : (
+          filtered.map((item) => (
+            <Box component="article" key={item.id} sx={{ height: '100%' }}>
+              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: 3, overflow: 'hidden' }}>
+                <CardMedia component="img" image={item.image} alt={item.name} sx={{ height: { xs: 180, sm: 200 }, objectFit: 'cover' }} />
+                <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1, gap: 1 }}>
+                    <Box component="div" sx={{ minWidth: 0, flex: 1 }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.4 }}>
+                        {item.name}
+                      </Typography>
+                      <Typography variant="caption" color="textSecondary">
+                        {item.portion}
+                      </Typography>
+                    </Box>
+                    <Typography variant="body2" sx={{ fontWeight: 700, whiteSpace: 'nowrap', ml: 1 }}>
+                      NRs {item.price}
                     </Typography>
                   </Box>
-                  <Typography variant="body2" sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}>
-                    NRs {item.price}
+
+                  <Typography variant="body2" color="textSecondary" sx={{ mb: 2, minHeight: 42 }}>
+                    {item.description}
                   </Typography>
-                </Box>
-                <Typography variant="body2" color="textSecondary" sx={{ mb: 2, minHeight: 40 }}>
-                  {item.description}
-                </Typography>
 
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-                  {item.vegetarian && (
-                    <Typography variant="caption" sx={{ bgcolor: 'success.main', color: 'success.contrastText', px: 1, py: 0.5, borderRadius: 1 }}>
-                      {uiText.menu.vegetarian}
-                    </Typography>
-                  )}
-                  {item.vegan && (
-                    <Typography variant="caption" sx={{ bgcolor: 'info.main', color: 'info.contrastText', px: 1, py: 0.5, borderRadius: 1 }}>
-                      {uiText.menu.vegan}
-                    </Typography>
-                  )}
-                  {item.glutenFree && (
-                    <Typography variant="caption" sx={{ bgcolor: 'warning.main', color: 'warning.contrastText', px: 1, py: 0.5, borderRadius: 1 }}>
-                      {uiText.menu.glutenFree}
-                    </Typography>
-                  )}
-                </Box>
+                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+                    {item.vegetarian && (
+                      <Typography variant="caption" sx={{ bgcolor: 'success.main', color: 'success.contrastText', px: 1, py: 0.5, borderRadius: 1 }}>
+                        {uiText.menu.vegetarian}
+                      </Typography>
+                    )}
+                    {item.vegan && (
+                      <Typography variant="caption" sx={{ bgcolor: 'info.main', color: 'info.contrastText', px: 1, py: 0.5, borderRadius: 1 }}>
+                        {uiText.menu.vegan}
+                      </Typography>
+                    )}
+                    {item.glutenFree && (
+                      <Typography variant="caption" sx={{ bgcolor: 'warning.main', color: 'warning.contrastText', px: 1, py: 0.5, borderRadius: 1 }}>
+                        {uiText.menu.glutenFree}
+                      </Typography>
+                    )}
+                  </Box>
 
-                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
-                  <Button
-                    size="small"
-                    onClick={() => setQuantities((c) => ({ ...c, [item.id]: Math.max(1, (c[item.id] || 1) - 1) }))}
-                    variant="outlined"
-                    aria-label={uiText.accessibility.decreaseQuantity(item.name)}
-                    sx={{ minWidth: 42, minHeight: 42, '&:focus-visible': { outline: '2px solid', outlineColor: 'primary.main', outlineOffset: 2 } }}
-                  >
-                    <RemoveIcon fontSize="small" />
-                  </Button>
-                  <Typography sx={{ minWidth: 40, textAlign: 'center', fontWeight: 700 }}>{quantities[item.id] || 1}</Typography>
-                  <Button
-                    size="small"
-                    onClick={() => setQuantities((c) => ({ ...c, [item.id]: (c[item.id] || 1) + 1 }))}
-                    variant="outlined"
-                    aria-label={uiText.accessibility.increaseQuantity(item.name)}
-                    sx={{ minWidth: 42, minHeight: 42, '&:focus-visible': { outline: '2px solid', outlineColor: 'primary.main', outlineOffset: 2 } }}
-                  >
-                    <AddIcon fontSize="small" />
-                  </Button>
-                  <Button
-                    size="small"
-                    variant="contained"
-                    onClick={() => handleAddToCart(item.id)}
-                    sx={{ flex: 1, minWidth: 96, minHeight: 42, '&:focus-visible': { outline: '2px solid', outlineColor: 'primary.main', outlineOffset: 2 } }}
-                  >
-                    {getLabel('act_add_to_cart', uiText.menu.add)}
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
-          </Box>
-        ))}
+                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap', mt: 'auto' }}>
+                    <Button
+                      size="small"
+                      onClick={() => setQuantities((c) => ({ ...c, [item.id]: Math.max(1, (c[item.id] || 1) - 1) }))}
+                      variant="outlined"
+                      aria-label={uiText.accessibility.decreaseQuantity(item.name)}
+                      sx={{ minWidth: 42, minHeight: 42, flexShrink: 0, '&:focus-visible': { outline: '2px solid', outlineColor: 'primary.main', outlineOffset: 2 } }}
+                    >
+                      <RemoveIcon fontSize="small" />
+                    </Button>
+                    <Typography sx={{ minWidth: 40, textAlign: 'center', fontWeight: 700 }}>{quantities[item.id] || 1}</Typography>
+                    <Button
+                      size="small"
+                      onClick={() => setQuantities((c) => ({ ...c, [item.id]: (c[item.id] || 1) + 1 }))}
+                      variant="outlined"
+                      aria-label={uiText.accessibility.increaseQuantity(item.name)}
+                      sx={{ minWidth: 42, minHeight: 42, flexShrink: 0, '&:focus-visible': { outline: '2px solid', outlineColor: 'primary.main', outlineOffset: 2 } }}
+                    >
+                      <AddIcon fontSize="small" />
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      onClick={() => handleAddToCart(item.id)}
+                      sx={{ flex: 1, minWidth: 96, minHeight: 42, '&:focus-visible': { outline: '2px solid', outlineColor: 'primary.main', outlineOffset: 2 } }}
+                    >
+                      {getLabel('act_add_to_cart', uiText.menu.add)}
+                    </Button>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Box>
+          ))
+        )}
       </Box>
     </Box>
   );

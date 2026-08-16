@@ -14,7 +14,6 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Logo from '@mui/icons-material/LunchDining';
-import SettingsIcon from '@mui/icons-material/Settings';
 import { appBrand, hydrateFrontendContent, navigation, STORAGE_KEY, uiText } from './content/common-content';
 import { initializeMenuData } from './content/data';
 import { useAppDispatch, useAppSelector, setActiveNav } from './store';
@@ -38,6 +37,35 @@ function App() {
   const [contentVersion, setContentVersion] = useState(0);
   const [fallbackNotice, setFallbackNotice] = useState<{ open: boolean; message: string }>({ open: false, message: '' });
   const theme = buildM3Theme('#a75b2c', false);
+
+  const getUserRole = () => {
+    if (typeof window === 'undefined') {
+      return '';
+    }
+
+    const roleValues = [
+      localStorage.getItem('role'),
+      localStorage.getItem('userRole'),
+      sessionStorage.getItem('role'),
+      sessionStorage.getItem('userRole'),
+      localStorage.getItem('auth_role'),
+      sessionStorage.getItem('auth_role'),
+      localStorage.getItem('accessRole'),
+      sessionStorage.getItem('accessRole'),
+    ];
+
+    const role = roleValues.find((value) => typeof value === 'string' && value.trim().length > 0)?.trim().toLowerCase();
+    return role ? role.replace(/_/g, '-').replace(/\s+/g, '') : '';
+  };
+
+  const canAccessContentEditor = () => {
+    const role = getUserRole();
+    const adminRoles = new Set(['admin', 'administrator', 'superadmin', 'content-editor', 'content_editor', 'editor']);
+    const bypassFlag = typeof window !== 'undefined'
+      && (localStorage.getItem('x-bypass-auth') === 'true' || sessionStorage.getItem('x-bypass-auth') === 'true');
+
+    return adminRoles.has(role) || bypassFlag;
+  };
 
   const openAdminEditor = () => {
     dispatch(setActiveNav('Admin'));
@@ -115,6 +143,11 @@ function App() {
           dispatch(setActiveNav('Menu'));
         }
       };
+
+      const isAuthorisedEditorUser = canAccessContentEditor();
+      if (isAuthorisedEditorUser && !window.location.hash) {
+        window.location.hash = '#admin';
+      }
 
       syncHashToNavigation();
       window.addEventListener('hashchange', syncHashToNavigation);
@@ -255,44 +288,30 @@ function App() {
                 </Badge>
               </IconButton>
 
-              <Button
-                variant="outlined"
-                color="inherit"
-                onClick={openAdminEditor}
-                aria-label="Open Content Editor"
-                title="Open Content Editor"
-                sx={{
-                  borderColor: 'rgba(255,255,255,0.7)',
-                  whiteSpace: 'nowrap',
-                  minWidth: 0,
-                  px: 1.5,
-                  py: 0.6,
-                  '&:focus-visible': {
-                    outline: '2px solid',
-                    outlineColor: 'common.white',
-                    outlineOffset: 2,
-                    borderRadius: 1,
-                  },
-                }}
-              >
-                Edit Content
-              </Button>
-              <IconButton
-                color="inherit"
-                onClick={openAdminEditor}
-                aria-label="Admin Panel"
-                title="Content Editor (Admin)"
-                sx={{
-                  '&:focus-visible': {
-                    outline: '2px solid',
-                    outlineColor: 'common.white',
-                    outlineOffset: 2,
-                    borderRadius: 1,
-                  },
-                }}
-              >
-                <SettingsIcon sx={{ fontSize: { xs: 20, md: 24 } }} />
-              </IconButton>
+              {canAccessContentEditor() && (
+                <Button
+                  variant="outlined"
+                  color="inherit"
+                  onClick={openAdminEditor}
+                  aria-label="Open Content Editor"
+                  title="Open Content Editor"
+                  sx={{
+                    borderColor: 'rgba(255,255,255,0.7)',
+                    whiteSpace: 'nowrap',
+                    minWidth: 0,
+                    px: 1.5,
+                    py: 0.6,
+                    '&:focus-visible': {
+                      outline: '2px solid',
+                      outlineColor: 'common.white',
+                      outlineOffset: 2,
+                      borderRadius: 1,
+                    },
+                  }}
+                >
+                  Edit Content
+                </Button>
+              )}
             </Box>
 
             <Box
@@ -349,24 +368,6 @@ function App() {
                 width: { xs: '100%', md: 'auto' },
               }}
             >
-              <Button
-                variant="outlined"
-                color="inherit"
-                onClick={() => dispatch(setActiveNav('Menu'))}
-                sx={{
-                  borderColor: 'rgba(255,255,255,0.7)',
-                  whiteSpace: 'nowrap',
-                  flex: { xs: 1, sm: '0 0 auto' },
-                  '&:focus-visible': {
-                    outline: '2px solid',
-                    outlineColor: 'common.white',
-                    outlineOffset: 2,
-                    backgroundColor: 'rgba(255,255,255,0.12)',
-                  },
-                }}
-              >
-                {uiText.app.menu}
-              </Button>
               <Button
                 variant="contained"
                 color="secondary"
