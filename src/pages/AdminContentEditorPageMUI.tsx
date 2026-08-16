@@ -14,6 +14,8 @@ import {
   Tab,
   Divider,
   Container,
+  Checkbox,
+  FormControlLabel,
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -36,15 +38,18 @@ export function TabPanel(props: TabPanelProps) {
 
 export function AdminContentEditorPageMUI() {
   const [contentData, setContentData] = useState<any>(null);
+  const [menuData, setMenuData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState(6);
   const [editedData, setEditedData] = useState<any>(null);
+  const [editedMenuData, setEditedMenuData] = useState<any>(null);
 
   useEffect(() => {
     fetchContent();
+    fetchMenuData();
   }, []);
 
   const fetchContent = async () => {
@@ -71,6 +76,28 @@ export function AdminContentEditorPageMUI() {
       console.error('Fetch error:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchMenuData = async () => {
+    try {
+      const response = await fetch('/api/pms_tms/v1/content/frontend-menu-data', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        console.warn(`Failed to fetch menu data: ${response.statusText}`);
+        return;
+      }
+
+      const result = await response.json();
+      setMenuData(result.data);
+      setEditedMenuData(JSON.parse(JSON.stringify(result.data)));
+    } catch (err) {
+      console.error('Menu data fetch error:', err);
     }
   };
 
@@ -164,10 +191,91 @@ export function AdminContentEditorPageMUI() {
     }
   };
 
+  const handleSaveMenuData = async () => {
+    try {
+      setSaving(true);
+      setError(null);
+
+      const response = await fetch('/api/pms_tms/v1/content/frontend-menu-data', {
+        method: 'PUT',
+        headers: resolveAuthHeaders(),
+        credentials: 'include',
+        body: JSON.stringify({ data: editedMenuData }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || `Update failed: ${response.statusText}`);
+      }
+
+      setMenuData(JSON.parse(JSON.stringify(editedMenuData)));
+      setSuccess('Menu data updated successfully');
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('menu-data-updated', { detail: { data: editedMenuData } }));
+        setTimeout(() => {
+          window.location.reload();
+        }, 1200);
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to save menu data';
+      setError(message);
+      console.error('Save menu data error:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleReset = () => {
     setEditedData(JSON.parse(JSON.stringify(contentData)));
+    setEditedMenuData(JSON.parse(JSON.stringify(menuData)));
     setError(null);
     setSuccess(null);
+  };
+
+  const addMenuItemCard = () => {
+    const updated = JSON.parse(JSON.stringify(editedMenuData || menuData));
+    updated.menuItems.push({
+      id: `menu-item-${Date.now()}`,
+      name: 'New Menu Item',
+      category: 'Everyday Favorites',
+      description: 'Add a description',
+      price: 0,
+      portion: '1 serving',
+      vegetarian: false,
+      vegan: false,
+      glutenFree: false,
+      dairyFree: false,
+      nutAllergyFriendly: false,
+      spiceLevel: 'Mild',
+      allergens: [],
+      image: '',
+    });
+    setEditedMenuData(updated);
+  };
+
+  const deleteMenuItemCard = (index: number) => {
+    const updated = JSON.parse(JSON.stringify(editedMenuData || menuData));
+    updated.menuItems.splice(index, 1);
+    setEditedMenuData(updated);
+  };
+
+  const addPackageCard = () => {
+    const updated = JSON.parse(JSON.stringify(editedMenuData || menuData));
+    updated.cateringPackages.push({
+      id: `package-${Date.now()}`,
+      name: 'New Package',
+      description: 'Add a package description',
+      startingAt: 0,
+      badge: 'New',
+    });
+    setEditedMenuData(updated);
+  };
+
+  const deletePackageCard = (index: number) => {
+    const updated = JSON.parse(JSON.stringify(editedMenuData || menuData));
+    updated.cateringPackages.splice(index, 1);
+    setEditedMenuData(updated);
   };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -487,11 +595,64 @@ export function AdminContentEditorPageMUI() {
               <Tab label="UI Text - Checkout & Cart" id="content-editor-tab-3" />
               <Tab label="UI Text - Contact & Corporate" id="content-editor-tab-4" />
               <Tab label="Metadata & Categories" id="content-editor-tab-5" />
-              <Tab label="All Editable Content" id="content-editor-tab-6" />
+              <Tab label="Dropdowns & Lists" id="content-editor-tab-6" />
+              <Tab label="Menu Items" id="content-editor-tab-7" />
+              <Tab label="Catering Packages" id="content-editor-tab-8" />
+              <Tab label="All Editable Content" id="content-editor-tab-9" />
             </Tabs>
           </Box>
 
-          <CardContent sx={{ pt: 3 }}>
+          <CardContent
+            sx={{
+              pt: 3,
+              '& .MuiButton-root': {
+                fontWeight: 700,
+                letterSpacing: '0.01em',
+                textTransform: 'none',
+                borderRadius: 2,
+              },
+              '& .MuiButton-contained': {
+                color: '#fffaf6',
+                backgroundColor: '#8a4d26',
+                '&:hover': {
+                  backgroundColor: '#713d1e',
+                },
+              },
+              '& .MuiButton-outlined': {
+                color: '#4b2d1f',
+                backgroundColor: '#fffaf7',
+                borderColor: '#b76f3d',
+                '&:hover': {
+                  borderColor: '#8a4d26',
+                  backgroundColor: '#f8efe7',
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: '#4b2d1f',
+                fontWeight: 600,
+              },
+              '& .MuiInputBase-input': {
+                color: '#2f241e',
+              },
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: '#f9f3ee',
+                borderRadius: 2,
+                '& fieldset': {
+                  borderColor: '#c28a5d',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#a66336',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#8a4d26',
+                  boxShadow: '0 0 0 1px rgba(138,77,38,0.12)',
+                },
+              },
+              '& .MuiFormHelperText-root': {
+                color: '#5a3c2d',
+              },
+            }}
+          >
             {/* Tab 0: App Brand & Navigation */}
             <TabPanel value={tabValue} index={0}>
               <Stack spacing={2}>
@@ -728,8 +889,318 @@ export function AdminContentEditorPageMUI() {
               </Stack>
             </TabPanel>
 
-            {/* Tab 6: All Editable Content */}
+            {/* Tab 6: Dropdowns & Lists */}
             <TabPanel value={tabValue} index={6}>
+              <Stack spacing={3}>
+                <Typography variant="h6" sx={{ fontWeight: 700, mt: 2, mb: 1, color: 'primary.main' }}>
+                  Menu Categories
+                </Typography>
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+                  Edit the categories available in the menu filter dropdown. Each item on a new line.
+                </Typography>
+                <TextField
+                  label="Menu Categories"
+                  value={editedData?.menuCategories?.join('\n') || ''}
+                  onChange={(e) => {
+                    const categories = e.target.value.split('\n').filter((c: string) => c.trim());
+                    setEditedData(setNestedValue(editedData, 'menuCategories', categories));
+                  }}
+                  fullWidth
+                  multiline
+                  minRows={6}
+                  placeholder="All&#10;Everyday Favorites&#10;Nepali Traditional&#10;Appetizers & Snacks&#10;Desserts"
+                />
+
+                <Typography variant="h6" sx={{ fontWeight: 700, mt: 3, mb: 1, color: 'primary.main' }}>
+                  Dietary Options
+                </Typography>
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+                  Edit the dietary filter options. Each item on a new line.
+                </Typography>
+                <TextField
+                  label="Dietary Options"
+                  value={editedData?.dietaryOptions?.join('\n') || ''}
+                  onChange={(e) => {
+                    const options = e.target.value.split('\n').filter((o: string) => o.trim());
+                    setEditedData(setNestedValue(editedData, 'dietaryOptions', options));
+                  }}
+                  fullWidth
+                  multiline
+                  minRows={6}
+                  placeholder="All&#10;Vegetarian&#10;Vegan&#10;Gluten-Free&#10;Dairy-Free&#10;Nut Allergies"
+                />
+
+                <Typography variant="h6" sx={{ fontWeight: 700, mt: 3, mb: 1, color: 'primary.main' }}>
+                  Order Flow Steps
+                </Typography>
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+                  Edit the steps shown in the order flow stepper. Each item on a new line.
+                </Typography>
+                <TextField
+                  label="Order Flow Steps"
+                  value={editedData?.steps?.join('\n') || ''}
+                  onChange={(e) => {
+                    const stepsArray = e.target.value.split('\n').filter((s: string) => s.trim());
+                    setEditedData(setNestedValue(editedData, 'steps', stepsArray));
+                  }}
+                  fullWidth
+                  multiline
+                  minRows={4}
+                  placeholder="Choose food&#10;Pickup or Delivery&#10;Date & Time&#10;Confirm order"
+                />
+              </Stack>
+            </TabPanel>
+
+            {/* Tab 7: Menu Items */}
+            <TabPanel value={tabValue} index={7}>
+              {editedMenuData && editedMenuData.menuItems ? (
+                <Stack spacing={3}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'primary.main', mt: 1 }}>
+                      Menu Items ({editedMenuData.menuItems.length} total)
+                    </Typography>
+                    <Button variant="contained" onClick={addMenuItemCard}>
+                      + Add Menu Item
+                    </Button>
+                  </Box>
+                  {editedMenuData.menuItems.map((item: any, idx: number) => (
+                    <Card key={item.id || idx} variant="outlined">
+                      <CardHeader
+                        title={`${item.name} (ID: ${item.id})`}
+                        action={
+                          <Button
+                            color="error"
+                            variant="outlined"
+                            size="small"
+                            onClick={() => deleteMenuItemCard(idx)}
+                          >
+                            Delete
+                          </Button>
+                        }
+                      />
+                      <CardContent>
+                        <Stack spacing={2}>
+                          <TextField
+                            label="Name"
+                            value={item.name || ''}
+                            onChange={(e) => {
+                              const updated = JSON.parse(JSON.stringify(editedMenuData));
+                              updated.menuItems[idx].name = e.target.value;
+                              setEditedMenuData(updated);
+                            }}
+                            fullWidth
+                          />
+                          <TextField
+                            label="Category"
+                            value={item.category || ''}
+                            onChange={(e) => {
+                              const updated = JSON.parse(JSON.stringify(editedMenuData));
+                              updated.menuItems[idx].category = e.target.value;
+                              setEditedMenuData(updated);
+                            }}
+                            fullWidth
+                          />
+                          <TextField
+                            label="Description"
+                            value={item.description || ''}
+                            onChange={(e) => {
+                              const updated = JSON.parse(JSON.stringify(editedMenuData));
+                              updated.menuItems[idx].description = e.target.value;
+                              setEditedMenuData(updated);
+                            }}
+                            fullWidth
+                            multiline
+                            rows={2}
+                          />
+                          <TextField
+                            label="Price"
+                            type="number"
+                            value={item.price || ''}
+                            onChange={(e) => {
+                              const updated = JSON.parse(JSON.stringify(editedMenuData));
+                              updated.menuItems[idx].price = Number(e.target.value);
+                              setEditedMenuData(updated);
+                            }}
+                            fullWidth
+                          />
+                          <TextField
+                            label="Portion"
+                            value={item.portion || ''}
+                            onChange={(e) => {
+                              const updated = JSON.parse(JSON.stringify(editedMenuData));
+                              updated.menuItems[idx].portion = e.target.value;
+                              setEditedMenuData(updated);
+                            }}
+                            fullWidth
+                          />
+                          <TextField
+                            label="Spice Level"
+                            value={item.spiceLevel || ''}
+                            onChange={(e) => {
+                              const updated = JSON.parse(JSON.stringify(editedMenuData));
+                              updated.menuItems[idx].spiceLevel = e.target.value;
+                              setEditedMenuData(updated);
+                            }}
+                            fullWidth
+                          />
+                          <TextField
+                            label="Image URL"
+                            value={item.image || ''}
+                            onChange={(e) => {
+                              const updated = JSON.parse(JSON.stringify(editedMenuData));
+                              updated.menuItems[idx].image = e.target.value;
+                              setEditedMenuData(updated);
+                            }}
+                            fullWidth
+                          />
+                          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked={item.vegetarian || false}
+                                  onChange={(e) => {
+                                    const updated = JSON.parse(JSON.stringify(editedMenuData));
+                                    updated.menuItems[idx].vegetarian = e.target.checked;
+                                    setEditedMenuData(updated);
+                                  }}
+                                />
+                              }
+                              label="Vegetarian"
+                            />
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked={item.vegan || false}
+                                  onChange={(e) => {
+                                    const updated = JSON.parse(JSON.stringify(editedMenuData));
+                                    updated.menuItems[idx].vegan = e.target.checked;
+                                    setEditedMenuData(updated);
+                                  }}
+                                />
+                              }
+                              label="Vegan"
+                            />
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked={item.glutenFree || false}
+                                  onChange={(e) => {
+                                    const updated = JSON.parse(JSON.stringify(editedMenuData));
+                                    updated.menuItems[idx].glutenFree = e.target.checked;
+                                    setEditedMenuData(updated);
+                                  }}
+                                />
+                              }
+                              label="Gluten-Free"
+                            />
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked={item.dairyFree || false}
+                                  onChange={(e) => {
+                                    const updated = JSON.parse(JSON.stringify(editedMenuData));
+                                    updated.menuItems[idx].dairyFree = e.target.checked;
+                                    setEditedMenuData(updated);
+                                  }}
+                                />
+                              }
+                              label="Dairy-Free"
+                            />
+                          </Box>
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </Stack>
+              ) : (
+                <Typography color="textSecondary">No menu items loaded</Typography>
+              )}
+            </TabPanel>
+
+            {/* Tab 8: Catering Packages */}
+            <TabPanel value={tabValue} index={8}>
+              {editedMenuData && editedMenuData.cateringPackages ? (
+                <Stack spacing={3}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'primary.main', mt: 1 }}>
+                      Catering Packages ({editedMenuData.cateringPackages.length} total)
+                    </Typography>
+                    <Button variant="contained" onClick={addPackageCard}>
+                      + Add Package
+                    </Button>
+                  </Box>
+                  {editedMenuData.cateringPackages.map((pkg: any, idx: number) => (
+                    <Card key={pkg.id || idx} variant="outlined">
+                      <CardHeader
+                        title={`${pkg.name} (ID: ${pkg.id})`}
+                        action={
+                          <Button
+                            color="error"
+                            variant="outlined"
+                            size="small"
+                            onClick={() => deletePackageCard(idx)}
+                          >
+                            Delete
+                          </Button>
+                        }
+                      />
+                      <CardContent>
+                        <Stack spacing={2}>
+                          <TextField
+                            label="Name"
+                            value={pkg.name || ''}
+                            onChange={(e) => {
+                              const updated = JSON.parse(JSON.stringify(editedMenuData));
+                              updated.cateringPackages[idx].name = e.target.value;
+                              setEditedMenuData(updated);
+                            }}
+                            fullWidth
+                          />
+                          <TextField
+                            label="Description"
+                            value={pkg.description || ''}
+                            onChange={(e) => {
+                              const updated = JSON.parse(JSON.stringify(editedMenuData));
+                              updated.cateringPackages[idx].description = e.target.value;
+                              setEditedMenuData(updated);
+                            }}
+                            fullWidth
+                            multiline
+                            rows={2}
+                          />
+                          <TextField
+                            label="Starting At (Price)"
+                            type="number"
+                            value={pkg.startingAt || ''}
+                            onChange={(e) => {
+                              const updated = JSON.parse(JSON.stringify(editedMenuData));
+                              updated.cateringPackages[idx].startingAt = Number(e.target.value);
+                              setEditedMenuData(updated);
+                            }}
+                            fullWidth
+                          />
+                          <TextField
+                            label="Badge"
+                            value={pkg.badge || ''}
+                            onChange={(e) => {
+                              const updated = JSON.parse(JSON.stringify(editedMenuData));
+                              updated.cateringPackages[idx].badge = e.target.value;
+                              setEditedMenuData(updated);
+                            }}
+                            fullWidth
+                          />
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </Stack>
+              ) : (
+                <Typography color="textSecondary">No catering packages loaded</Typography>
+              )}
+            </TabPanel>
+
+            {/* Tab 9: All Editable Content */}
+            <TabPanel value={tabValue} index={9}>
               {renderPageContentFields()}
             </TabPanel>
           </CardContent>
@@ -740,12 +1211,23 @@ export function AdminContentEditorPageMUI() {
               Reset
             </Button>
             <Button
-              onClick={handleSave}
+              onClick={() => {
+                if (tabValue === 6) {
+                  // Dropdowns & Lists - save common content with arrays
+                  handleSave();
+                } else if (tabValue === 7 || tabValue === 8) {
+                  // Menu Items or Catering Packages - save menu data
+                  handleSaveMenuData();
+                } else {
+                  // All other tabs - save common content
+                  handleSave();
+                }
+              }}
               disabled={saving || loading}
               variant="contained"
               startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
             >
-              {saving ? 'Saving...' : 'Save All Changes'}
+              {saving ? 'Saving...' : 'Save Changes'}
             </Button>
           </Box>
         </Card>

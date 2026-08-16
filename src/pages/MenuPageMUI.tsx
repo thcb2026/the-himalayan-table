@@ -16,16 +16,16 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import { menuItems } from '../content/data';
 import { dietaryOptions, menuCategories, uiText } from '../content/common-content';
 import { MenuCategory, DietaryTag } from '../types';
-import { useAppDispatch, useAppSelector, setSelectedCategory, setSelectedDietary, addToCart, selectAppState } from '../store';
+import { useAppDispatch, useAppSelector, setSelectedCategory, setSelectedDietary, addToCart, selectAppState, setActiveNav } from '../store';
 import { getLabel } from '../utils/getLabel';
-
-const categories: (MenuCategory | 'All')[] = menuCategories as (MenuCategory | 'All')[];
-const dietaryChoices: (DietaryTag | 'All')[] = dietaryOptions as (DietaryTag | 'All')[];
 
 export function MenuPageMUI() {
   const dispatch = useAppDispatch();
   const state = useAppSelector(selectAppState);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
+
+  const categories = menuCategories as (MenuCategory | 'All')[];
+  const dietaryChoices = dietaryOptions as (DietaryTag | 'All')[];
 
   const filtered = useMemo(() => {
     return menuItems.filter((item) => {
@@ -42,7 +42,7 @@ export function MenuPageMUI() {
 
       return categoryMatch && dietaryMatch;
     });
-  }, [state.selectedCategory, state.selectedDietary]);
+  }, [state.selectedCategory, state.selectedDietary, menuItems]);
 
   const handleAddToCart = (itemId: string) => {
     const quantity = quantities[itemId] || 1;
@@ -59,6 +59,25 @@ export function MenuPageMUI() {
         <Typography variant="h4" sx={{ fontWeight: 700, mt: 1, fontSize: { xs: '2rem', sm: '2.5rem' } }}>
           {uiText.menu.title}
         </Typography>
+      </Box>
+
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, px: { xs: 0.5, sm: 0 } }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            dispatch(setActiveNav('Admin'));
+            if (typeof window !== 'undefined') {
+              const nextHash = '#admin';
+              if (window.location.hash !== nextHash) {
+                window.location.hash = nextHash;
+              }
+            }
+          }}
+          sx={{ minWidth: 140 }}
+        >
+          Edit Menu
+        </Button>
       </Box>
 
       <Box

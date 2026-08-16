@@ -1,6 +1,10 @@
 import { CateringPackage, MenuItem } from '../types';
 
-export const menuItems: MenuItem[] = [
+/**
+ * Default menu items - will be hydrated from backend at runtime
+ * Source of truth: common/backend/utils/data/frontend-menu-data.js
+ */
+export let menuItems: MenuItem[] = [
   {
     id: 'momo-platter',
     name: 'Chicken Momo Platter',
@@ -122,4 +126,81 @@ export const cateringPackages: CateringPackage[] = [
     badge: 'Event ready',
   },
 ];
+
+/**
+ * Hydrate menu data from backend
+ * Fetches updated menu items and catering packages from the backend
+ * Updates the exported values in this module
+ */
+export const hydrateMenuData = async () => {
+  try {
+    const authHeaders = (() => {
+      const token = localStorage.getItem('authToken');
+      if (token && token.startsWith('Bearer ')) {
+        return { Authorization: token };
+      }
+      // Dev bypass
+      const devHeaders: Record<string, string> = {
+        'x-bypass-auth': 'true',
+        'x-dev-user': JSON.stringify({
+          id: 'dev-user',
+          role: 'editor',
+          entitlements: ['edit_content'],
+        }),
+      };
+      return devHeaders;
+    })();
+
+    const response = await fetch('/api/pms_tms/v1/content/frontend-menu-data', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders,
+      },
+    });
+
+    if (!response.ok) {
+      console.warn('[MENU-DATA] Failed to hydrate menu data:', response.status);
+      return;
+    }
+
+    const result = await response.json();
+    if (result.success && result.data) {
+      // Update exported values
+      menuItems.length = 0;
+      menuItems.push(...(result.data.menuItems || []));
+      
+      cateringPackages.length = 0;
+      cateringPackages.push(...(result.data.cateringPackages || []));
+
+      console.info('[MENU-DATA] Menu data hydrated successfully');
+      
+      // Dispatch event to notify components of update
+      window.dispatchEvent(new CustomEvent('menu-data-updated', {
+        detail: { menuItems, cateringPackages },
+      }));
+    }
+  } catch (error) {
+    console.error('[MENU-DATA] Hydration error:', error);
+  }
+};
+
+/**
+ * Initialize menu data on app startup
+ * Prevents re-triggering hydration if already in progress
+ */
+let hydrateInProgress = false;
+export const initializeMenuData = async () => {
+  if (hydrateInProgress) {
+    console.info('[MENU-DATA] Hydration already in progress, skipping');
+    return;
+  }
+  
+  hydrateInProgress = true;
+  try {
+    await hydrateMenuData();
+  } finally {
+    hydrateInProgress = false;
+  }
+};
 

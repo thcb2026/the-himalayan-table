@@ -422,6 +422,10 @@ export const hydrateFrontendContent = async (): Promise<void> => {
       dietaryOptions.splice(0, dietaryOptions.length, ...data.dietaryOptions);
     }
 
+    if (Array.isArray(data.steps)) {
+      steps.splice(0, steps.length, ...data.steps);
+    }
+
     if (data.appBrand && typeof data.appBrand === 'object') {
       deepMergeContent(appBrand, data.appBrand);
     }

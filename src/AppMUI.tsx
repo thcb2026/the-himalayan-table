@@ -16,6 +16,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Logo from '@mui/icons-material/LunchDining';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { appBrand, hydrateFrontendContent, navigation, STORAGE_KEY, uiText } from './content/common-content';
+import { initializeMenuData } from './content/data';
 import { useAppDispatch, useAppSelector, setActiveNav } from './store';
 import { buildM3Theme } from './theme/theme';
 import { getLabel, hydrateSharedContentRegistry } from './utils/getLabel';
@@ -38,6 +39,18 @@ function App() {
   const [fallbackNotice, setFallbackNotice] = useState<{ open: boolean; message: string }>({ open: false, message: '' });
   const theme = buildM3Theme('#a75b2c', false);
 
+  const openAdminEditor = () => {
+    dispatch(setActiveNav('Admin'));
+    if (typeof window !== 'undefined') {
+      const nextHash = '#admin';
+      if (window.location.hash !== nextHash) {
+        window.location.hash = nextHash;
+      } else {
+        dispatch(setActiveNav('Admin'));
+      }
+    }
+  };
+
   React.useEffect(() => {
     const handleRegistryUpdate = () => {
       console.log('[AppMUI] Registry updated, forcing re-render');
@@ -49,6 +62,15 @@ function App() {
         await hydrateFrontendContent();
       } catch (error) {
         console.warn('[AppMUI] Content rehydration failed after update:', error);
+      }
+      setContentVersion((current) => current + 1);
+    };
+    const handleMenuDataUpdate = async () => {
+      console.log('[AppMUI] Menu data updated, rehydrating menu data and forcing re-render');
+      try {
+        await initializeMenuData();
+      } catch (error) {
+        console.warn('[AppMUI] Menu rehydration failed after update:', error);
       }
       setContentVersion((current) => current + 1);
     };
@@ -73,6 +95,11 @@ function App() {
       console.warn('[AppMUI] Frontend content hydration failed:', err);
     });
 
+    // Initialize menu data
+    initializeMenuData().catch((err) => {
+      console.warn('[AppMUI] Menu data initialization failed:', err);
+    });
+
     if (typeof window !== 'undefined') {
       const queuedMessage = (window as Window & { __contentRegistryFallbackMessage?: string }).__contentRegistryFallbackMessage;
       if (queuedMessage) {
@@ -80,18 +107,32 @@ function App() {
         setFallbackNotice({ open: true, message: queuedMessage });
       }
 
+      const syncHashToNavigation = () => {
+        const hash = window.location.hash;
+        if (hash === '#admin') {
+          dispatch(setActiveNav('Admin'));
+        } else if (hash === '#menu') {
+          dispatch(setActiveNav('Menu'));
+        }
+      };
+
+      syncHashToNavigation();
+      window.addEventListener('hashchange', syncHashToNavigation);
       window.addEventListener('content-registry-updated', handleRegistryUpdate);
       window.addEventListener('content-registry-fallback', handleFallbackNotice);
       window.addEventListener('frontend-content-updated', handleFrontendContentUpdate);
       window.addEventListener('content-editor-updated', handleFrontendContentUpdate);
+      window.addEventListener('menu-data-updated', handleMenuDataUpdate);
     }
 
     return () => {
       if (typeof window !== 'undefined') {
+        window.removeEventListener('hashchange', () => undefined);
         window.removeEventListener('content-registry-updated', handleRegistryUpdate);
         window.removeEventListener('content-registry-fallback', handleFallbackNotice);
         window.removeEventListener('frontend-content-updated', handleFrontendContentUpdate);
         window.removeEventListener('content-editor-updated', handleFrontendContentUpdate);
+        window.removeEventListener('menu-data-updated', handleMenuDataUpdate);
       }
     };
   }, []);
@@ -103,9 +144,13 @@ function App() {
   }, [state, contentVersion]);
 
   const renderPage = () => {
-    // contentVersion is used here to ensure re-render when registry updates
-    const key = state.activeNav + contentVersion;
-    
+    const isAdminRoute = state.activeNav === 'Admin' || (typeof window !== 'undefined' && window.location.hash === '#admin');
+    const key = `${state.activeNav}-${contentVersion}`;
+
+    if (isAdminRoute) {
+      return <AdminContentEditorPageMUI key={key} />;
+    }
+
     switch (state.activeNav) {
       case 'Menu':
         return <MenuPageMUI key={key} />;
@@ -210,9 +255,31 @@ function App() {
                 </Badge>
               </IconButton>
 
+              <Button
+                variant="outlined"
+                color="inherit"
+                onClick={openAdminEditor}
+                aria-label="Open Content Editor"
+                title="Open Content Editor"
+                sx={{
+                  borderColor: 'rgba(255,255,255,0.7)',
+                  whiteSpace: 'nowrap',
+                  minWidth: 0,
+                  px: 1.5,
+                  py: 0.6,
+                  '&:focus-visible': {
+                    outline: '2px solid',
+                    outlineColor: 'common.white',
+                    outlineOffset: 2,
+                    borderRadius: 1,
+                  },
+                }}
+              >
+                Edit Content
+              </Button>
               <IconButton
                 color="inherit"
-                onClick={() => dispatch(setActiveNav('Admin'))}
+                onClick={openAdminEditor}
                 aria-label="Admin Panel"
                 title="Content Editor (Admin)"
                 sx={{
