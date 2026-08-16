@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { uiText } from "./content/common-content";
 
 export type DietaryTag =
   | 'Vegetarian'
@@ -126,4 +127,11 @@ export interface TabPanelProps {
 export interface CartDrawerMUIProps {
   isOpen: boolean;
   onClose: () => void;
+}
+export interface GalleryItem {
+  id: string;
+  image: string;
+  altKey: keyof typeof uiText.media;
+  gridRow?: { sm: string };
+  minHeight: { xs: number; sm: number } | number;
 }
