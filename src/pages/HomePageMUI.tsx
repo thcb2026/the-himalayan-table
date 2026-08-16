@@ -1,66 +1,90 @@
 import React from 'react';
-import { Box, Typography, Button, Card, CardContent, CardMedia, Stack } from '@mui/material';
+import { Box, Typography, Button, Card, CardMedia, Stack } from '@mui/material';
 import { uiText } from '../content/common-content';
+import { useAppDispatch } from '../store';
+import { setActiveNav } from '../store';
 import { getLabel } from '../utils/getLabel';
 
 export function HomePageMUI() {
+  const dispatch = useAppDispatch();
+
   return (
-    <Box component="div">
+    <Box component="div" sx={{ pb: 2 }}>
       <Box
         component="section"
         aria-labelledby="home-hero-title"
         sx={{
           display: 'grid',
           gridTemplateColumns: { xs: '1fr', md: '1.2fr 1fr' },
-          gap: 3,
-          mb: 4,
+          gap: { xs: 3, md: 4 },
+          mb: 5,
           alignItems: 'center',
+          px: { xs: 0, sm: 0.5 },
         }}
       >
-        <Box component="article">
-          <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
+        <Box component="article" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: 1.2 }}>
             {uiText.home.welcome}
           </Typography>
           <Typography
             id="home-hero-title"
             variant="h3"
             sx={{
-              fontWeight: 700,
-              my: 1,
-              fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+              fontWeight: 800,
+              my: 0,
+              fontSize: { xs: '2.2rem', sm: '2.8rem', md: '3.4rem' },
+              lineHeight: 1.1,
             }}
           >
             {uiText.home.title}
           </Typography>
-          <Typography variant="body1" color="textSecondary" sx={{ my: 2, lineHeight: 1.7, maxWidth: 600 }}>
+          <Typography variant="body1" color="textSecondary" sx={{ lineHeight: 1.7, maxWidth: 620, fontSize: { xs: '1rem', md: '1.05rem' } }}>
             {uiText.home.description}
           </Typography>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 3, alignItems: { xs: 'stretch', sm: 'center' } }}>
-            <Button variant="contained" size="large" sx={{ width: { xs: '100%', sm: 'auto' } }}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 1, alignItems: { xs: 'stretch', sm: 'center' } }}>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => dispatch(setActiveNav('Menu'))}
+              sx={{ width: { xs: '100%', sm: 'auto' }, minHeight: 48 }}
+            >
               {getLabel('act_menu', uiText.home.exploreMenu)}
             </Button>
-            <Button variant="outlined" size="large" sx={{ width: { xs: '100%', sm: 'auto' } }}>
+            <Button
+              variant="outlined"
+              size="large"
+              onClick={() => dispatch(setActiveNav('Order Online'))}
+              sx={{ width: { xs: '100%', sm: 'auto' }, minHeight: 48 }}
+            >
               {getLabel('act_order_now', uiText.home.orderOnline)}
             </Button>
           </Stack>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 3 }}>
-            <Box component="div">
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 1 }}>
+            <Box component="div" sx={{ flex: 1 }}>
               <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
                 {uiText.home.freeDelivery}
               </Typography>
-              <Typography variant="body2">{uiText.home.freeDeliveryDetail}</Typography>
+              <Typography variant="body2" color="textSecondary">{uiText.home.freeDeliveryDetail}</Typography>
             </Box>
-            <Box component="div">
+            <Box component="div" sx={{ flex: 1 }}>
               <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
                 {uiText.home.expertCatering}
               </Typography>
-              <Typography variant="body2">{uiText.home.expertCateringDetail}</Typography>
+              <Typography variant="body2" color="textSecondary">{uiText.home.expertCateringDetail}</Typography>
             </Box>
           </Stack>
         </Box>
 
-        <Box component="figure" sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1.2fr 0.8fr' }, gap: 2, m: 0 }}>
-          <Card sx={{ gridRow: { sm: '1 / 3' }, minHeight: { xs: 400, sm: 500 } }}>
+        <Box
+          component="figure"
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', sm: '1.2fr 0.8fr' },
+            gap: 2,
+            m: 0,
+          }}
+        >
+          <Card sx={{ gridRow: { sm: '1 / 3' }, minHeight: { xs: 360, sm: 500 }, overflow: 'hidden', borderRadius: 3 }}>
             <CardMedia
               component="img"
               height="100%"
@@ -69,7 +93,7 @@ export function HomePageMUI() {
               sx={{ objectFit: 'cover', height: '100%' }}
             />
           </Card>
-          <Card sx={{ minHeight: 240 }}>
+          <Card sx={{ minHeight: 220, overflow: 'hidden', borderRadius: 3 }}>
             <CardMedia
               component="img"
               height="100%"
@@ -78,7 +102,7 @@ export function HomePageMUI() {
               sx={{ objectFit: 'cover', height: '100%' }}
             />
           </Card>
-          <Card sx={{ minHeight: 240 }}>
+          <Card sx={{ minHeight: 220, overflow: 'hidden', borderRadius: 3 }}>
             <CardMedia
               component="img"
               height="100%"
@@ -91,7 +115,7 @@ export function HomePageMUI() {
       </Box>
 
       <Box component="section" aria-labelledby="story-heading" sx={{ my: 6 }}>
-        <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
+        <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: 1.2 }}>
           {uiText.home.ourStory}
         </Typography>
         <Typography id="story-heading" variant="h4" sx={{ fontWeight: 700, mt: 1, mb: 3 }}>

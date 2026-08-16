@@ -18,11 +18,13 @@ import {
   Alert,
 } from '@mui/material';
 import { menuItems } from '../content/data';
-import { OrderFlowPageProps } from '../types';
 import { currency, steps, uiText } from '../content/common-content';
+import { useAppDispatch } from '../store';
+import { setActiveNav } from '../store';
 import { getLabel } from '../utils/getLabel';
 
-export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) {
+export function OrderFlowPageMUI() {
+  const dispatch = useAppDispatch();
   const [step, setStep] = useState(0);
   const [selectedItemId, setSelectedItemId] = useState(menuItems[0].id);
   const [quantity, setQuantity] = useState(1);
@@ -50,7 +52,7 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
           <Typography id="order-flow-title" variant="h5" sx={{ fontWeight: 700 }}>
             {uiText.orderFlow.title}
           </Typography>
-          <Button variant="outlined" onClick={() => onSetActiveNav('Menu')} sx={{ minHeight: 48 }}>
+          <Button variant="outlined" onClick={() => dispatch(setActiveNav('Menu'))} sx={{ minHeight: 48 }}>
             {getLabel('act_back_to_menu', uiText.orderFlow.backToMenu)}
           </Button>
         </Box>
@@ -297,7 +299,7 @@ export function OrderFlowPageMUI({ state, onSetActiveNav }: OrderFlowPageProps) 
                   <Typography sx={{ fontWeight: 700 }}>{currency.symbol} {total}</Typography>
                 </Box>
               </Stack>
-              <Button variant="contained" onClick={() => onSetActiveNav('Home')} size="large">
+              <Button variant="contained" onClick={() => dispatch(setActiveNav('Home'))} size="large">
                 {getLabel('act_back_home', uiText.orderFlow.backToHome)}
               </Button>
             </CardContent>

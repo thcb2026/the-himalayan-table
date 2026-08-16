@@ -70,37 +70,8 @@ export interface AppState {
 }
 export type StoreUpdater<T extends object> = Partial<T> | ((current: T) => T);
 
-export interface CartDrawerProps {
-  state: AppState;
-  onClose: () => void;
-  onIncrease: (itemId: string) => void;
-  onDecrease: (itemId: string) => void;
-  onRemove: (itemId: string) => void;
-  onCheckout: () => void;
-}
-export interface CheckoutPageProps {
-  state: AppState;
-  onBack: () => void;
-  onComplete: () => void;
-}
-
 export interface FormErrors {
   [key: string]: string;
-}
-export interface OrderFlowPageProps {
-  state: AppState;
-  onSetActiveNav: (value: string) => void;
-}
-export interface MenuPageProps {
-  state: AppState;
-  onCategoryChange: (value: MenuCategory | 'All') => void;
-  onDietaryChange: (value: DietaryTag | 'All') => void;
-  onAddToCart: (itemId: string, quantity: number) => void;
-}
-
-export interface CorporateCateringPageProps {
-  state: { quote: QuoteRequest };
-  onChange: <K extends keyof QuoteRequest>(key: K, value: QuoteRequest[K]) => void;
 }
 
 export type ContentLabelGroup = {

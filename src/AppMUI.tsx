@@ -14,8 +14,8 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Logo from '@mui/icons-material/LunchDining';
-import { appBrand, initialQuote, navigation, STORAGE_KEY, uiText } from './content/common-content';
-import { useAppDispatch, useAppSelector, setActiveNav, setSelectedCategory, setSelectedDietary, addToCart, updateCartItem, removeCartItem, updateQuote, resetCart } from './store';
+import { appBrand, navigation, STORAGE_KEY, uiText } from './content/common-content';
+import { useAppDispatch, useAppSelector, setActiveNav } from './store';
 import { buildM3Theme } from './theme/theme';
 import { getLabel, hydrateSharedContentRegistry } from './utils/getLabel';
 
@@ -27,7 +27,6 @@ const ContactPageMUI = React.lazy(() => import('./pages/ContactPageMUI').then(m 
 const OrderFlowPageMUI = React.lazy(() => import('./pages/OrderFlowPageMUI').then(m => ({ default: m.OrderFlowPageMUI })));
 const CartDrawerMUI = React.lazy(() => import('./pages/CartDrawerMUI').then(m => ({ default: m.CartDrawerMUI })));
 const CheckoutPageMUI = React.lazy(() => import('./pages/CheckoutPageMUI').then(m => ({ default: m.CheckoutPageMUI })));
-
 
 function App() {
   const dispatch = useAppDispatch();
@@ -84,25 +83,6 @@ function App() {
     }
   }, [state, contentVersion]);
 
-  const handleAddToCart = (itemId: string, quantity = 1) => {
-    dispatch(addToCart({ itemId, quantity }));
-  };
-
-  const handleUpdateCartItem = (itemId: string, delta: number) => {
-    dispatch(updateCartItem({ itemId, delta }));
-  };
-
-  const handleRemoveCartItem = (itemId: string) => {
-    dispatch(removeCartItem(itemId));
-  };
-
-  const handleUpdateQuote = <K extends keyof typeof initialQuote>(
-    key: K,
-    value: (typeof initialQuote)[K],
-  ) => {
-    dispatch(updateQuote({ key, value }));
-  };
-
   const renderPage = () => {
     // contentVersion is used here to ensure re-render when registry updates
     const key = state.activeNav + contentVersion;
@@ -115,20 +95,9 @@ function App() {
       case 'Contact':
         return <ContactPageMUI key={key} />;
       case 'Order Online':
-        return <OrderFlowPageMUI key={key} state={state} onSetActiveNav={(value) => dispatch(setActiveNav(value))} />;
+        return <OrderFlowPageMUI key={key} />;
       case 'Checkout':
-        return (
-          <CheckoutPageMUI
-            key={key}
-            state={state}
-            onBack={() => dispatch(setActiveNav('Order Online'))}
-            onComplete={() => {
-              dispatch(setActiveNav('Order Online'));
-              dispatch(resetCart());
-              setIsCartOpen(false);
-            }}
-          />
-        );
+        return <CheckoutPageMUI key={key} />;
       case 'Event Catering':
       case 'Our Story':
         return <MenuPageMUI key={key} />;
@@ -163,22 +132,80 @@ function App() {
           elevation={2}
           sx={{
             background: 'linear-gradient(135deg, primary.main 0%, primary.dark 100%)',
+            borderBottom: '1px solid rgba(255,255,255,0.18)',
           }}
         >
-          <Toolbar sx={{ justifyContent: 'space-between', gap: 2, flexWrap: 'wrap', py: { xs: 1, sm: 1.5 } }}>
-            <Box component="div" sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
-              <Logo sx={{ fontSize: 32 }} aria-hidden="true" />
-              <Box component="div" sx={{ minWidth: 0 }}>
-                <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1 }}>
-                  {appBrand.name}
-                </Typography>
-                <Typography variant="caption" sx={{ color: 'inherit', opacity: 0.9 }}>
-                  {appBrand.tagline}
-                </Typography>
+          <Toolbar
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', md: 'row' },
+              alignItems: { xs: 'stretch', md: 'center' },
+              justifyContent: 'space-between',
+              gap: { xs: 1.5, md: 2 },
+              py: { xs: 1.25, md: 1.5 },
+              px: { xs: 1.5, sm: 2 },
+            }}
+          >
+            <Box
+              component="div"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: { xs: 'space-between', md: 'flex-start' },
+                gap: 1,
+                minWidth: 0,
+                width: { xs: '100%', md: 'auto' },
+              }}
+            >
+              <Box component="div" sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+                <Logo sx={{ fontSize: { xs: 28, md: 32 } }} aria-hidden="true" />
+                <Box component="div" sx={{ minWidth: 0 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1, fontSize: { xs: '1.1rem', md: '1.5rem' } }}>
+                    {appBrand.name}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'inherit', opacity: 0.9, display: { xs: 'none', sm: 'block' } }}>
+                    {appBrand.tagline}
+                  </Typography>
+                </Box>
               </Box>
+
+              <IconButton
+                color="inherit"
+                onClick={() => setIsCartOpen(true)}
+                aria-label={getLabel('aria_shopping_cart', 'Shopping Cart')}
+                sx={{
+                  position: 'relative',
+                  ml: 'auto',
+                  '&:focus-visible': {
+                    outline: '2px solid',
+                    outlineColor: 'common.white',
+                    outlineOffset: 2,
+                    borderRadius: 1,
+                  },
+                }}
+              >
+                <Badge badgeContent={state.cartCount} color="error">
+                  <ShoppingCartIcon sx={{ fontSize: { xs: 24, md: 28 } }} />
+                </Badge>
+              </IconButton>
             </Box>
 
-            <Box component="nav" aria-label="Main navigation" sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center', flex: 1 }}>
+            <Box
+              component="nav"
+              aria-label="Main navigation"
+              sx={{
+                display: 'flex',
+                gap: { xs: 0.75, sm: 1 },
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+                width: { xs: '100%', md: 'auto' },
+                flex: { md: 1 },
+                overflowX: { xs: 'auto', md: 'visible' },
+                scrollbarWidth: 'none',
+                '&::-webkit-scrollbar': { display: 'none' },
+                pb: { xs: 0.25, md: 0 },
+              }}
+            >
               {navigation.map((item) => (
                 <Button
                   key={item}
@@ -191,6 +218,9 @@ function App() {
                     textTransform: 'none',
                     whiteSpace: 'nowrap',
                     borderRadius: 1,
+                    px: { xs: 1.25, sm: 1.5 },
+                    py: { xs: 0.6, sm: 0.8 },
+                    fontSize: { xs: '0.9rem', sm: '1rem' },
                     '&:focus-visible': {
                       outline: '2px solid',
                       outlineColor: 'common.white',
@@ -204,7 +234,16 @@ function App() {
               ))}
             </Box>
 
-            <Box component="div" sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+            <Box
+              component="div"
+              sx={{
+                display: 'flex',
+                gap: 1,
+                flexWrap: 'wrap',
+                justifyContent: { xs: 'stretch', md: 'flex-end' },
+                width: { xs: '100%', md: 'auto' },
+              }}
+            >
               <Button
                 variant="outlined"
                 color="inherit"
@@ -212,6 +251,7 @@ function App() {
                 sx={{
                   borderColor: 'rgba(255,255,255,0.7)',
                   whiteSpace: 'nowrap',
+                  flex: { xs: 1, sm: '0 0 auto' },
                   '&:focus-visible': {
                     outline: '2px solid',
                     outlineColor: 'common.white',
@@ -228,6 +268,7 @@ function App() {
                 onClick={() => dispatch(setActiveNav('Order Online'))}
                 sx={{
                   whiteSpace: 'nowrap',
+                  flex: { xs: 1, sm: '0 0 auto' },
                   '&:focus-visible': {
                     outline: '2px solid',
                     outlineColor: 'common.white',
@@ -237,29 +278,21 @@ function App() {
               >
                 {uiText.app.orderNow}
               </Button>
-              <IconButton
-                color="inherit"
-                onClick={() => setIsCartOpen(true)}
-                aria-label={getLabel('aria_shopping_cart', 'Shopping Cart')}
-                sx={{
-                  position: 'relative',
-                  '&:focus-visible': {
-                    outline: '2px solid',
-                    outlineColor: 'common.white',
-                    outlineOffset: 2,
-                    borderRadius: 1,
-                  },
-                }}
-              >
-                <Badge badgeContent={state.cartCount} color="error">
-                  <ShoppingCartIcon />
-                </Badge>
-              </IconButton>
             </Box>
           </Toolbar>
         </AppBar>
 
-        <Container component="main" maxWidth="lg" sx={{ flex: 1, py: { xs: 2, sm: 3, md: 4 }, width: '100%' }}>
+        <Container
+          component="main"
+          maxWidth="lg"
+          sx={{
+            flex: 1,
+            py: { xs: 2, sm: 3, md: 4 },
+            px: { xs: 1.5, sm: 2, md: 3 },
+            width: '100%',
+            maxWidth: { xs: '100%', md: 'lg' },
+          }}
+        >
           <Suspense fallback={
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
               <CircularProgress aria-label="Loading content" />
@@ -272,15 +305,8 @@ function App() {
         {isCartOpen && (
           <Suspense fallback={null}>
             <CartDrawerMUI
-              state={state}
+              isOpen={isCartOpen}
               onClose={() => setIsCartOpen(false)}
-              onIncrease={(itemId) => handleUpdateCartItem(itemId, 1)}
-              onDecrease={(itemId) => handleUpdateCartItem(itemId, -1)}
-              onRemove={handleRemoveCartItem}
-              onCheckout={() => {
-                setIsCartOpen(false);
-                dispatch(setActiveNav('Checkout'));
-              }}
             />
           </Suspense>
         )}
