@@ -1,4 +1,4 @@
-import type { QuoteRequest } from '../types';
+import type { GalleryItem, QuoteRequest } from '../types';
 
 export const navigation = ['Home', 'Menu', 'Order Online', 'Corporate Catering', 'Event Catering', 'Our Story', 'Contact'];
 export const STORAGE_KEY = 'the-himalayan-table-state';
@@ -649,5 +649,27 @@ export const pageGroups = [
       { path: 'validationMessages.corporate.deliveryAddress', label: 'Corporate delivery validation' },
       { path: 'validationMessages.corporate.mealType', label: 'Corporate meal type validation' },
     ],
+  },
+];
+
+export const galleryItems: GalleryItem[] = [
+  {
+    id: 'hero-main',
+    image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=500&fit=crop',
+    altKey: 'nepaliFood',
+    gridRow: { sm: '1 / 3' },
+    minHeight: { xs: 360, sm: 500 },
+  },
+  {
+    id: 'hero-spices',
+    image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=240&fit=crop',
+    altKey: 'spices',
+    minHeight: 220,
+  },
+  {
+    id: 'hero-catering',
+    image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=240&fit=crop',
+    altKey: 'eventCatering',
+    minHeight: 220,
   },
 ];
