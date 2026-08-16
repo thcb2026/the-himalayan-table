@@ -559,13 +559,16 @@ export function AdminContentEditorPageMUI() {
         <Card sx={{ mb: 3 }}>
           <CardHeader
             title="Frontend Content"
+            titleTypographyProps={{ sx: { fontSize: { xs: '1.1rem', md: '1.25rem' }, fontWeight: 700 } }}
             action={
-              <Stack direction="row" spacing={1}>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ width: { xs: '100%', sm: 'auto' } }}>
                 <Button
                   startIcon={<RefreshIcon />}
                   onClick={fetchContent}
                   disabled={loading || saving}
                   variant="outlined"
+                  size="small"
+                  sx={{ width: { xs: '100%', sm: 'auto' } }}
                 >
                   Reload
                 </Button>
@@ -574,11 +577,19 @@ export function AdminContentEditorPageMUI() {
                   onClick={handleSave}
                   disabled={loading || saving}
                   variant="contained"
+                  size="small"
+                  sx={{ width: { xs: '100%', sm: 'auto' } }}
                 >
-                  {saving ? 'Saving...' : 'Save Changes'}
+                  {saving ? 'Saving...' : 'Save'}
                 </Button>
               </Stack>
             }
+            sx={{
+              flexDirection: { xs: 'column', md: 'row' },
+              alignItems: { xs: 'flex-start', md: 'center' },
+              gap: { xs: 1, md: 2 },
+              pb: { xs: 1.5, md: 1 },
+            }}
           />
           <Divider />
 
