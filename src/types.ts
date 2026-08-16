@@ -116,3 +116,14 @@ export interface ErrorBoundaryState {
   hasError: boolean;
   error: Error | null;
 }
+
+export interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+export interface CartDrawerMUIProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
