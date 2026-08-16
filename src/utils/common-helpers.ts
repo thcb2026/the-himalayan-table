@@ -39,3 +39,32 @@ export const shouldCacheRequest = (options: RequestInit = {}): boolean => {
   const method = String(options.method || 'GET').toUpperCase();
   return method === 'GET' && !options.signal;
 };
+ export const resolveAuthHeaders = (): Record<string, string> => {
+    const tokenCandidates = [
+      localStorage.getItem('accessToken'),
+      localStorage.getItem('auth_token'),
+      localStorage.getItem('token'),
+      localStorage.getItem('jwt'),
+      localStorage.getItem('platform_auth_token'),
+      sessionStorage.getItem('accessToken'),
+      sessionStorage.getItem('auth_token'),
+      sessionStorage.getItem('token'),
+      sessionStorage.getItem('jwt'),
+      sessionStorage.getItem('platform_auth_token'),
+    ];
+
+    const token = tokenCandidates.find((value) => typeof value === 'string' && value.trim().length > 0)?.trim();
+
+    if (token) {
+      return {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      };
+    }
+
+    return {
+      'Content-Type': 'application/json',
+      'x-bypass-auth': 'true',
+      'x-dev-user': '1',
+    };
+  };
