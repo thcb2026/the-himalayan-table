@@ -14,6 +14,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Logo from '@mui/icons-material/LunchDining';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { appBrand, navigation, STORAGE_KEY, uiText } from './content/common-content';
 import { useAppDispatch, useAppSelector, setActiveNav } from './store';
 import { buildM3Theme } from './theme/theme';
@@ -27,6 +28,7 @@ const ContactPageMUI = React.lazy(() => import('./pages/ContactPageMUI').then(m 
 const OrderFlowPageMUI = React.lazy(() => import('./pages/OrderFlowPageMUI').then(m => ({ default: m.OrderFlowPageMUI })));
 const CartDrawerMUI = React.lazy(() => import('./pages/CartDrawerMUI').then(m => ({ default: m.CartDrawerMUI })));
 const CheckoutPageMUI = React.lazy(() => import('./pages/CheckoutPageMUI').then(m => ({ default: m.CheckoutPageMUI })));
+const AdminContentEditorPageMUI = React.lazy(() => import('./pages/AdminContentEditorPageMUI').then(m => ({ default: m.AdminContentEditorPageMUI })));
 
 function App() {
   const dispatch = useAppDispatch();
@@ -98,6 +100,8 @@ function App() {
         return <OrderFlowPageMUI key={key} />;
       case 'Checkout':
         return <CheckoutPageMUI key={key} />;
+      case 'Admin':
+        return <AdminContentEditorPageMUI key={key} />;
       case 'Event Catering':
       case 'Our Story':
         return <MenuPageMUI key={key} />;
@@ -187,6 +191,23 @@ function App() {
                 <Badge badgeContent={state.cartCount} color="error">
                   <ShoppingCartIcon sx={{ fontSize: { xs: 24, md: 28 } }} />
                 </Badge>
+              </IconButton>
+
+              <IconButton
+                color="inherit"
+                onClick={() => dispatch(setActiveNav('Admin'))}
+                aria-label="Admin Panel"
+                title="Content Editor (Admin)"
+                sx={{
+                  '&:focus-visible': {
+                    outline: '2px solid',
+                    outlineColor: 'common.white',
+                    outlineOffset: 2,
+                    borderRadius: 1,
+                  },
+                }}
+              >
+                <SettingsIcon sx={{ fontSize: { xs: 20, md: 24 } }} />
               </IconButton>
             </Box>
 
