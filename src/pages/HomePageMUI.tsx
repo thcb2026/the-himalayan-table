@@ -45,14 +45,6 @@ export function HomePageMUI() {
             <Button
               variant="contained"
               size="large"
-              onClick={() => dispatch(setActiveNav('Menu'))}
-              sx={{ width: { xs: '100%', sm: 'auto' }, minHeight: 48 }}
-            >
-              {getLabel('act_menu', uiText.home.exploreMenu)}
-            </Button>
-            <Button
-              variant="outlined"
-              size="large"
               onClick={() => dispatch(setActiveNav('Order Online'))}
               sx={{ width: { xs: '100%', sm: 'auto' }, minHeight: 48 }}
             >

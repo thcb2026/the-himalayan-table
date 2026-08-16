@@ -605,11 +605,18 @@ export function AdminContentEditorPageMUI() {
           <CardContent
             sx={{
               pt: 3,
+              '& .MuiCard-root': {
+                borderRadius: 3,
+                borderColor: '#e4c4a3',
+                backgroundColor: '#fffaf7',
+                boxShadow: '0 2px 12px rgba(122, 81, 54, 0.08)',
+              },
               '& .MuiButton-root': {
                 fontWeight: 700,
                 letterSpacing: '0.01em',
                 textTransform: 'none',
                 borderRadius: 2,
+                minHeight: 42,
               },
               '& .MuiButton-contained': {
                 color: '#fffaf6',
@@ -650,6 +657,10 @@ export function AdminContentEditorPageMUI() {
               },
               '& .MuiFormHelperText-root': {
                 color: '#5a3c2d',
+              },
+              '& .MuiFormControlLabel-label': {
+                color: '#3e2c24',
+                fontWeight: 500,
               },
             }}
           >
@@ -964,21 +975,24 @@ export function AdminContentEditorPageMUI() {
                     </Button>
                   </Box>
                   {editedMenuData.menuItems.map((item: any, idx: number) => (
-                    <Card key={item.id || idx} variant="outlined">
+                    <Card key={item.id || idx} variant="outlined" sx={{ borderRadius: 3, overflow: 'hidden' }}>
                       <CardHeader
                         title={`${item.name} (ID: ${item.id})`}
+                        titleTypographyProps={{ sx: { fontWeight: 700, color: '#3e2c24' } }}
                         action={
                           <Button
                             color="error"
                             variant="outlined"
                             size="small"
                             onClick={() => deleteMenuItemCard(idx)}
+                            sx={{ ml: 1 }}
                           >
                             Delete
                           </Button>
                         }
+                        sx={{ pb: 1 }}
                       />
-                      <CardContent>
+                      <CardContent sx={{ pt: 1 }}>
                         <Stack spacing={2}>
                           <TextField
                             label="Name"
@@ -1130,21 +1144,24 @@ export function AdminContentEditorPageMUI() {
                     </Button>
                   </Box>
                   {editedMenuData.cateringPackages.map((pkg: any, idx: number) => (
-                    <Card key={pkg.id || idx} variant="outlined">
+                    <Card key={pkg.id || idx} variant="outlined" sx={{ borderRadius: 3, overflow: 'hidden' }}>
                       <CardHeader
                         title={`${pkg.name} (ID: ${pkg.id})`}
+                        titleTypographyProps={{ sx: { fontWeight: 700, color: '#3e2c24' } }}
                         action={
                           <Button
                             color="error"
                             variant="outlined"
                             size="small"
                             onClick={() => deletePackageCard(idx)}
+                            sx={{ ml: 1 }}
                           >
                             Delete
                           </Button>
                         }
+                        sx={{ pb: 1 }}
                       />
-                      <CardContent>
+                      <CardContent sx={{ pt: 1 }}>
                         <Stack spacing={2}>
                           <TextField
                             label="Name"
