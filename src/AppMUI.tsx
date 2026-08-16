@@ -240,9 +240,10 @@ function App() {
               flexDirection: { xs: 'column', md: 'row' },
               alignItems: { xs: 'stretch', md: 'center' },
               justifyContent: 'space-between',
-              gap: { xs: 1.5, md: 2 },
+              gap: { xs: 1, md: 2 },
               py: { xs: 1.25, md: 1.5 },
               px: { xs: 1.5, sm: 2 },
+              flexWrap: 'wrap',
             }}
           >
             <Box
@@ -254,12 +255,13 @@ function App() {
                 gap: 1,
                 minWidth: 0,
                 width: { xs: '100%', md: 'auto' },
+                flexWrap: 'wrap',
               }}
             >
               <Box component="div" sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
                 <Logo sx={{ fontSize: { xs: 28, md: 32 } }} aria-hidden="true" />
                 <Box component="div" sx={{ minWidth: 0 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1, fontSize: { xs: '1.1rem', md: '1.5rem' } }}>
+                  <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1, fontSize: { xs: '1.2rem', sm: '1.5rem', md: '1.5rem' } }}>
                     {appBrand.name}
                   </Typography>
                   <Typography variant="caption" sx={{ color: 'inherit', opacity: 0.9, display: { xs: 'none', sm: 'block' } }}>
@@ -319,12 +321,12 @@ function App() {
               aria-label="Main navigation"
               sx={{
                 display: 'flex',
-                gap: { xs: 0.75, sm: 1 },
+                gap: { xs: 0.5, sm: 1 },
                 flexWrap: 'wrap',
-                justifyContent: 'center',
+                justifyContent: { xs: 'flex-start', md: 'center' },
                 width: { xs: '100%', md: 'auto' },
                 flex: { md: 1 },
-                overflowX: { xs: 'auto', md: 'visible' },
+                overflowX: { xs: 'visible', md: 'visible' },
                 scrollbarWidth: 'none',
                 '&::-webkit-scrollbar': { display: 'none' },
                 pb: { xs: 0.25, md: 0 },

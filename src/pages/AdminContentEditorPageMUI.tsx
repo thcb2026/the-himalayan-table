@@ -587,18 +587,35 @@ export function AdminContentEditorPageMUI() {
               value={tabValue}
               onChange={handleTabChange}
               aria-label="Content sections"
-              sx={{ px: 2 }}
+              variant="scrollable"
+              scrollButtons="auto"
+              allowScrollButtonsMobile
+              sx={{
+                px: 2,
+                '& .MuiTabs-flexContainer': {
+                  flexWrap: 'wrap',
+                  gap: 0.5,
+                },
+                '& .MuiTab-root': {
+                  minHeight: 42,
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  whiteSpace: 'nowrap',
+                  fontSize: { xs: '0.72rem', sm: '0.8rem' },
+                  px: { xs: 1, sm: 1.5 },
+                },
+              }}
             >
-              <Tab label="App Brand & Navigation" id="content-editor-tab-0" />
-              <Tab label="UI Text - Home" id="content-editor-tab-1" />
-              <Tab label="UI Text - Menu & Order" id="content-editor-tab-2" />
-              <Tab label="UI Text - Checkout & Cart" id="content-editor-tab-3" />
-              <Tab label="UI Text - Contact & Corporate" id="content-editor-tab-4" />
-              <Tab label="Metadata & Categories" id="content-editor-tab-5" />
-              <Tab label="Dropdowns & Lists" id="content-editor-tab-6" />
+              <Tab label="Brand & Nav" id="content-editor-tab-0" />
+              <Tab label="Home" id="content-editor-tab-1" />
+              <Tab label="Menu & Order" id="content-editor-tab-2" />
+              <Tab label="Checkout" id="content-editor-tab-3" />
+              <Tab label="Contact & Corp" id="content-editor-tab-4" />
+              <Tab label="Metadata" id="content-editor-tab-5" />
+              <Tab label="Lists" id="content-editor-tab-6" />
               <Tab label="Menu Items" id="content-editor-tab-7" />
-              <Tab label="Catering Packages" id="content-editor-tab-8" />
-              <Tab label="All Editable Content" id="content-editor-tab-9" />
+              <Tab label="Packages" id="content-editor-tab-8" />
+              <Tab label="All Content" id="content-editor-tab-9" />
             </Tabs>
           </Box>
 
