@@ -32,7 +32,7 @@ export function HomePageMUI() {
             sx={{
               fontWeight: 800,
               my: 0,
-              fontSize: { xs: '2.2rem', sm: '2.8rem', md: '3.4rem' },
+              fontSize: { xs: '2rem', sm: '2.6rem', md: '3.4rem' },
               lineHeight: 1.1,
             }}
           >
@@ -41,12 +41,12 @@ export function HomePageMUI() {
           <Typography variant="body1" color="textSecondary" sx={{ lineHeight: 1.7, maxWidth: 620, fontSize: { xs: '1rem', md: '1.05rem' } }}>
             {uiText.home.description}
           </Typography>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 1, alignItems: { xs: 'stretch', sm: 'center' } }}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 1, alignItems: { xs: 'stretch', sm: 'center' }, width: { xs: '100%', sm: 'auto' } }}>
             <Button
               variant="contained"
               size="large"
               onClick={() => dispatch(setActiveNav('Order Online'))}
-              sx={{ width: { xs: '100%', sm: 'auto' }, minHeight: 48 }}
+              sx={{ width: { xs: '100%', sm: 'auto' }, minHeight: 48, whiteSpace: 'nowrap' }}
             >
               {getLabel('act_order_now', uiText.home.orderOnline)}
             </Button>
