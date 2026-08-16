@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Drawer,
   Box,
@@ -22,7 +21,7 @@ import { getLabel } from '../utils/getLabel';
 import { CartDrawerMUIProps } from '../types';
 
 
-export function CartDrawerMUI({ isOpen, onClose }: CartDrawerMUIProps) {
+export const CartDrawerMUI = ({ isOpen, onClose }: CartDrawerMUIProps) => {
   const dispatch = useAppDispatch();
   const state = useAppSelector((state) => state.app);
   const cartItems = state.cartItems

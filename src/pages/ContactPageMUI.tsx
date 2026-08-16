@@ -6,7 +6,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { contactInfo, uiText } from '../content/common-content';
 import { getLabel } from '../utils/getLabel';
 
-export function ContactPageMUI() {
+export const ContactPageMUI = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
   };

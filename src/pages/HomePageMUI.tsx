@@ -1,11 +1,10 @@
-import React from 'react';
 import { Box, Typography, Button, Card, CardMedia, Stack } from '@mui/material';
 import { uiText } from '../content/common-content';
 import { useAppDispatch } from '../store';
 import { setActiveNav } from '../store';
 import { getLabel } from '../utils/getLabel';
 
-export function HomePageMUI() {
+export const HomePageMUI = () => {
   const dispatch = useAppDispatch();
 
   return (
@@ -103,27 +102,6 @@ export function HomePageMUI() {
               sx={{ objectFit: 'cover', height: '100%' }}
             />
           </Card>
-        </Box>
-      </Box>
-
-      <Box component="section" aria-labelledby="story-heading" sx={{ my: 6 }}>
-        <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: 1.2 }}>
-          {uiText.home.ourStory}
-        </Typography>
-        <Typography id="story-heading" variant="h4" sx={{ fontWeight: 700, mt: 1, mb: 3 }}>
-          {uiText.home.storyTitle}
-        </Typography>
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-          <Box component="article">
-            <Typography color="textSecondary" sx={{ lineHeight: 1.8 }}>
-              {uiText.home.storyBodyOne}
-            </Typography>
-          </Box>
-          <Box component="article">
-            <Typography color="textSecondary" sx={{ lineHeight: 1.8 }}>
-              {uiText.home.storyBodyTwo}
-            </Typography>
-          </Box>
         </Box>
       </Box>
     </Box>

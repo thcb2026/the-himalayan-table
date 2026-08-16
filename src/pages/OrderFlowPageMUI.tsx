@@ -18,12 +18,13 @@ import {
 } from '@mui/material';
 import { menuItems } from '../content/data';
 import { currency, steps, uiText } from '../content/common-content';
-import { useAppDispatch } from '../store';
-import { setActiveNav } from '../store';
+import { useAppDispatch, setActiveNav } from '../store';
 import { getLabel } from '../utils/getLabel';
 
-export function OrderFlowPageMUI() {
+export const OrderFlowPageMUI: React.FC = () => {
+  const { eyebrow, title, backToMenu, stepChooseFood } = uiText.orderFlow;
   const dispatch = useAppDispatch();
+  
   const [step, setStep] = useState(0);
   const [selectedItemId, setSelectedItemId] = useState(menuItems[0].id);
   const [quantity, setQuantity] = useState(1);
@@ -40,19 +41,18 @@ export function OrderFlowPageMUI() {
   const deliveryFee = deliveryMode === 'Delivery' ? 150 : 0;
   const total = subtotal + deliveryFee;
 
-
   return (
     <Box component="main" aria-labelledby="order-flow-title">
       <Box component="header" sx={{ mb: 3 }}>
         <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
-          {uiText.orderFlow.eyebrow}
+          {eyebrow}
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
           <Typography id="order-flow-title" variant="h5" sx={{ fontWeight: 700 }}>
-            {uiText.orderFlow.title}
+            {title}
           </Typography>
           <Button variant="outlined" onClick={() => dispatch(setActiveNav('Menu'))} sx={{ minHeight: 48 }}>
-            {getLabel('act_back_to_menu', uiText.orderFlow.backToMenu)}
+            {getLabel('act_back_to_menu', backToMenu)}
           </Button>
         </Box>
       </Box>
@@ -65,13 +65,14 @@ export function OrderFlowPageMUI() {
         ))}
       </Stepper>
 
+      {/* Step 0: Choose Food */}
       {step === 0 && (
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 3 }}>
           <Box component="section" aria-labelledby="choose-food-heading">
             <Card>
               <CardContent>
                 <Typography id="choose-food-heading" variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-                  {uiText.orderFlow.stepChooseFood}
+                  {stepChooseFood}
                 </Typography>
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
                   {menuItems.map((item) => (
@@ -111,7 +112,7 @@ export function OrderFlowPageMUI() {
                         <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
                           {item.name}
                         </Typography>
-                        <Typography variant="caption" color="textSecondary">
+                        <Typography variant="caption" color="text.secondary">
                           {currency.symbol} {item.price}
                         </Typography>
                       </CardContent>
@@ -140,7 +141,6 @@ export function OrderFlowPageMUI() {
                   fullWidth
                   slotProps={{ htmlInput: { min: 1 } }}
                   sx={{ mb: 2 }}
-                  aria-label={uiText.orderFlow.quantityLabel}
                 />
                 <Button variant="contained" fullWidth onClick={() => setStep(1)} sx={{ minHeight: 48 }}>
                   {getLabel('act_continue', uiText.orderFlow.continue)}
@@ -151,6 +151,7 @@ export function OrderFlowPageMUI() {
         </Box>
       )}
 
+      {/* Step 1: Delivery Mode */}
       {step === 1 && (
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 3 }}>
           <Box component="section" aria-labelledby="pickup-details-heading">
@@ -159,35 +160,33 @@ export function OrderFlowPageMUI() {
                 <Typography id="pickup-details-heading" variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                   {uiText.orderFlow.stepPickup}
                 </Typography>
-                <Stack spacing={2} component="fieldset" sx={{ border: 0, p: 0, m: 0 }}>
-                  <Typography component="legend" variant="subtitle2" sx={{ mb: 1, fontWeight: 700 }}>
-                    {uiText.orderFlow.paymentMethod}
-                  </Typography>
+                <RadioGroup
+                  value={deliveryMode}
+                  onChange={(e) => setDeliveryMode(e.target.value as 'Pickup' | 'Delivery')}
+                >
                   <FormControlLabel
+                    value="Pickup"
                     control={<Radio />}
                     label={uiText.orderFlow.deliveryModePickup}
-                    checked={deliveryMode === 'Pickup'}
-                    onChange={() => setDeliveryMode('Pickup')}
                   />
                   <FormControlLabel
+                    value="Delivery"
                     control={<Radio />}
                     label={uiText.orderFlow.deliveryModeDelivery}
-                    checked={deliveryMode === 'Delivery'}
-                    onChange={() => setDeliveryMode('Delivery')}
                   />
-                  {deliveryMode === 'Delivery' && (
-                    <TextField
-                      label={uiText.orderFlow.deliveryAddress}
-                      value={deliveryAddress}
-                      onChange={(e) => setDeliveryAddress(e.target.value)}
-                      placeholder={uiText.orderFlow.addressPlaceholder}
-                      fullWidth
-                      multiline
-                      rows={2}
-                      aria-label={uiText.orderFlow.deliveryAddress}
-                    />
-                  )}
-                </Stack>
+                </RadioGroup>
+                {deliveryMode === 'Delivery' && (
+                  <TextField
+                    label={uiText.orderFlow.deliveryAddress}
+                    value={deliveryAddress}
+                    onChange={(e) => setDeliveryAddress(e.target.value)}
+                    placeholder={uiText.orderFlow.addressPlaceholder}
+                    fullWidth
+                    multiline
+                    rows={2}
+                    sx={{ mt: 2 }}
+                  />
+                )}
               </CardContent>
             </Card>
           </Box>
@@ -225,6 +224,7 @@ export function OrderFlowPageMUI() {
         </Box>
       )}
 
+      {/* Step 2: Date & Payment */}
       {step === 2 && (
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 3 }}>
           <Box component="section" aria-labelledby="datetime-heading">
@@ -259,7 +259,11 @@ export function OrderFlowPageMUI() {
                 <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                   {uiText.orderFlow.stepPayment}
                 </Typography>
-                <RadioGroup value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value as any)} aria-label={uiText.accessibility.choosePaymentMethod}>
+                <RadioGroup
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value as any)}
+                  aria-label={uiText.accessibility.choosePaymentMethod}
+                >
                   {uiText.orderFlow.paymentOptions.map((option) => (
                     <FormControlLabel key={option} control={<Radio />} label={option} value={option} />
                   ))}
@@ -273,6 +277,7 @@ export function OrderFlowPageMUI() {
         </Box>
       )}
 
+      {/* Step 3: Confirmation */}
       {step === 3 && (
         <Box sx={{ maxWidth: 600, mx: 'auto' }}>
           <Card>
@@ -283,18 +288,18 @@ export function OrderFlowPageMUI() {
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
                 {uiText.orderFlow.thankYou}
               </Typography>
-              <Typography color="textSecondary" sx={{ mb: 3 }}>
+              <Typography color="text.secondary" sx={{ mb: 3 }}>
                 {uiText.orderFlow.orderScheduled
                   .replace('{itemName}', selectedItem.name)
                   .replace('{quantity}', String(quantity))}
               </Typography>
               <Stack spacing={1} sx={{ textAlign: 'left', mb: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography color="textSecondary">{uiText.orderFlow.paymentMethod}</Typography>
+                  <Typography color="text.secondary">{uiText.orderFlow.paymentMethod}</Typography>
                   <Typography sx={{ fontWeight: 700 }}>{paymentMethod}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography color="textSecondary">{uiText.orderFlow.totalAmount}</Typography>
+                  <Typography color="text.secondary">{uiText.orderFlow.totalAmount}</Typography>
                   <Typography sx={{ fontWeight: 700 }}>{currency.symbol} {total}</Typography>
                 </Box>
               </Stack>
@@ -307,4 +312,4 @@ export function OrderFlowPageMUI() {
       )}
     </Box>
   );
-}
+};

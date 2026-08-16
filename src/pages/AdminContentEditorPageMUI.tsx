@@ -20,8 +20,10 @@ import {
 import SaveIcon from '@mui/icons-material/Save';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { TabPanelProps } from '../types';
+import { resolveAuthHeaders } from '../utils/common-helpers';
+import { pageGroups } from '../content/common-content';
 
-export function TabPanel(props: TabPanelProps) {
+export const TabPanel = (props: TabPanelProps) => {
   const { children, value, index, ...other } = props;
   return (
     <div
@@ -36,7 +38,7 @@ export function TabPanel(props: TabPanelProps) {
   );
 }
 
-export function AdminContentEditorPageMUI() {
+export const AdminContentEditorPageMUI = () => {
   const [contentData, setContentData] = useState<any>(null);
   const [menuData, setMenuData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -101,35 +103,7 @@ export function AdminContentEditorPageMUI() {
     }
   };
 
-  const resolveAuthHeaders = (): Record<string, string> => {
-    const tokenCandidates = [
-      localStorage.getItem('accessToken'),
-      localStorage.getItem('auth_token'),
-      localStorage.getItem('token'),
-      localStorage.getItem('jwt'),
-      localStorage.getItem('platform_auth_token'),
-      sessionStorage.getItem('accessToken'),
-      sessionStorage.getItem('auth_token'),
-      sessionStorage.getItem('token'),
-      sessionStorage.getItem('jwt'),
-      sessionStorage.getItem('platform_auth_token'),
-    ];
-
-    const token = tokenCandidates.find((value) => typeof value === 'string' && value.trim().length > 0)?.trim();
-
-    if (token) {
-      return {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      };
-    }
-
-    return {
-      'Content-Type': 'application/json',
-      'x-bypass-auth': 'true',
-      'x-dev-user': '1',
-    };
-  };
+ 
 
   const handleSave = async () => {
     try {
@@ -321,172 +295,6 @@ export function AdminContentEditorPageMUI() {
       return null;
     }
 
-    const pageGroups = [
-      {
-        title: 'Header / App Shell',
-        fields: [
-          { path: 'appBrand.name', label: 'Header brand name' },
-          { path: 'appBrand.tagline', label: 'Header tagline' },
-          { path: 'currency.symbol', label: 'Currency symbol' },
-        ],
-      },
-      {
-        title: 'HomePageMUI',
-        fields: [
-          { path: 'uiText.home.welcome', label: 'Home welcome label' },
-          { path: 'uiText.home.title', label: 'Hero title' },
-          { path: 'uiText.home.description', label: 'Hero description', multiline: true },
-          { path: 'uiText.home.exploreMenu', label: 'Explore menu button label' },
-          { path: 'uiText.home.orderOnline', label: 'Order now button label' },
-          { path: 'uiText.home.freeDelivery', label: 'Free delivery label' },
-          { path: 'uiText.home.freeDeliveryDetail', label: 'Free delivery detail' },
-          { path: 'uiText.home.expertCatering', label: 'Expert catering label' },
-          { path: 'uiText.home.expertCateringDetail', label: 'Expert catering detail' },
-          { path: 'uiText.home.ourStory', label: 'Our story heading label' },
-          { path: 'uiText.home.storyTitle', label: 'Story section title' },
-          { path: 'uiText.home.storyBodyOne', label: 'Story paragraph 1', multiline: true },
-          { path: 'uiText.home.storyBodyTwo', label: 'Story paragraph 2', multiline: true },
-        ],
-      },
-      {
-        title: 'MenuPageMUI',
-        fields: [
-          { path: 'uiText.app.menu', label: 'Menu breadcrumb / section label' },
-          { path: 'uiText.menu.title', label: 'Menu page title' },
-          { path: 'uiText.menu.categoryLabel', label: 'Category filter label' },
-          { path: 'uiText.menu.dietaryLabel', label: 'Dietary filter label' },
-          { path: 'uiText.menu.vegetarian', label: 'Vegetarian tag' },
-          { path: 'uiText.menu.vegan', label: 'Vegan tag' },
-          { path: 'uiText.menu.glutenFree', label: 'Gluten-free tag' },
-          { path: 'uiText.menu.add', label: 'Add to cart label' },
-        ],
-      },
-      {
-        title: 'OrderFlowPageMUI',
-        fields: [
-          { path: 'uiText.orderFlow.eyebrow', label: 'Order flow eyebrow' },
-          { path: 'uiText.orderFlow.title', label: 'Order flow title' },
-          { path: 'uiText.orderFlow.backToMenu', label: 'Back to menu button' },
-          { path: 'uiText.orderFlow.stepChooseFood', label: 'Choose food step label' },
-          { path: 'uiText.orderFlow.selectedItem', label: 'Selected item label' },
-          { path: 'uiText.orderFlow.quantityLabel', label: 'Quantity label' },
-          { path: 'uiText.orderFlow.continue', label: 'Continue button label' },
-          { path: 'uiText.orderFlow.stepPickup', label: 'Pickup step label' },
-          { path: 'uiText.orderFlow.paymentMethod', label: 'Payment method heading' },
-          { path: 'uiText.orderFlow.deliveryModePickup', label: 'Pickup option label' },
-          { path: 'uiText.orderFlow.deliveryModeDelivery', label: 'Delivery option label' },
-          { path: 'uiText.orderFlow.deliveryAddress', label: 'Delivery address label' },
-          { path: 'uiText.orderFlow.addressPlaceholder', label: 'Delivery address placeholder' },
-          { path: 'uiText.orderFlow.orderSummary', label: 'Order summary label' },
-          { path: 'uiText.orderFlow.subtotal', label: 'Subtotal label' },
-          { path: 'uiText.orderFlow.deliveryLabel', label: 'Delivery label' },
-          { path: 'uiText.orderFlow.total', label: 'Total label' },
-          { path: 'uiText.orderFlow.stepDateTime', label: 'Date/time step label' },
-          { path: 'uiText.orderFlow.preferredDate', label: 'Preferred date label' },
-          { path: 'uiText.orderFlow.preferredTime', label: 'Preferred time label' },
-          { path: 'uiText.orderFlow.stepPayment', label: 'Payment step label' },
-          { path: 'uiText.orderFlow.confirmOrder', label: 'Confirm order button label' },
-          { path: 'uiText.orderFlow.orderConfirmedMessage', label: 'Order confirmed message' },
-          { path: 'uiText.orderFlow.thankYou', label: 'Thank you message' },
-          { path: 'uiText.orderFlow.orderScheduled', label: 'Order scheduled message', multiline: true },
-          { path: 'uiText.orderFlow.backToHome', label: 'Back to home button label' },
-        ],
-      },
-      {
-        title: 'CheckoutPageMUI / CartDrawerMUI',
-        fields: [
-          { path: 'uiText.app.continueShopping', label: 'Continue shopping button' },
-          { path: 'uiText.app.goToCheckout', label: 'Go to checkout button' },
-          { path: 'uiText.cart.title', label: 'Cart title' },
-          { path: 'uiText.cart.empty', label: 'Cart empty state' },
-          { path: 'uiText.cart.subtotal', label: 'Cart subtotal label' },
-          { path: 'uiText.checkout.eyebrow', label: 'Checkout eyebrow' },
-          { path: 'uiText.checkout.title', label: 'Checkout title' },
-          { path: 'uiText.checkout.customerDetails', label: 'Customer details label' },
-          { path: 'uiText.checkout.firstName', label: 'First name label' },
-          { path: 'uiText.checkout.lastName', label: 'Last name label' },
-          { path: 'uiText.checkout.email', label: 'Email label' },
-          { path: 'uiText.checkout.phone', label: 'Phone label' },
-          { path: 'uiText.checkout.deliveryAddress', label: 'Delivery address label' },
-          { path: 'uiText.checkout.notes', label: 'Notes label' },
-          { path: 'uiText.checkout.paymentMethod', label: 'Payment method label' },
-          { path: 'uiText.checkout.placeOrder', label: 'Place order label' },
-          { path: 'uiText.checkout.back', label: 'Back label' },
-          { path: 'uiText.checkout.sentTitle', label: 'Thank you title' },
-          { path: 'uiText.checkout.sentMessage', label: 'Order submitted message', multiline: true },
-          { path: 'uiText.checkout.customerLabel', label: 'Customer label' },
-          { path: 'uiText.checkout.deliveryTo', label: 'Delivery to label' },
-          { path: 'uiText.checkout.totalAmount', label: 'Total amount label' },
-          { path: 'uiText.checkout.backToHome', label: 'Back to home label' },
-        ],
-      },
-      {
-        title: 'ContactPageMUI',
-        fields: [
-          { path: 'uiText.contact.eyebrow', label: 'Contact eyebrow' },
-          { path: 'uiText.contact.title', label: 'Contact title' },
-          { path: 'uiText.contact.sendMessage', label: 'Send message heading' },
-          { path: 'uiText.contact.yourName', label: 'Your name field' },
-          { path: 'uiText.contact.yourEmail', label: 'Email field' },
-          { path: 'uiText.contact.subject', label: 'Subject field' },
-          { path: 'uiText.contact.message', label: 'Message field' },
-          { path: 'uiText.contact.sendButton', label: 'Send form button' },
-          { path: 'uiText.contact.phoneLabel', label: 'Phone label' },
-          { path: 'uiText.contact.emailLabel', label: 'Email label' },
-          { path: 'uiText.contact.location', label: 'Location label' },
-          { path: 'uiText.contact.quickContact', label: 'Quick contact label' },
-          { path: 'uiText.contact.whatsapp', label: 'WhatsApp label' },
-          { path: 'uiText.contact.viber', label: 'Viber label' },
-          { path: 'uiText.contact.instagram', label: 'Instagram label' },
-          { path: 'uiText.contact.facebook', label: 'Facebook label' },
-          { path: 'contactInfo.phone', label: 'Contact phone value' },
-          { path: 'contactInfo.email', label: 'Contact email value' },
-          { path: 'contactInfo.location', label: 'Contact location value' },
-          { path: 'contactInfo.instagram', label: 'Instagram handle' },
-          { path: 'contactInfo.facebook', label: 'Facebook handle' },
-        ],
-      },
-      {
-        title: 'CorporateCateringPageMUI',
-        fields: [
-          { path: 'uiText.corporate.eyebrow', label: 'Corporate eyebrow' },
-          { path: 'uiText.corporate.title', label: 'Corporate title' },
-          { path: 'uiText.corporate.companyName', label: 'Company name field' },
-          { path: 'uiText.corporate.contactPerson', label: 'Contact person field' },
-          { path: 'uiText.corporate.emailLabel', label: 'Corporate email label' },
-          { path: 'uiText.corporate.phoneLabel', label: 'Corporate phone label' },
-          { path: 'uiText.corporate.eventDate', label: 'Event date label' },
-          { path: 'uiText.corporate.numberOfPeople', label: 'Number of people label' },
-          { path: 'uiText.corporate.deliveryAddress', label: 'Delivery address label' },
-          { path: 'uiText.corporate.mealType', label: 'Meal type label' },
-          { path: 'uiText.corporate.budgetPerPerson', label: 'Budget per person label' },
-          { path: 'uiText.corporate.dietaryRequirements', label: 'Dietary requirements label' },
-          { path: 'uiText.corporate.successMessage', label: 'Success message', multiline: true },
-          { path: 'uiText.corporate.featureTitle', label: 'Feature title' },
-        ],
-      },
-      {
-        title: 'Validation & Accessibility',
-        fields: [
-          { path: 'validationMessages.checkout.firstName', label: 'Checkout first name validation' },
-          { path: 'validationMessages.checkout.lastName', label: 'Checkout last name validation' },
-          { path: 'validationMessages.checkout.emailRequired', label: 'Checkout email required validation' },
-          { path: 'validationMessages.checkout.emailInvalid', label: 'Checkout email invalid validation' },
-          { path: 'validationMessages.checkout.phoneRequired', label: 'Checkout phone required validation' },
-          { path: 'validationMessages.checkout.phoneInvalid', label: 'Checkout phone invalid validation' },
-          { path: 'validationMessages.checkout.deliveryAddress', label: 'Checkout delivery validation' },
-          { path: 'validationMessages.corporate.companyName', label: 'Corporate company validation' },
-          { path: 'validationMessages.corporate.contactPerson', label: 'Corporate contact validation' },
-          { path: 'validationMessages.corporate.emailRequired', label: 'Corporate email required validation' },
-          { path: 'validationMessages.corporate.emailInvalid', label: 'Corporate email invalid validation' },
-          { path: 'validationMessages.corporate.phone', label: 'Corporate phone validation' },
-          { path: 'validationMessages.corporate.eventDate', label: 'Corporate date validation' },
-          { path: 'validationMessages.corporate.numberOfPeople', label: 'Corporate guest validation' },
-          { path: 'validationMessages.corporate.deliveryAddress', label: 'Corporate delivery validation' },
-          { path: 'validationMessages.corporate.mealType', label: 'Corporate meal type validation' },
-        ],
-      },
-    ];
 
     return (
       <Stack spacing={3}>

@@ -29,7 +29,7 @@ const OrderFlowPageMUI = React.lazy(() => import('./pages/OrderFlowPageMUI').the
 const CartDrawerMUI = React.lazy(() => import('./pages/CartDrawerMUI').then(m => ({ default: m.CartDrawerMUI })));
 const CheckoutPageMUI = React.lazy(() => import('./pages/CheckoutPageMUI').then(m => ({ default: m.CheckoutPageMUI })));
 const AdminContentEditorPageMUI = React.lazy(() => import('./pages/AdminContentEditorPageMUI').then(m => ({ default: m.AdminContentEditorPageMUI })));
-
+const OurStoryMUI = React.lazy(() => import('./pages/OurStoryMUI').then(m => ({ default: m.OurStoryMUI })));
 function App() {
   const dispatch = useAppDispatch();
   const state = useAppSelector((state) => state.app);
@@ -199,7 +199,7 @@ function App() {
         return <AdminContentEditorPageMUI key={key} />;
       case 'Event Catering':
       case 'Our Story':
-        return <MenuPageMUI key={key} />;
+        return <OurStoryMUI key={key} />;
       case 'Home':
       default:
         return <HomePageMUI key={key} />;

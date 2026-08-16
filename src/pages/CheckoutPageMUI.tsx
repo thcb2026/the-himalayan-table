@@ -16,7 +16,7 @@ import { useAppDispatch, useAppSelector, setActiveNav, resetCart } from '../stor
 import { deliveryCharge, subtotal, total } from '../utils/common-helpers';
 import { getLabel } from '../utils/getLabel';
 
-export function CheckoutPageMUI() {
+export const CheckoutPageMUI = () => {
   const dispatch = useAppDispatch();
   const cartState = useAppSelector((state) => state.app);
   const [form, setForm] = useState(initialFormData);

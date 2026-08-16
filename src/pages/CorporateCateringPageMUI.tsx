@@ -18,7 +18,7 @@ import { currency, uiText, validationMessages } from '../content/common-content'
 import { getLabel } from '../utils/getLabel';
 import { useAppDispatch, useAppSelector, selectAppState, updateQuote } from '../store';
 
-export function CorporateCateringPageMUI() {
+export const CorporateCateringPageMUI = () => {
   const dispatch = useAppDispatch();
   const state = useAppSelector(selectAppState);
   const [errors, setErrors] = useState<Record<string, string>>({});

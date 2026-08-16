@@ -19,7 +19,7 @@ import { MenuCategory, DietaryTag } from '../types';
 import { useAppDispatch, useAppSelector, setSelectedCategory, setSelectedDietary, addToCart, selectAppState, setActiveNav } from '../store';
 import { getLabel } from '../utils/getLabel';
 
-export function MenuPageMUI() {
+export const MenuPageMUI = () => {
   const dispatch = useAppDispatch();
   const state = useAppSelector(selectAppState);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
@@ -221,7 +221,7 @@ export function MenuPageMUI() {
             </Box>
           ))
         )}
-      </Box>
+      </Box> 
     </Box>
   );
 }
