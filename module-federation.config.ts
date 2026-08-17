@@ -10,6 +10,8 @@ export const mfConfig = {
     "./OrderFlowPageMUI": "./src/pages/OrderFlowPageMUI",
     "./CorporateCateringPageMUI": "./src/pages/CorporateCateringPageMUI",
     "./ContactPageMUI": "./src/pages/ContactPageMUI",
+    "./AdminContentEditorPageMUI": "./src/reusable-components/AdminContentEditorPageMUI",
+    "./ContentEditorPageMUI": "./src/reusable-components/AdminContentEditorPageMUI",
     "./store": "./src/store",
     "./types": "./src/types",
     "./data": "./src/data",
