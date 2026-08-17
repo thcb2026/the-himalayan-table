@@ -21,7 +21,8 @@ import SaveIcon from '@mui/icons-material/Save';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { TabPanelProps } from '../types';
 import { resolveAuthHeaders } from '../utils/common-helpers';
-import { pageGroups } from '../content/common-content';
+import { hydrateFrontendContent, pageGroups } from '../content/common-content';
+import { initializeMenuData } from '../content/data';
 
 export const TabPanel = (props: TabPanelProps) => {
   const { children, value, index, ...other } = props;
@@ -150,6 +151,8 @@ export const AdminContentEditorPageMUI = () => {
       console.info('Update result:', result);
 
       if (typeof window !== 'undefined') {
+        await hydrateFrontendContent();
+        await initializeMenuData();
         window.dispatchEvent(new CustomEvent('frontend-content-updated', { detail: { updates } }));
         window.dispatchEvent(new CustomEvent('content-editor-updated', { detail: { updates } }));
         setTimeout(() => {
@@ -186,6 +189,7 @@ export const AdminContentEditorPageMUI = () => {
       setSuccess('Menu data updated successfully');
 
       if (typeof window !== 'undefined') {
+        await initializeMenuData();
         window.dispatchEvent(new CustomEvent('menu-data-updated', { detail: { data: editedMenuData } }));
         setTimeout(() => {
           window.location.reload();
