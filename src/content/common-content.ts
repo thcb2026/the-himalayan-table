@@ -388,12 +388,32 @@ export const hydrateFrontendContent = async (): Promise<void> => {
   isFrontendContentHydrating = true;
 
   try {
-    const response = await fetch(`${HOST_LOCAL_API_URL}/api/pms_tms/v1/content/frontend-common-content`, {
+    const endpoint = '/api/pms_tms/v1/content/frontend-common-content';
+    const apiUrl = typeof window !== 'undefined' && window.location?.origin ? `${window.location.origin}${endpoint}` : `${HOST_LOCAL_API_URL}${endpoint}`;
+    const response = await fetch(endpoint, {
       method: 'GET',
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },
+    }).catch(async () => {
+      if (typeof window !== 'undefined' && window.location?.origin) {
+        return fetch(apiUrl, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      }
+
+      return fetch(`${HOST_LOCAL_API_URL}${endpoint}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
     });
 
     if (!response.ok) {
