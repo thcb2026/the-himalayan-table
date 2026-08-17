@@ -19,10 +19,11 @@ import {
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { TabPanelProps } from '../types';
+import { AdminContentEditorPageMUIProps, ContentEditorSaveMode, TabPanelProps } from '../types';
 import { resolveAuthHeaders } from '../utils/common-helpers';
 import { hydrateFrontendContent, pageGroups } from '../content/common-content';
 import { initializeMenuData } from '../content/data';
+
 
 export const TabPanel = (props: TabPanelProps) => {
   const { children, value, index, ...other } = props;
@@ -39,7 +40,17 @@ export const TabPanel = (props: TabPanelProps) => {
   );
 }
 
-export const AdminContentEditorPageMUI = () => {
+export const ContentEditorPageMUI = ({
+  title = 'Content Editor',
+  subtitle = 'Edit frontend UI text, labels, and metadata. Changes are saved to the database and deployed to the application.',
+  contentEndpoint = '/api/pms_tms/v1/content/frontend-common-content',
+  menuEndpoint = '/api/pms_tms/v1/content/frontend-menu-data',
+  saveMode = 'callback',
+  onContentSaved,
+  onMenuSaved,
+  onError,
+  showHeader = true,
+}: AdminContentEditorPageMUIProps = {}) => {
   const [contentData, setContentData] = useState<any>(null);
   const [menuData, setMenuData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -50,6 +61,19 @@ export const AdminContentEditorPageMUI = () => {
   const [editedData, setEditedData] = useState<any>(null);
   const [editedMenuData, setEditedMenuData] = useState<any>(null);
 
+  const triggerAfterSave = (mode: ContentEditorSaveMode, callback?: () => void) => {
+    if (mode === 'reload' && typeof window !== 'undefined') {
+      setTimeout(() => {
+        window.location.reload();
+      }, 1200);
+      return;
+    }
+
+    if (mode === 'callback') {
+      callback?.();
+    }
+  };
+
   useEffect(() => {
     fetchContent();
     fetchMenuData();
@@ -59,7 +83,7 @@ export const AdminContentEditorPageMUI = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('/api/pms_tms/v1/content/frontend-common-content', {
+      const response = await fetch(contentEndpoint, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -84,7 +108,7 @@ export const AdminContentEditorPageMUI = () => {
 
   const fetchMenuData = async () => {
     try {
-      const response = await fetch('/api/pms_tms/v1/content/frontend-menu-data', {
+      const response = await fetch(menuEndpoint, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -133,7 +157,7 @@ export const AdminContentEditorPageMUI = () => {
         return;
       }
 
-      const response = await fetch('/api/pms_tms/v1/content/frontend-common-content', {
+      const response = await fetch(contentEndpoint, {
         method: 'PATCH',
         headers: resolveAuthHeaders(),
         credentials: 'include',
@@ -155,13 +179,13 @@ export const AdminContentEditorPageMUI = () => {
         await initializeMenuData();
         window.dispatchEvent(new CustomEvent('frontend-content-updated', { detail: { updates } }));
         window.dispatchEvent(new CustomEvent('content-editor-updated', { detail: { updates } }));
-        setTimeout(() => {
-          window.location.reload();
-        }, 1200);
       }
+
+      triggerAfterSave(saveMode, () => onContentSaved?.({ updates, result }));
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to save content';
       setError(message);
+      onError?.(message);
       console.error('Save error:', err);
     } finally {
       setSaving(false);
@@ -173,7 +197,7 @@ export const AdminContentEditorPageMUI = () => {
       setSaving(true);
       setError(null);
 
-      const response = await fetch('/api/pms_tms/v1/content/frontend-menu-data', {
+      const response = await fetch(menuEndpoint, {
         method: 'PUT',
         headers: resolveAuthHeaders(),
         credentials: 'include',
@@ -191,13 +215,13 @@ export const AdminContentEditorPageMUI = () => {
       if (typeof window !== 'undefined') {
         await initializeMenuData();
         window.dispatchEvent(new CustomEvent('menu-data-updated', { detail: { data: editedMenuData } }));
-        setTimeout(() => {
-          window.location.reload();
-        }, 1200);
       }
+
+      triggerAfterSave(saveMode, () => onMenuSaved?.({ data: editedMenuData, result: { success: true } }));
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to save menu data';
       setError(message);
+      onError?.(message);
       console.error('Save menu data error:', err);
     } finally {
       setSaving(false);
@@ -344,17 +368,19 @@ export const AdminContentEditorPageMUI = () => {
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
       <Box component="section" sx={{ mb: 4 }}>
-        <Box component="header" sx={{ mb: 3 }}>
-          <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
-            Administration
-          </Typography>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-            Content Editor
-          </Typography>
-          <Typography color="textSecondary">
-            Edit frontend UI text, labels, and metadata. Changes are saved to the database and deployed to the application.
-          </Typography>
-        </Box>
+        {showHeader && (
+          <Box component="header" sx={{ mb: 3 }}>
+            <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 700 }}>
+              Administration
+            </Typography>
+            <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+              {title}
+            </Typography>
+            <Typography color="textSecondary">
+              {subtitle}
+            </Typography>
+          </Box>
+        )}
 
         {error && (
           <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
@@ -1091,4 +1117,14 @@ export const AdminContentEditorPageMUI = () => {
       </Box>
     </Container>
   );
-}
+};
+
+export const AdminContentEditorPageMUI = (props: AdminContentEditorPageMUIProps) => (
+  <ContentEditorPageMUI
+    {...props}
+    saveMode={props.saveMode ?? 'reload'}
+    showHeader={props.showHeader ?? true}
+  />
+);
+
+export default AdminContentEditorPageMUI;
