@@ -28,7 +28,7 @@ const ContactPageMUI = React.lazy(() => import('./pages/ContactPageMUI').then(m 
 const OrderFlowPageMUI = React.lazy(() => import('./pages/OrderFlowPageMUI').then(m => ({ default: m.OrderFlowPageMUI })));
 const CartDrawerMUI = React.lazy(() => import('./pages/CartDrawerMUI').then(m => ({ default: m.CartDrawerMUI })));
 const CheckoutPageMUI = React.lazy(() => import('./pages/CheckoutPageMUI').then(m => ({ default: m.CheckoutPageMUI })));
-const AdminContentEditorPageMUI = React.lazy(() => import('./pages/AdminContentEditorPageMUI').then(m => ({ default: m.AdminContentEditorPageMUI })));
+const AdminContentEditorPageMUI = React.lazy(() => import('./reusable-components/AdminContentEditorPageMUI').then(m => ({ default: m.AdminContentEditorPageMUI })));
 const OurStoryMUI = React.lazy(() => import('./pages/OurStoryMUI').then(m => ({ default: m.OurStoryMUI })));
 function App() {
   const dispatch = useAppDispatch();

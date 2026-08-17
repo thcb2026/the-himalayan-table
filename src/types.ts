@@ -135,3 +135,17 @@ export interface GalleryItem {
   gridRow?: { sm: string };
   minHeight: { xs: number; sm: number } | number;
 }
+
+export type ContentEditorSaveMode = 'none' | 'callback' | 'reload';
+
+export interface AdminContentEditorPageMUIProps {
+  title?: string;
+  subtitle?: string;
+  contentEndpoint?: string;
+  menuEndpoint?: string;
+  saveMode?: ContentEditorSaveMode;
+  onContentSaved?: (payload: { updates: Record<string, unknown>; result?: any }) => void;
+  onMenuSaved?: (payload: { data: any; result?: any }) => void;
+  onError?: (message: string) => void;
+  showHeader?: boolean;
+}
