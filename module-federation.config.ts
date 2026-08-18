@@ -12,6 +12,7 @@ export const mfConfig = {
     "./ContactPageMUI": "./src/pages/ContactPageMUI",
     "./AdminContentEditorPageMUI": "./src/reusable-components/AdminContentEditorPageMUI",
     "./ContentEditorPageMUI": "./src/reusable-components/AdminContentEditorPageMUI",
+    "./Mount": "./src/remote/mount",
     "./store": "./src/store",
     "./types": "./src/types",
     "./data": "./src/data",

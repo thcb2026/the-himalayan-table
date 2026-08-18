@@ -5,7 +5,7 @@ const { ModuleFederationPlugin } = require('webpack').container;
 
 // Module Federation configuration
 const mfConfig = {
-  name: "the_himalayan_table",
+  name: "the_himalayan_table_app",
   filename: "remoteEntry.js",
   exposes: {
     "./App": "./src/AppMUI",
@@ -18,6 +18,7 @@ const mfConfig = {
     "./ContactPageMUI": "./src/pages/ContactPageMUI",
     "./AdminContentEditorPageMUI": "./src/reusable-components/AdminContentEditorPageMUI",
     "./ContentEditorPageMUI": "./src/reusable-components/AdminContentEditorPageMUI",
+    "./Mount": "./src/remote/mount",
     "./store": "./src/store",
     "./types": "./src/types",
     "./content/data": "./src/content/data",
@@ -42,7 +43,14 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].[contenthash].js',
     chunkFilename: '[name].[contenthash].js',
-    publicPath: 'auto',
+    publicPath: '/the-himalayan-table-app/',
+    uniqueName: 'the_himalayan_table',
+    library: {
+      name: 'the_himalayan_table',
+      type: 'assign',
+    },
+    globalObject: 'window',
+    chunkLoadingGlobal: 'webpackChunkthe_himalayan_table',
     clean: true,
   },
 
@@ -56,9 +64,18 @@ module.exports = {
 
   // 5. Dev Server configuration
   devServer: {
+    host: '0.0.0.0',
     static: './dist',
     port: 4211,
-    open: true,
+    open: false,
+    allowedHosts: 'all',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET,OPTIONS,HEAD',
+      'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Requested-With,Accept,Origin',
+      'Access-Control-Expose-Headers': 'Content-Type,Authorization',
+      'Cross-Origin-Resource-Policy': 'cross-origin',
+    },
     proxy: [
       {
         context: ['/api'],

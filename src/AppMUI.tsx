@@ -180,6 +180,14 @@ function App() {
     const isAdminRoute = state.activeNav === 'Admin' || (typeof window !== 'undefined' && window.location.hash === '#admin');
     const key = `${state.activeNav}-${contentVersion}`;
 
+    if (isAdminRoute && !canAccessContentEditor()) {
+      const returnUrl = encodeURIComponent('/the-himalayan-table#admin');
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+        window.location.assign(`/login?returnUrl=${returnUrl}`);
+      }
+      return <HomePageMUI key={key} />;
+    }
+
     if (isAdminRoute) {
       return <AdminContentEditorPageMUI key={key} />;
     }
