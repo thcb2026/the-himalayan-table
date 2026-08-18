@@ -47,7 +47,7 @@ module.exports = {
     uniqueName: 'the_himalayan_table',
     library: {
       name: 'the_himalayan_table',
-      type: 'window',
+      type: 'assign',
     },
     globalObject: 'window',
     chunkLoadingGlobal: 'webpackChunkthe_himalayan_table',
