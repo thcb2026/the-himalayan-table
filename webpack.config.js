@@ -5,7 +5,7 @@ const { ModuleFederationPlugin } = require('webpack').container;
 
 // Module Federation configuration
 const mfConfig = {
-  name: "the_himalayan_table",
+  name: "the_himalayan_table_app",
   filename: "remoteEntry.js",
   exposes: {
     "./App": "./src/AppMUI",
@@ -43,7 +43,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].[contenthash].js',
     chunkFilename: '[name].[contenthash].js',
-    publicPath: 'http://localhost:4211/',
+    publicPath: '/the-himalayan-table-app/',
     uniqueName: 'the_himalayan_table',
     library: {
       name: 'the_himalayan_table',
