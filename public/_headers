@@ -6,6 +6,10 @@
 /index.html
   Cache-Control: public, max-age=0, must-revalidate
 
+# Federation entry points must always resolve the current deployment.
+/remoteEntry.js
+  Cache-Control: public, max-age=0, must-revalidate
+
 # Chunk files can be cached long-term (they have content hashes)
 /*.bundle.js
   Cache-Control: public, max-age=31536000, immutable
