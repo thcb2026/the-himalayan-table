@@ -301,9 +301,11 @@ export default {
 
     try {
       // Support the same-origin remote fallback path used by the platform shell.
-      const assetPath = pathname.startsWith('/the-himalayan-table')
-        ? pathname.replace(/^\/the-himalayan-table/, '') || '/'
-        : pathname;
+      const assetPath = pathname.startsWith('/the-himalayan-table-app')
+        ? pathname.replace(/^\/the-himalayan-table-app/, '') || '/'
+        : pathname.startsWith('/the-himalayan-table')
+          ? pathname.replace(/^\/the-himalayan-table/, '') || '/'
+          : pathname;
       const assetRequest = new Request(new URL(assetPath + url.search, url).toString(), request);
 
       // Try to serve the requested file first.
